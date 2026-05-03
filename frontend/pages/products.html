@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop – CARTELLO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-white">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="bg-black text-white text-center py-2 text-xs">
+      Free shipping on orders over $100 | Use code <strong>SAVE10</strong> for 10% off
+    </div>
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <button id="mobileMenuBtn" class="lg:hidden">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+        <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
+      </div>
+      <div class="flex-1 max-w-md hidden lg:flex items-center bg-gray-100 rounded-full px-4 py-2.5">
+        <i class="fas fa-search text-gray-400 mr-2 text-sm"></i>
+        <input id="searchInput" type="text" placeholder="Search for products..."
+          class="bg-transparent outline-none w-full text-sm placeholder-gray-400">
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="cart.html" class="relative">
+          <i class="fas fa-shopping-cart text-xl"></i>
+          <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+        </a>
+        <a href="profile.html" id="userIcon"><i class="fas fa-user text-xl"></i></a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
+      <a href="../index.html" class="hover:text-black transition">Home</a>
+      <i class="fas fa-chevron-right text-xs"></i>
+      <span class="text-black font-medium">Shop</span>
+    </nav>
+
+    <div class="flex gap-8">
+
+      <!-- Sidebar Filters -->
+      <aside class="hidden lg:block w-64 flex-shrink-0">
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-bold text-lg">Filters</h2>
+            <button onclick="resetFilters()" class="text-xs text-gray-500 hover:text-black transition underline">Reset All</button>
+          </div>
+
+          <!-- Categories -->
+          <div class="mb-6">
+            <h3 class="font-semibold text-sm mb-3">Category</h3>
+            <div id="categoryFilters" class="space-y-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="category" value="" class="accent-black" checked>
+                <span class="text-sm text-gray-700">All Categories</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="border-t pt-5 mb-6">
+            <h3 class="font-semibold text-sm mb-3">Price Range</h3>
+            <div class="flex items-center gap-2">
+              <input id="minPrice" type="number" placeholder="Min" min="0"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-black transition">
+              <span class="text-gray-400 text-sm">–</span>
+              <input id="maxPrice" type="number" placeholder="Max" min="0"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-black transition">
+            </div>
+            <button id="applyPrice"
+              class="mt-3 w-full bg-black text-white text-sm py-2.5 rounded-xl hover:bg-gray-800 transition">
+              Apply
+            </button>
+          </div>
+
+          <div class="border-t pt-5">
+            <h3 class="font-semibold text-sm mb-3">Availability</h3>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="inStockOnly" class="accent-black">
+              <span class="text-sm text-gray-700">In Stock Only</span>
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Area -->
+      <div class="flex-1 min-w-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h1 class="text-2xl font-bold">All Products</h1>
+            <p id="resultsCount" class="text-sm text-gray-500 mt-0.5"></p>
+          </div>
+          <div class="flex items-center gap-3">
+            <!-- Mobile filter toggle -->
+            <button class="lg:hidden flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm hover:bg-gray-50 transition">
+              <i class="fas fa-filter"></i> Filters
+            </button>
+            <select id="sortSelect"
+              class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-black transition bg-white">
+              <option value="">Most Relevant</option>
+              <option value="newest">Newest First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name-asc">Name: A–Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div id="productsGrid" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+          <div class="col-span-full flex justify-center items-center py-16">
+            <i class="fas fa-spinner fa-spin text-3xl text-gray-300"></i>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="flex items-center justify-center gap-2 mt-10"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-50 border-t mt-16 py-8">
+    <div class="container mx-auto px-4 text-center text-sm text-gray-500">
+      CARTELLO © 2024–2025, All Rights Reserved
+    </div>
+  </footer>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    let currentFilters = {};
+    let currentPage = 1;
+
+    function formatCurrency(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function renderStars(r) {
+      let h = '';
+      for (let i = 0; i < 5; i++) {
+        if (i < Math.floor(r)) h += '<i class="fas fa-star text-yellow-400 text-xs"></i>';
+        else if (i === Math.floor(r) && r % 1 >= 0.5) h += '<i class="fas fa-star-half-alt text-yellow-400 text-xs"></i>';
+        else h += '<i class="far fa-star text-yellow-400 text-xs"></i>';
+      }
+      return h;
+    }
+
+    function addToCart(id, name, price, image) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const ex = cart.find(i => i.id === id);
+      if (ex) ex.quantity++;
+      else cart.push({ id, name, price, image, quantity: 1 });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      const count = cart.reduce((t, i) => t + i.quantity, 0);
+      document.getElementById('cartCount').textContent = count;
+      showToast(name + ' added to cart!');
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium';
+      t.innerHTML = '<i class="fas fa-check-circle mr-2"></i>' + msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    function createCard(p) {
+      const disc = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : null;
+      return `
+        <div class="group cursor-pointer" onclick="location.href='product-detail.html?id=${p._id}'">
+          <div class="relative overflow-hidden rounded-2xl bg-gray-100 aspect-square mb-3">
+            <img src="${p.images[0] || 'https://via.placeholder.com/400'}" alt="${p.name}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            ${disc ? `<span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">-${disc}%</span>` : ''}
+            <button onclick="event.stopPropagation();addToCart('${p._id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${p.images[0]}')"
+              class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap hover:bg-gray-800">
+              <i class="fas fa-cart-plus mr-1"></i> Add to Cart
+            </button>
+          </div>
+          <h3 class="font-medium text-gray-900 text-sm truncate">${p.name}</h3>
+          <div class="flex items-center gap-1 my-1">${renderStars(p.rating)}<span class="text-xs text-gray-400">(${p.numReviews})</span></div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm">${formatCurrency(p.price)}</span>
+            ${p.originalPrice ? `<span class="text-gray-400 line-through text-xs">${formatCurrency(p.originalPrice)}</span>` : ''}
+          </div>
+        </div>`;
+    }
+
+    async function loadProducts(page = 1, filters = {}) {
+      currentPage = page;
+      currentFilters = filters;
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = `<div class="col-span-full flex justify-center py-16"><i class="fas fa-spinner fa-spin text-3xl text-gray-300"></i></div>`;
+      const params = new URLSearchParams({ page, limit: 12, ...filters });
+      try {
+        const res = await fetch(`${API}/products?${params}`);
+        const data = await res.json();
+        document.getElementById('resultsCount').textContent = `${data.total} products found`;
+        if (!data.products.length) {
+          grid.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400"><i class="fas fa-box-open text-4xl mb-4"></i><p>No products found.</p></div>`;
+          return;
+        }
+        grid.innerHTML = data.products.map(createCard).join('');
+        renderPagination(data.totalPages, data.currentPage);
+      } catch {
+        grid.innerHTML = `<div class="col-span-full text-center py-16 text-red-400">Failed to load products.</div>`;
+      }
+    }
+
+    function renderPagination(total, cur) {
+      const el = document.getElementById('pagination');
+      if (total <= 1) { el.innerHTML = ''; return; }
+      let html = `<button onclick="loadProducts(${cur - 1},currentFilters)" ${cur <= 1 ? 'disabled' : ''}
+        class="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30">
+        <i class="fas fa-chevron-left text-xs"></i></button>`;
+      for (let i = 1; i <= total; i++) {
+        html += `<button onclick="loadProducts(${i},currentFilters)"
+          class="w-9 h-9 rounded-full text-sm font-medium transition ${i === cur ? 'bg-black text-white' : 'border border-gray-200 hover:bg-gray-100'}">${i}</button>`;
+      }
+      html += `<button onclick="loadProducts(${cur + 1},currentFilters)" ${cur >= total ? 'disabled' : ''}
+        class="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30">
+        <i class="fas fa-chevron-right text-xs"></i></button>`;
+      el.innerHTML = html;
+    }
+
+    function resetFilters() {
+      document.querySelectorAll('input[name="category"]')[0].checked = true;
+      document.getElementById('minPrice').value = '';
+      document.getElementById('maxPrice').value = '';
+      document.getElementById('sortSelect').value = '';
+      document.getElementById('searchInput').value = '';
+      loadProducts(1, {});
+    }
+
+    // Init
+    (async () => {
+      // Load categories
+      try {
+        const res = await fetch(`${API}/categories`);
+        const data = await res.json();
+        const cf = document.getElementById('categoryFilters');
+        data.categories.forEach(cat => {
+          cf.innerHTML += `
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="category" value="${cat._id}" class="accent-black">
+              <span class="text-sm text-gray-700">${cat.name}</span>
+            </label>`;
+        });
+        cf.querySelectorAll('input').forEach(inp => {
+          inp.addEventListener('change', () => loadProducts(1, { ...currentFilters, category: inp.value }));
+        });
+      } catch {}
+
+      // URL params
+      const params = new URLSearchParams(window.location.search);
+      const init = {};
+      if (params.get('category')) init.category = params.get('category');
+      if (params.get('search')) {
+        init.search = params.get('search');
+        document.getElementById('searchInput').value = params.get('search');
+      }
+      loadProducts(1, init);
+
+      // Update cart count
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.getElementById('cartCount').textContent = cart.reduce((t,i) => t + i.quantity, 0);
+
+      // User icon
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (user) {
+        document.getElementById('userIcon').innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">`;
+      }
+    })();
+
+    // Search
+    let debounce;
+    document.getElementById('searchInput').addEventListener('input', function() {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => loadProducts(1, { ...currentFilters, search: this.value }), 400);
+    });
+
+    // Sort
+    document.getElementById('sortSelect').addEventListener('change', function() {
+      loadProducts(1, { ...currentFilters, sort: this.value });
+    });
+
+    // Price
+    document.getElementById('applyPrice').addEventListener('click', () => {
+      const min = document.getElementById('minPrice').value;
+      const max = document.getElementById('maxPrice').value;
+      loadProducts(1, { ...currentFilters, minPrice: min, maxPrice: max });
+    });
+  </script>
+</body>
+</html>

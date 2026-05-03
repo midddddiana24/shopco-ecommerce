@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders – CARTELLO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
+      <div class="flex items-center gap-4">
+        <a href="cart.html" class="relative">
+          <i class="fas fa-shopping-cart text-xl"></i>
+          <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-10 max-w-4xl">
+    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
+      <a href="../index.html" class="hover:text-black">Home</a>
+      <i class="fas fa-chevron-right text-xs"></i>
+      <span class="text-black font-medium">My Orders</span>
+    </nav>
+
+    <h1 class="text-3xl font-bold mb-8">My Orders</h1>
+
+    <div id="loading" class="flex justify-center py-16">
+      <i class="fas fa-spinner fa-spin text-3xl text-gray-300"></i>
+    </div>
+
+    <div id="ordersContainer" class="hidden space-y-4"></div>
+
+    <div id="emptyOrders" class="hidden text-center py-16">
+      <i class="fas fa-box-open text-5xl text-gray-200 mb-4"></i>
+      <h2 class="text-xl font-semibold text-gray-500 mb-2">No orders yet</h2>
+      <p class="text-gray-400 mb-6">Start shopping to see your orders here.</p>
+      <a href="products.html" class="bg-black text-white px-8 py-3.5 rounded-full font-semibold hover:bg-gray-800 transition">Shop Now</a>
+    </div>
+  </main>
+
+  <!-- Order Detail Modal -->
+  <div id="orderModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl">
+        <h2 class="font-bold text-lg">Order Details</h2>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <div id="modalContent" class="p-6"></div>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t mt-16 py-8">
+    <div class="container mx-auto px-4 text-center text-sm text-gray-500">CARTELLO © 2024–2025</div>
+  </footer>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+
+    function formatCurrency(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function formatDate(d) {
+      return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function requireAuth() {
+      if (!localStorage.getItem('token')) window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname);
+    }
+    requireAuth();
+
+    const statusColors = {
+      pending: 'bg-yellow-100 text-yellow-700',
+      processing: 'bg-blue-100 text-blue-700',
+      shipped: 'bg-purple-100 text-purple-700',
+      delivered: 'bg-green-100 text-green-700',
+      cancelled: 'bg-red-100 text-red-700'
+    };
+
+    const statusIcons = {
+      pending: 'fa-clock',
+      processing: 'fa-cog fa-spin',
+      shipped: 'fa-truck',
+      delivered: 'fa-check-circle',
+      cancelled: 'fa-times-circle'
+    };
+
+    function openModal(order) {
+      document.getElementById('modalContent').innerHTML = `
+        <div class="space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs text-gray-400">Order ID</p>
+              <p class="text-sm font-mono font-medium">#${order._id.slice(-8).toUpperCase()}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[order.status] || 'bg-gray-100 text-gray-600'}">
+              <i class="fas ${statusIcons[order.status] || 'fa-circle'} mr-1"></i>${order.status}
+            </span>
+          </div>
+
+          <div class="bg-gray-50 rounded-2xl p-4">
+            <h3 class="font-semibold text-sm mb-3">Items Ordered</h3>
+            <div class="space-y-3">
+              ${order.orderItems.map(item => `
+                <div class="flex items-center gap-3">
+                  <img src="${item.image || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-gray-200">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate">${item.name}</p>
+                    <p class="text-xs text-gray-500">Qty: ${item.quantity} ${item.size ? '· ' + item.size : ''}</p>
+                  </div>
+                  <span class="text-sm font-semibold">${formatCurrency(item.price * item.quantity)}</span>
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-2xl p-4">
+            <h3 class="font-semibold text-sm mb-3">Shipping Address</h3>
+            <p class="text-sm text-gray-700">${order.shippingAddress.fullName}</p>
+            <p class="text-sm text-gray-500">${order.shippingAddress.address}</p>
+            <p class="text-sm text-gray-500">${order.shippingAddress.city}, ${order.shippingAddress.postalCode}</p>
+            <p class="text-sm text-gray-500">${order.shippingAddress.country}</p>
+            <p class="text-sm text-gray-500">${order.shippingAddress.phone}</p>
+          </div>
+
+          <div class="border-t pt-4 space-y-2 text-sm">
+            <div class="flex justify-between text-gray-600"><span>Subtotal</span><span>${formatCurrency(order.itemsPrice)}</span></div>
+            <div class="flex justify-between text-gray-600"><span>Shipping</span><span>${formatCurrency(order.shippingPrice)}</span></div>
+            <div class="flex justify-between font-bold text-base pt-1 border-t"><span>Total</span><span>${formatCurrency(order.totalPrice)}</span></div>
+          </div>
+
+          <div class="flex justify-between text-sm text-gray-500">
+            <span>Payment: <strong>${order.paymentMethod}</strong></span>
+            <span>Ordered: ${formatDate(order.createdAt)}</span>
+          </div>
+        </div>`;
+      document.getElementById('orderModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('orderModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('orderModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    (async () => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.getElementById('cartCount').textContent = cart.reduce((t, i) => t + i.quantity, 0);
+
+      try {
+        const res = await fetch(`${API}/orders/myorders`, {
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const data = await res.json();
+        document.getElementById('loading').classList.add('hidden');
+
+        if (!data.orders || data.orders.length === 0) {
+          document.getElementById('emptyOrders').classList.remove('hidden');
+          return;
+        }
+
+        const container = document.getElementById('ordersContainer');
+        container.classList.remove('hidden');
+        container.innerHTML = data.orders.map(order => `
+          <div class="bg-white border border-gray-200 rounded-3xl p-5 hover:shadow-md transition cursor-pointer" onclick='openModal(${JSON.stringify(order)})'>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-xs text-gray-400 mb-0.5">Order #${order._id.slice(-8).toUpperCase()}</p>
+                <p class="text-xs text-gray-500">${formatDate(order.createdAt)}</p>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[order.status] || 'bg-gray-100 text-gray-600'}">
+                <i class="fas ${statusIcons[order.status] || 'fa-circle'} mr-1"></i>${order.status}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-3 mb-4">
+              ${order.orderItems.slice(0, 3).map(item => `
+                <img src="${item.image || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-gray-100">`).join('')}
+              ${order.orderItems.length > 3 ? `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500">+${order.orderItems.length - 3}</div>` : ''}
+            </div>
+
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-500">${order.orderItems.reduce((t, i) => t + i.quantity, 0)} item(s) · ${order.paymentMethod}</p>
+              <p class="font-bold">${formatCurrency(order.totalPrice)}</p>
+            </div>
+          </div>`).join('');
+
+      } catch (err) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('ordersContainer').innerHTML = `<div class="text-center py-12 text-red-400">Failed to load orders. <a href="" class="underline">Retry</a></div>`;
+        document.getElementById('ordersContainer').classList.remove('hidden');
+      }
+    })();
+  </script>
+</body>
+</html>

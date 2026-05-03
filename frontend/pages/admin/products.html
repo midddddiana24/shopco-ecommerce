@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Products – CARTELLO Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col">
+      <div class="p-6 border-b border-white/10">
+        <a href="../../index.html" class="text-2xl font-black">CARTELLO</a>
+        <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tachometer-alt w-4"></i> Dashboard
+        </a>
+        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm">
+          <i class="fas fa-box w-4"></i> Products
+        </a>
+        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-shopping-bag w-4"></i> Orders
+        </a>
+        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tags w-4"></i> Categories
+        </a>
+      </nav>
+      <div class="p-4 border-t border-white/10">
+        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-sign-out-alt w-4"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-2xl font-bold">Products</h1>
+            <p class="text-gray-500 text-sm mt-0.5">Manage your product catalog</p>
+          </div>
+          <button onclick="openAddModal()"
+            class="bg-black text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i> Add Product
+          </button>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input id="searchInput" type="text" placeholder="Search products..."
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition">
+          </div>
+          <select id="categoryFilter" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none bg-white">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Featured</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTable" class="divide-y divide-gray-100">
+                <tr><td colspan="6" class="text-center py-10"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="productModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
+        <h2 id="modalTitle" class="font-bold text-lg">Add Product</h2>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <form id="productForm" class="p-6 space-y-5">
+        <input type="hidden" id="productId">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Name *</label>
+            <input type="text" id="pName" required placeholder="e.g. Classic White T-Shirt"
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Price (USD) *</label>
+            <input type="number" id="pPrice" required min="0" step="0.01" placeholder="29.99"
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Original Price (for discount)</label>
+            <input type="number" id="pOriginalPrice" min="0" step="0.01" placeholder="39.99"
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Category *</label>
+            <select id="pCategory" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition bg-white">
+              <option value="">Select Category</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Stock Quantity *</label>
+            <input type="number" id="pStock" required min="0" placeholder="100"
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Description *</label>
+            <textarea id="pDescription" required rows="3" placeholder="Describe the product..."
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition resize-none"></textarea>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Images</label>
+            <input type="file" id="pImages" multiple accept="image/*"
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition bg-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-black file:text-white hover:file:bg-gray-800">
+            <p class="text-xs text-gray-400 mt-1">Up to 5 images, 5MB each. JPG, PNG, WebP accepted.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Sizes</label>
+            <div class="flex flex-wrap gap-2">
+              ${['XS','S','M','L','XL','XXL'].map(s => `
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" name="pSizes" value="${s}" class="accent-black">
+                  <span class="text-sm">${s}</span>
+                </label>`).join('')}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pt-6">
+            <input type="checkbox" id="pFeatured" class="accent-black w-4 h-4">
+            <label for="pFeatured" class="text-sm font-medium text-gray-700">Featured Product</label>
+          </div>
+        </div>
+
+        <div id="formError" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3"></div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition">Cancel</button>
+          <button type="submit" id="submitBtn" class="flex-1 bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-8 text-center">
+      <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="fas fa-trash-alt text-red-600 text-xl"></i>
+      </div>
+      <h2 class="font-bold text-lg mb-2">Delete Product?</h2>
+      <p class="text-gray-500 text-sm mb-6">This action cannot be undone. The product will be permanently removed.</p>
+      <div class="flex gap-3">
+        <button onclick="closeDeleteModal()" class="flex-1 border border-gray-200 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition">Cancel</button>
+        <button id="confirmDeleteBtn" class="flex-1 bg-red-600 text-white py-3 rounded-xl text-sm font-semibold hover:bg-red-700 transition">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    const headers = () => ({ 'Authorization': 'Bearer ' + localStorage.getItem('token') });
+    let categories = [];
+    let deleteTargetId = null;
+
+    function formatCurrency(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function logout() {
+      if (confirm('Logout?')) { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '../login.html'; }
+    }
+
+    function requireAdmin() {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (!user || user.role !== 'admin') { alert('Access denied.'); window.location.href = '../../index.html'; }
+    }
+    requireAdmin();
+
+    function showToast(msg, type = 'success') {
+      const t = document.createElement('div');
+      t.className = `fixed bottom-6 right-6 z-[999] ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium`;
+      t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${msg}`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    async function loadCategories() {
+      const res = await fetch(`${API}/categories`);
+      const data = await res.json();
+      categories = data.categories || [];
+      const sel1 = document.getElementById('categoryFilter');
+      const sel2 = document.getElementById('pCategory');
+      categories.forEach(c => {
+        sel1.innerHTML += `<option value="${c._id}">${c.name}</option>`;
+        sel2.innerHTML += `<option value="${c._id}">${c.name}</option>`;
+      });
+    }
+
+    async function loadProducts(search = '', category = '') {
+      const table = document.getElementById('productsTable');
+      table.innerHTML = `<tr><td colspan="6" class="text-center py-10"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></td></tr>`;
+      const params = new URLSearchParams({ limit: 100 });
+      if (search) params.append('search', search);
+      if (category) params.append('category', category);
+
+      try {
+        const res = await fetch(`${API}/products?${params}`);
+        const data = await res.json();
+        if (!data.products.length) {
+          table.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gray-400 text-sm">No products found.</td></tr>`;
+          return;
+        }
+        table.innerHTML = data.products.map(p => `
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <img src="${p.images[0] || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-gray-100 flex-shrink-0">
+                <div>
+                  <p class="font-medium text-sm">${p.name}</p>
+                  <p class="text-xs text-gray-400 truncate max-w-xs">${p.description?.slice(0, 50) || ''}...</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">${p.category?.name || '–'}</td>
+            <td class="px-6 py-4">
+              <span class="font-semibold text-sm">${formatCurrency(p.price)}</span>
+              ${p.originalPrice ? `<span class="text-xs text-gray-400 line-through ml-1">${formatCurrency(p.originalPrice)}</span>` : ''}
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-sm font-medium ${p.stock === 0 ? 'text-red-600' : p.stock <= 5 ? 'text-orange-600' : 'text-green-600'}">${p.stock}</span>
+            </td>
+            <td class="px-6 py-4">
+              ${p.featured ? '<span class="bg-yellow-100 text-yellow-700 text-xs font-medium px-2.5 py-1 rounded-full"><i class="fas fa-star mr-1"></i>Featured</span>' :
+              '<span class="text-gray-400 text-xs">–</span>'}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex gap-2">
+                <button onclick="openEditModal('${p._id}')" class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition" title="Edit">
+                  <i class="fas fa-pen text-xs text-gray-600"></i>
+                </button>
+                <button onclick="openDeleteModal('${p._id}')" class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center hover:bg-red-100 transition" title="Delete">
+                  <i class="fas fa-trash text-xs text-red-600"></i>
+                </button>
+              </div>
+            </td>
+          </tr>`).join('');
+      } catch {
+        table.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-red-400 text-sm">Failed to load products.</td></tr>`;
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add Product';
+      document.getElementById('productForm').reset();
+      document.getElementById('productId').value = '';
+      document.getElementById('formError').classList.add('hidden');
+      document.getElementById('productModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    async function openEditModal(id) {
+      const res = await fetch(`${API}/products/${id}`);
+      const data = await res.json();
+      const p = data.product;
+      document.getElementById('modalTitle').textContent = 'Edit Product';
+      document.getElementById('productId').value = p._id;
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pPrice').value = p.price;
+      document.getElementById('pOriginalPrice').value = p.originalPrice || '';
+      document.getElementById('pCategory').value = p.category?._id || '';
+      document.getElementById('pStock').value = p.stock;
+      document.getElementById('pDescription').value = p.description;
+      document.getElementById('pFeatured').checked = p.featured;
+      document.querySelectorAll('input[name="pSizes"]').forEach(cb => {
+        cb.checked = p.sizes?.includes(cb.value);
+      });
+      document.getElementById('formError').classList.add('hidden');
+      document.getElementById('productModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function openDeleteModal(id) {
+      deleteTargetId = id;
+      document.getElementById('deleteModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.add('hidden');
+      document.body.style.overflow = '';
+      deleteTargetId = null;
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+      try {
+        const res = await fetch(`${API}/products/${deleteTargetId}`, { method: 'DELETE', headers: headers() });
+        if (!res.ok) throw new Error('Delete failed');
+        showToast('Product deleted successfully!');
+        closeDeleteModal();
+        loadProducts();
+      } catch { showToast('Failed to delete product.', 'error'); }
+    });
+
+    document.getElementById('productForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const errEl = document.getElementById('formError');
+      const id = document.getElementById('productId').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+      errEl.classList.add('hidden');
+
+      const formData = new FormData();
+      formData.append('name', document.getElementById('pName').value);
+      formData.append('price', document.getElementById('pPrice').value);
+      formData.append('originalPrice', document.getElementById('pOriginalPrice').value || '');
+      formData.append('category', document.getElementById('pCategory').value);
+      formData.append('stock', document.getElementById('pStock').value);
+      formData.append('description', document.getElementById('pDescription').value);
+      formData.append('featured', document.getElementById('pFeatured').checked);
+      const sizes = [...document.querySelectorAll('input[name="pSizes"]:checked')].map(cb => cb.value);
+      formData.append('sizes', JSON.stringify(sizes));
+      const files = document.getElementById('pImages').files;
+      for (const f of files) formData.append('images', f);
+
+      try {
+        const url = id ? `${API}/products/${id}` : `${API}/products`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers: headers(), body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Save failed');
+        showToast(id ? 'Product updated!' : 'Product created!');
+        closeModal();
+        loadProducts();
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Product';
+      }
+    });
+
+    // Search debounce
+    let debounce;
+    document.getElementById('searchInput').addEventListener('input', function() {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => loadProducts(this.value, document.getElementById('categoryFilter').value), 400);
+    });
+    document.getElementById('categoryFilter').addEventListener('change', function() {
+      loadProducts(document.getElementById('searchInput').value, this.value);
+    });
+
+    (async () => { await loadCategories(); await loadProducts(); })();
+  </script>
+</body>
+</html>

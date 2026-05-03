@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – CARTELLO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col">
+      <div class="p-6 border-b border-white/10">
+        <a href="../../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
+        <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm">
+          <i class="fas fa-tachometer-alt w-4"></i> Dashboard
+        </a>
+        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-box w-4"></i> Products
+        </a>
+        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-shopping-bag w-4"></i> Orders
+        </a>
+        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tags w-4"></i> Categories
+        </a>
+      </nav>
+      <div class="p-4 border-t border-white/10">
+        <div id="adminInfo" class="flex items-center gap-3 mb-3"></div>
+        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-sign-out-alt w-4"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-2xl font-bold">Dashboard</h1>
+            <p class="text-gray-500 text-sm mt-0.5">Welcome back! Here's what's happening.</p>
+          </div>
+          <div class="text-sm text-gray-400" id="lastUpdated"></div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-sm text-gray-500 font-medium">Total Orders</p>
+              <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-shopping-bag text-blue-600"></i>
+              </div>
+            </div>
+            <h3 id="totalOrders" class="text-3xl font-bold">–</h3>
+            <p class="text-xs text-green-600 mt-1"><i class="fas fa-arrow-up mr-1"></i>All time</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-sm text-gray-500 font-medium">Total Products</p>
+              <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-box text-purple-600"></i>
+              </div>
+            </div>
+            <h3 id="totalProducts" class="text-3xl font-bold">–</h3>
+            <p class="text-xs text-gray-400 mt-1">In catalog</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-sm text-gray-500 font-medium">Categories</p>
+              <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-tags text-orange-600"></i>
+              </div>
+            </div>
+            <h3 id="totalCategories" class="text-3xl font-bold">–</h3>
+            <p class="text-xs text-gray-400 mt-1">Active categories</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-sm text-gray-500 font-medium">Total Revenue</p>
+              <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-dollar-sign text-green-600"></i>
+              </div>
+            </div>
+            <h3 id="totalRevenue" class="text-3xl font-bold">–</h3>
+            <p class="text-xs text-green-600 mt-1"><i class="fas fa-check-circle mr-1"></i>All orders</p>
+          </div>
+        </div>
+
+        <!-- Recent Orders + Quick Actions -->
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <h2 class="font-bold">Recent Orders</h2>
+              <a href="orders.html" class="text-sm text-gray-500 hover:text-black transition">View All →</a>
+            </div>
+            <div id="recentOrders" class="divide-y divide-gray-50">
+              <div class="flex justify-center py-8"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h2 class="font-bold mb-4">Quick Actions</h2>
+              <div class="space-y-2">
+                <a href="products.html#add" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
+                  <div class="w-9 h-9 bg-black rounded-xl flex items-center justify-center group-hover:bg-gray-800 transition">
+                    <i class="fas fa-plus text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-medium">Add New Product</span>
+                </a>
+                <a href="categories.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
+                  <div class="w-9 h-9 bg-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tag text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-medium">Manage Categories</span>
+                </a>
+                <a href="orders.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
+                  <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-truck text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-medium">Update Order Status</span>
+                </a>
+                <a href="../../index.html" target="_blank" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
+                  <div class="w-9 h-9 bg-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-store text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-medium">View Store</span>
+                </a>
+              </div>
+            </div>
+
+            <div id="orderStatusChart" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h2 class="font-bold mb-4">Order Status</h2>
+              <div id="statusBreakdown" class="space-y-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+
+    function formatCurrency(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function formatDate(d) {
+      return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function logout() {
+      if (confirm('Logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../login.html';
+      }
+    }
+
+    function requireAdmin() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (!token || !user) return window.location.href = '../login.html';
+      if (user.role !== 'admin') { alert('Access denied.'); window.location.href = '../../index.html'; }
+      const info = document.getElementById('adminInfo');
+      if (info) info.innerHTML = `
+        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=fff&color=000&size=32" class="w-8 h-8 rounded-full">
+        <div><p class="text-sm font-medium">${user.name}</p><p class="text-xs text-gray-400">Admin</p></div>`;
+    }
+    requireAdmin();
+
+    document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+
+    const statusColors = {
+      pending: 'bg-yellow-100 text-yellow-700',
+      processing: 'bg-blue-100 text-blue-700',
+      shipped: 'bg-purple-100 text-purple-700',
+      delivered: 'bg-green-100 text-green-700',
+      cancelled: 'bg-red-100 text-red-700'
+    };
+
+    const headers = { 'Authorization': 'Bearer ' + localStorage.getItem('token') };
+
+    (async () => {
+      try {
+        const [ordersRes, productsRes, catsRes] = await Promise.all([
+          fetch(`${API}/orders`, { headers }),
+          fetch(`${API}/products?limit=1000`),
+          fetch(`${API}/categories`)
+        ]);
+
+        const [ordersData, productsData, catsData] = await Promise.all([
+          ordersRes.json(), productsRes.json(), catsRes.json()
+        ]);
+
+        const orders = ordersData.orders || [];
+        const revenue = orders.reduce((t, o) => t + o.totalPrice, 0);
+
+        document.getElementById('totalOrders').textContent = ordersData.count || 0;
+        document.getElementById('totalProducts').textContent = productsData.total || 0;
+        document.getElementById('totalCategories').textContent = catsData.count || 0;
+        document.getElementById('totalRevenue').textContent = formatCurrency(revenue);
+
+        // Recent Orders
+        const recentEl = document.getElementById('recentOrders');
+        if (orders.length === 0) {
+          recentEl.innerHTML = '<p class="text-center text-gray-400 py-8 text-sm">No orders yet.</p>';
+        } else {
+          recentEl.innerHTML = orders.slice(0, 8).map(order => `
+            <div class="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium">#${order._id.slice(-8).toUpperCase()}</p>
+                <p class="text-xs text-gray-500">${order.user?.name || 'Unknown'} · ${formatDate(order.createdAt)}</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium capitalize ${statusColors[order.status] || 'bg-gray-100 text-gray-600'}">${order.status}</span>
+              <span class="text-sm font-bold">${formatCurrency(order.totalPrice)}</span>
+            </div>`).join('');
+        }
+
+        // Status breakdown
+        const counts = {};
+        orders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
+        const total = orders.length || 1;
+        const breakdown = document.getElementById('statusBreakdown');
+        breakdown.innerHTML = Object.entries(counts).map(([status, count]) => {
+          const pct = Math.round((count / total) * 100);
+          return `<div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="capitalize font-medium text-gray-700">${status}</span>
+              <span class="text-gray-500">${count} (${pct}%)</span>
+            </div>
+            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-black transition-all duration-500" style="width:${pct}%"></div>
+            </div>
+          </div>`;
+        }).join('') || '<p class="text-sm text-gray-400">No data yet.</p>';
+
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>

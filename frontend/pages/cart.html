@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart – CARTELLO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-white">
+
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
+      <div class="flex items-center gap-4">
+        <a href="cart.html" class="relative font-semibold text-sm flex items-center gap-2">
+          <i class="fas fa-shopping-cart text-xl"></i>
+          <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+        </a>
+        <a href="profile.html" id="userIcon"><i class="fas fa-user text-xl"></i></a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-10">
+    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
+      <a href="../index.html" class="hover:text-black">Home</a>
+      <i class="fas fa-chevron-right text-xs"></i>
+      <span class="text-black font-medium">Cart</span>
+    </nav>
+
+    <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
+
+    <!-- Empty Cart -->
+    <div id="emptyCart" class="hidden text-center py-20">
+      <i class="fas fa-shopping-cart text-6xl text-gray-200 mb-6"></i>
+      <h2 class="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h2>
+      <p class="text-gray-400 mb-6">Looks like you haven't added anything yet.</p>
+      <a href="products.html" class="bg-black text-white px-8 py-3.5 rounded-full font-semibold hover:bg-gray-800 transition">
+        Start Shopping
+      </a>
+    </div>
+
+    <!-- Cart Content -->
+    <div id="cartContent" class="hidden lg:grid lg:grid-cols-3 gap-8">
+      <!-- Items -->
+      <div class="lg:col-span-2">
+        <div id="cartContainer" class="bg-white border border-gray-200 rounded-3xl divide-y divide-gray-100 overflow-hidden"></div>
+      </div>
+
+      <!-- Summary -->
+      <div id="cartSummary"></div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-50 border-t mt-16 py-8">
+    <div class="container mx-auto px-4 text-center text-sm text-gray-500">CARTELLO © 2024–2025</div>
+  </footer>
+
+  <script>
+    function formatCurrency(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function getCart() { return JSON.parse(localStorage.getItem('cart') || '[]'); }
+    function saveCart(c) { localStorage.setItem('cart', JSON.stringify(c)); }
+
+    function updateCartCount() {
+      const n = getCart().reduce((t, i) => t + i.quantity, 0);
+      document.getElementById('cartCount').textContent = n;
+    }
+
+    function removeFromCart(idx) {
+      const cart = getCart();
+      cart.splice(idx, 1);
+      saveCart(cart);
+      renderAll();
+    }
+
+    function changeQty(idx, delta) {
+      const cart = getCart();
+      cart[idx].quantity += delta;
+      if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+      saveCart(cart);
+      renderAll();
+    }
+
+    function showToast(msg, type = 'success') {
+      const t = document.createElement('div');
+      t.className = `fixed bottom-6 right-6 z-50 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-xl text-sm`;
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
+
+    function renderAll() {
+      const cart = getCart();
+      updateCartCount();
+
+      if (cart.length === 0) {
+        document.getElementById('emptyCart').classList.remove('hidden');
+        document.getElementById('cartContent').classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('emptyCart').classList.add('hidden');
+      document.getElementById('cartContent').classList.remove('hidden');
+
+      // Items
+      document.getElementById('cartContainer').innerHTML = cart.map((item, i) => `
+        <div class="flex gap-4 p-5">
+          <a href="product-detail.html?id=${item.id}">
+            <img src="${item.image || 'https://via.placeholder.com/100'}" alt="${item.name}"
+              class="w-24 h-24 object-cover rounded-2xl bg-gray-100 flex-shrink-0 hover:opacity-90 transition">
+          </a>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between">
+              <div>
+                <a href="product-detail.html?id=${item.id}" class="font-semibold text-gray-900 hover:underline line-clamp-2">${item.name}</a>
+                ${item.size ? `<p class="text-xs text-gray-500 mt-0.5">Size: ${item.size}</p>` : ''}
+                ${item.color ? `<p class="text-xs text-gray-500">Color: ${item.color}</p>` : ''}
+              </div>
+              <button onclick="removeFromCart(${i})" class="text-gray-300 hover:text-red-500 transition ml-2 p-1">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center border border-gray-200 rounded-full overflow-hidden">
+                <button onclick="changeQty(${i},-1)" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition">
+                  <i class="fas fa-minus text-xs"></i>
+                </button>
+                <span class="w-8 text-center text-sm font-semibold">${item.quantity}</span>
+                <button onclick="changeQty(${i},1)" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition">
+                  <i class="fas fa-plus text-xs"></i>
+                </button>
+              </div>
+              <span class="font-bold">${formatCurrency(item.price * item.quantity)}</span>
+            </div>
+          </div>
+        </div>`).join('');
+
+      // Summary
+      const subtotal = cart.reduce((t, i) => t + i.price * i.quantity, 0);
+      const shipping = subtotal >= 100 ? 0 : 9.99;
+      const discount = subtotal >= 200 ? subtotal * 0.1 : 0;
+      const total = subtotal + shipping - discount;
+
+      document.getElementById('cartSummary').innerHTML = `
+        <div class="space-y-4">
+          <div class="bg-white border border-gray-200 rounded-3xl p-6">
+            <h2 class="text-xl font-bold mb-5">Order Summary</h2>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-600">Subtotal (${cart.reduce((t,i)=>t+i.quantity,0)} items)</span><span class="font-medium">${formatCurrency(subtotal)}</span></div>
+              ${discount > 0 ? `<div class="flex justify-between text-green-600 font-medium"><span>Loyalty Discount (10%)</span><span>-${formatCurrency(discount)}</span></div>` : ''}
+              <div class="flex justify-between"><span class="text-gray-600">Shipping</span><span class="${shipping === 0 ? 'text-green-600 font-medium' : ''}">${shipping === 0 ? 'FREE' : formatCurrency(shipping)}</span></div>
+              ${subtotal < 100 ? `<p class="text-xs text-gray-400 bg-gray-50 rounded-xl px-3 py-2">Add ${formatCurrency(100 - subtotal)} more to get free shipping!</p>` : ''}
+              <div class="border-t pt-3 flex justify-between text-base font-bold"><span>Total</span><span>${formatCurrency(total)}</span></div>
+            </div>
+            <a href="checkout.html" class="mt-5 block text-center bg-black text-white py-4 rounded-2xl font-semibold hover:bg-gray-800 transition">
+              Checkout <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+            <a href="products.html" class="mt-3 block text-center text-sm text-gray-500 hover:text-black transition">
+              ← Continue Shopping
+            </a>
+          </div>
+
+          <!-- Promo -->
+          <div class="bg-white border border-gray-200 rounded-3xl p-5">
+            <h3 class="font-semibold text-sm mb-3">Promo Code</h3>
+            <div class="flex gap-2">
+              <input id="promoInput" type="text" placeholder="e.g. SAVE10"
+                class="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-black transition">
+              <button onclick="applyPromo()" class="bg-black text-white px-4 py-2 rounded-xl text-sm hover:bg-gray-800 transition">Apply</button>
+            </div>
+            <p id="promoMsg" class="text-xs mt-2 hidden"></p>
+          </div>
+        </div>`;
+    }
+
+    function applyPromo() {
+      const code = document.getElementById('promoInput').value.trim().toUpperCase();
+      const msg = document.getElementById('promoMsg');
+      const valid = { 'SAVE10': '10% discount applied!', 'FREESHIP': 'Free shipping unlocked!' };
+      if (valid[code]) {
+        msg.className = 'text-xs mt-2 text-green-600';
+        msg.textContent = '✓ ' + valid[code];
+      } else {
+        msg.className = 'text-xs mt-2 text-red-500';
+        msg.textContent = '✗ Invalid code. Try SAVE10 or FREESHIP.';
+      }
+      msg.classList.remove('hidden');
+    }
+
+    // Init
+    renderAll();
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (user) document.getElementById('userIcon').innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">`;
+  </script>
+</body>
+</html>

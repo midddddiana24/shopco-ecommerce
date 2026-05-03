@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account – CARTELLO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center px-4 py-12">
+
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <a href="../index.html" class="text-3xl font-black tracking-tight">CARTELLO</a>
+      <p class="text-gray-500 mt-2 text-sm">Create your account and get 20% off your first order.</p>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+      <h1 class="text-2xl font-bold mb-6">Create Account</h1>
+
+      <div id="formError" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-5 flex items-center gap-2">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="formErrorText"></span>
+      </div>
+
+      <form id="registerForm" class="space-y-4">
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+          <div class="relative">
+            <i class="fas fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="text" id="fullName" name="fullName" required autocomplete="name"
+              placeholder="Juan dela Cruz"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition placeholder-gray-400">
+          </div>
+        </div>
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
+          <div class="relative">
+            <i class="fas fa-hashtag absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="text" id="username" name="username" autocomplete="username"
+              placeholder="juan123"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition placeholder-gray-400">
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+          <div class="relative">
+            <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="email" id="email" name="email" required autocomplete="email"
+              placeholder="you@example.com"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition placeholder-gray-400">
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+          <div class="relative">
+            <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="password" id="password" name="password" required minlength="6"
+              placeholder="At least 6 characters"
+              class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition placeholder-gray-400">
+            <button type="button" id="togglePass" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition text-sm">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <!-- Password strength -->
+          <div id="strengthBar" class="mt-2 h-1 rounded-full bg-gray-100 overflow-hidden hidden">
+            <div id="strengthFill" class="h-full rounded-full transition-all duration-300 w-0"></div>
+          </div>
+          <p id="strengthLabel" class="text-xs mt-1 text-gray-400 hidden"></p>
+        </div>
+
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
+          <div class="relative">
+            <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="password" id="confirmPassword" name="confirmPassword" required
+              placeholder="Repeat your password"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition placeholder-gray-400">
+          </div>
+        </div>
+
+        <label class="flex items-start gap-3 cursor-pointer mt-2">
+          <input type="checkbox" id="terms" required class="mt-0.5 rounded accent-black">
+          <span class="text-sm text-gray-600">
+            I agree to the <a href="#" class="underline font-medium text-black">Terms of Service</a> and
+            <a href="#" class="underline font-medium text-black">Privacy Policy</a>
+          </span>
+        </label>
+
+        <button type="submit"
+          class="w-full bg-black text-white py-3.5 rounded-xl font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-2 mt-2">
+          Create Account
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-gray-600 mt-6">
+        Already have an account?
+        <a href="login.html" class="font-semibold text-black hover:underline">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password
+    document.getElementById('togglePass').addEventListener('click', function() {
+      const pw = document.getElementById('password');
+      const icon = this.querySelector('i');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+      icon.className = pw.type === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+
+    // Password strength
+    document.getElementById('password').addEventListener('input', function() {
+      const val = this.value;
+      const bar = document.getElementById('strengthBar');
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+
+      if (!val) { bar.classList.add('hidden'); label.classList.add('hidden'); return; }
+      bar.classList.remove('hidden'); label.classList.remove('hidden');
+
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const levels = [
+        { pct: '20%', color: 'bg-red-500', text: 'Very Weak' },
+        { pct: '40%', color: 'bg-orange-400', text: 'Weak' },
+        { pct: '60%', color: 'bg-yellow-400', text: 'Fair' },
+        { pct: '80%', color: 'bg-blue-500', text: 'Strong' },
+        { pct: '100%', color: 'bg-green-500', text: 'Very Strong' },
+      ];
+      const lvl = levels[Math.min(score - 1, 4)] || levels[0];
+      fill.style.width = lvl.pct;
+      fill.className = `h-full rounded-full transition-all duration-300 ${lvl.color}`;
+      label.textContent = lvl.text;
+    });
+
+    // Register form
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('button[type="submit"]');
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const errorBanner = document.getElementById('formError');
+      const errorText = document.getElementById('formErrorText');
+
+      if (password !== confirmPassword) {
+        errorText.textContent = 'Passwords do not match.';
+        errorBanner.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+      errorBanner.classList.add('hidden');
+
+      try {
+        const username = document.getElementById('username').value.trim();
+        const res = await fetch('http://localhost:5000/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, fullName, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Registration failed');
+
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = '../index.html';
+      } catch (err) {
+        errorText.textContent = err.message;
+        errorBanner.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>
