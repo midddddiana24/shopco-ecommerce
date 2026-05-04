@@ -21,6 +21,14 @@ body {
   background: radial-gradient(circle at top, rgba(255,255,255,1), rgba(247,248,251,1) 60%);
 }
 
+section {
+  margin-top: 2.5rem;
+}
+
+section:first-of-type {
+  margin-top: 0;
+}
+
 img {
   display: block;
   max-width: 100%;

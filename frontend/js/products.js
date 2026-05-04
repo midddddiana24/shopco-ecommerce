@@ -94,9 +94,21 @@ function renderStars(rating) {
     return stars;
 }
 
+// Resolve cross-page path for navigation
+function resolvePath(path) {
+    const currentPath = window.location.pathname;
+    if (!currentPath.includes('/pages/')) return path;
+
+    const relativePath = path.replace(/^pages\//, '');
+    const afterPages = currentPath.substring(currentPath.indexOf('/pages/') + 7);
+    const depth = afterPages.split('/').length - 1;
+    const prefix = '../'.repeat(Math.max(0, depth));
+    return prefix + relativePath;
+}
+
 // View Product Detail
 function viewProduct(productId) {
-    window.location.href = `/pages/product-detail.html?id=${productId}`;
+    window.location.href = resolvePath(`pages/product-detail.html?id=${productId}`);
 }
 
 // Load New Arrivals on Homepage
@@ -155,11 +167,12 @@ if (document.getElementById('categoriesGrid')) {
 
 // Products Page Functionality
 if (window.location.pathname.includes('products.html')) {
+    const urlParams = new URLSearchParams(window.location.search);
     let currentFilters = {
-        category: new URLSearchParams(window.location.search).get('category') || '',
-        search: '',
-        sort: 'newest',
-        page: 1
+        category: urlParams.get('category') || '',
+        search: urlParams.get('search') || '',
+        sort: urlParams.get('sort') || 'newest',
+        page: parseInt(urlParams.get('page'), 10) || 1
     };
 
     async function renderProductsPage() {
@@ -224,6 +237,7 @@ if (window.location.pathname.includes('products.html')) {
     // Search functionality
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
+        searchInput.value = currentFilters.search;
         searchInput.addEventListener('input', (e) => {
             currentFilters.search = e.target.value;
             currentFilters.page = 1;
@@ -237,6 +251,7 @@ if (window.location.pathname.includes('products.html')) {
     // Sort functionality
     const sortSelect = document.getElementById('sortSelect');
     if (sortSelect) {
+        sortSelect.value = currentFilters.sort;
         sortSelect.addEventListener('change', (e) => {
             currentFilters.sort = e.target.value;
             currentFilters.page = 1;

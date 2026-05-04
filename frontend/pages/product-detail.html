@@ -45,7 +45,7 @@
       <!-- Images -->
       <div>
         <div class="relative aspect-square bg-gray-100 rounded-3xl overflow-hidden mb-4">
-          <img id="mainImage" src="" alt="" class="w-full h-full object-cover">
+          <img id="mainImage" src="" alt="" onerror="this.src='https://via.placeholder.com/600?text=No+Image'" class="w-full h-full object-cover">
           <button onclick="prevImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition shadow">
             <i class="fas fa-chevron-left text-sm"></i>
           </button>
@@ -116,7 +116,7 @@
 
         <!-- Trust Badges -->
         <div class="border-t border-gray-100 pt-6 grid grid-cols-3 gap-4 text-center text-xs text-gray-500">
-          <div><i class="fas fa-truck text-lg text-gray-400 mb-1 block"></i>Free Shipping<br>Over $100</div>
+          <div><i class="fas fa-truck text-lg text-gray-400 mb-1 block"></i>Free Shipping<br>Over ₱2,500</div>
           <div><i class="fas fa-undo text-lg text-gray-400 mb-1 block"></i>Easy Returns<br>30 Days</div>
           <div><i class="fas fa-shield-alt text-lg text-gray-400 mb-1 block"></i>Secure<br>Payment</div>
         </div>
@@ -144,7 +144,7 @@
     let selectedColor = '';
 
     function formatCurrency(n) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+      return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
     }
 
     function renderStars(r) {
@@ -181,7 +181,7 @@
       const key = product._id + selectedSize + selectedColor;
       const ex = cart.find(i => i.id + i.size + i.color === key);
       if (ex) ex.quantity += quantity;
-      else cart.push({ id: product._id, name: product.name, price: product.price, image: product.images[0], size: selectedSize, color: selectedColor, quantity });
+      else cart.push({ id: product._id, name: product.name, price: product.price, image: product.images?.[0] || 'https://via.placeholder.com/600?text=No+Image', size: selectedSize, color: selectedColor, quantity });
       localStorage.setItem('cart', JSON.stringify(cart));
       document.getElementById('cartCount').textContent = cart.reduce((t, i) => t + i.quantity, 0);
       showToast(product.name + ' added to cart!');
@@ -234,12 +234,12 @@
         }
 
         // Images
-        document.getElementById('mainImage').src = product.images[0] || 'https://via.placeholder.com/600';
+        document.getElementById('mainImage').src = product.images?.[0] || 'https://via.placeholder.com/600?text=No+Image';
         const thumbs = document.getElementById('thumbnails');
-        product.images.forEach((img, i) => {
+        (product.images || []).forEach((img, i) => {
           thumbs.innerHTML += `<button class="thumb-btn w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 ${i === 0 ? 'border-black ring-2 ring-black' : 'border-transparent'} hover:border-gray-400 transition"
             onclick="setMainImage(${i})">
-            <img src="${img}" class="w-full h-full object-cover">
+            <img src="${img || 'https://via.placeholder.com/150?text=No+Image'}" onerror="this.src='https://via.placeholder.com/150?text=No+Image'" class="w-full h-full object-cover">
           </button>`;
         });
 

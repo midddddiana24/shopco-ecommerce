@@ -164,7 +164,7 @@
                 
                 <!-- Hero Image -->
                 <div class="relative animate-fade-in">
-                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800" alt="Fashion Models" class="rounded-lg shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800" loading="lazy" alt="Fashion Models" class="rounded-lg shadow-2xl" onerror="this.src='https://via.placeholder.com/900x600?text=Image+Unavailable'">
                     <div class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg">
                         <i class="fas fa-star text-yellow-400"></i>
                     </div>
@@ -236,65 +236,80 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="container mx-auto px-4 py-16">
+    <section id="about" class="container mx-auto px-4 py-24">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
                 <span class="uppercase tracking-[.4em] text-sm text-gray-500">About CARTELLO</span>
-                <h2 class="text-4xl font-bold">Your curated fashion destination</h2>
-                <p class="text-gray-600 text-lg">
-                    CARTELLO brings the latest streetwear, casual essentials, and premium designer pieces together in one modern shopping experience. We help you discover styles that feel effortless, bold and timeless.
+                <h2 class="text-4xl lg:text-5xl font-bold leading-tight">Your curated fashion destination for bold, modern style.</h2>
+                <p class="text-gray-600 text-lg max-w-2xl">
+                    Cartello blends premium streetwear and effortless everyday pieces with fast shipping, easy returns, and expert styling inspiration. Every item is chosen for quality, comfort, and modern attitude.
                 </p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
                         <h3 class="font-semibold mb-2">Fast shipping</h3>
-                        <p class="text-gray-500 text-sm">Receive your favorite looks quickly with reliable delivery options.</p>
+                        <p class="text-gray-500 text-sm">Get your order delivered quickly with trusted carriers.</p>
                     </div>
                     <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
                         <h3 class="font-semibold mb-2">Premium quality</h3>
-                        <p class="text-gray-500 text-sm">Every product is selected for style, comfort and quality.</p>
+                        <p class="text-gray-500 text-sm">Curated collections built from the best materials and fits.</p>
+                    </div>
+                    <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
+                        <h3 class="font-semibold mb-2">Easy returns</h3>
+                        <p class="text-gray-500 text-sm">Shop confidently with simple returns and friendly support.</p>
+                    </div>
+                    <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
+                        <h3 class="font-semibold mb-2">Style guidance</h3>
+                        <p class="text-gray-500 text-sm">Find outfit ideas and styling tips for every season.</p>
                     </div>
                 </div>
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <a href="pages/products.html" class="inline-flex items-center justify-center gap-2 rounded-full bg-black text-white px-8 py-4 text-sm font-semibold hover:bg-gray-900 transition">Explore Collections</a>
+                    <a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-full border border-gray-300 text-gray-700 px-8 py-4 text-sm font-semibold hover:bg-gray-100 transition">Contact Support</a>
+                </div>
             </div>
-            <div class="relative">
-                <div class="absolute inset-0 rounded-[40px] bg-gradient-to-br from-black via-transparent to-gray-100 opacity-10"></div>
-                <img src="https://images.unsplash.com/photo-1521334884684-d80222895322?w=900" alt="Fashion outfit" class="rounded-[40px] shadow-2xl">
+            <div class="relative rounded-[40px] overflow-hidden shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1521334884684-d80222895322?w=900" loading="lazy" alt="Fashion outfit" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/900x700?text=Image+Unavailable'">
+                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-6 py-6">
+                    <p class="text-sm text-white uppercase tracking-[.3em] mb-2">Discover your look</p>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-white">Street-ready silhouettes for every mood.</h3>
+                </div>
             </div>
         </div>
     </section>
-    
 
     <!-- Customer Reviews -->
-    <section class="bg-white py-16 animate-fade-in">
+    <section class="bg-[#f7f8fb] py-20 animate-fade-in">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
+            <div class="text-center max-w-3xl mx-auto mb-12">
                 <span class="uppercase tracking-[.35em] text-sm text-gray-500">Testimonials</span>
-                <h2 class="text-4xl font-bold mt-4">Loved by shoppers worldwide</h2>
+                <h2 class="text-4xl font-bold mt-4">Loved by shoppers around the world</h2>
+                <p class="text-gray-600 mt-4">Real customers share how CARTELLO helped them feel confident, comfortable, and on-trend.</p>
             </div>
             <div class="grid gap-6 lg:grid-cols-3">
-                <div class="p-6 rounded-[30px] bg-gray-50 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1">
-                    <p class="text-gray-600 mb-6">"CARTELLO's product selection is amazing. My orders arrive fast, and the quality is always on point."</p>
+                <div class="p-8 rounded-[32px] bg-white shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+                    <p class="text-gray-600 mb-6 text-sm leading-7">"CARTELLO's product selection is amazing. My orders arrive fast, and the quality is always on point. I now have a go-to place for every outfit."</p>
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center">S</div>
+                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center text-lg font-bold">S</div>
                         <div>
                             <p class="font-semibold">Sarah Patel</p>
                             <p class="text-sm text-gray-500">Fashion blogger</p>
                         </div>
                     </div>
                 </div>
-                <div class="p-6 rounded-[30px] bg-gray-50 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1">
-                    <p class="text-gray-600 mb-6">"Great styling inspiration and easy checkout. I keep coming back for new arrivals every season."</p>
+                <div class="p-8 rounded-[32px] bg-white shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+                    <p class="text-gray-600 mb-6 text-sm leading-7">"Great styling inspiration and easy checkout. I keep coming back for new arrivals every season, and the customer service is excellent."</p>
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center">M</div>
+                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center text-lg font-bold">M</div>
                         <div>
                             <p class="font-semibold">Marcus Lee</p>
                             <p class="text-sm text-gray-500">Creative director</p>
                         </div>
                     </div>
                 </div>
-                <div class="p-6 rounded-[30px] bg-gray-50 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1">
-                    <p class="text-gray-600 mb-6">"The lookbooks and curated collections helped me refresh my wardrobe in a single click."</p>
+                <div class="p-8 rounded-[32px] bg-white shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+                    <p class="text-gray-600 mb-6 text-sm leading-7">"The lookbooks and curated collections helped me refresh my wardrobe in a single click. The outfits always feel polished and wearable."</p>
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center">L</div>
+                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center text-lg font-bold">L</div>
                         <div>
                             <p class="font-semibold">Lina Gomez</p>
                             <p class="text-sm text-gray-500">Style editor</p>
@@ -302,86 +317,127 @@
                     </div>
                 </div>
             </div>
+            <div class="mt-10 text-center">
+                <a href="pages/products.html" class="inline-flex items-center gap-2 rounded-full bg-black text-white px-8 py-4 text-sm font-semibold hover:bg-gray-900 transition">Browse Best Sellers <i class="fas fa-arrow-right"></i></a>
+            </div>
         </div>
     </section>
 
-    <!-- Newsletter -->
+    <!-- Contact & Support -->
     <section id="contact" class="bg-[#f8fafc] py-16 animate-fade-in">
         <div class="container mx-auto px-4">
-            <div class="grid lg:grid-cols-2 gap-10 items-center bg-white rounded-[40px] p-10 shadow-2xl">
-                <div>
-                    <span class="uppercase tracking-[.4em] text-sm text-gray-500">Stay Updated</span>
-                    <h2 class="text-4xl font-bold mt-4">Join the CARTELLO insiders</h2>
-                    <p class="text-gray-600 mt-4">Get exclusive early access to new drops, deals, and styling tips delivered straight to your inbox.</p>
+            <div class="grid lg:grid-cols-2 gap-10 items-start">
+                <div class="space-y-6">
+                    <span class="uppercase tracking-[.4em] text-sm text-gray-500">Contact CARTELLO</span>
+                    <h2 class="text-4xl font-bold mt-4">Need help? We're here for you.</h2>
+                    <p class="text-gray-600 text-lg max-w-2xl">Whether you have a styling question, order issue, or want help choosing the perfect look, our support team is ready to assist.</p>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
+                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">Customer Support</h3>
+                            <p class="text-sm text-gray-500">support@cartello.com</p>
+                            <p class="text-sm text-gray-500">+63 912 345 6789</p>
+                        </div>
+                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
+                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
+                                <i class="fas fa-truck-fast"></i>
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">Shipping & Returns</h3>
+                            <p class="text-sm text-gray-500">Free shipping on orders over ₱2,500.</p>
+                            <p class="text-sm text-gray-500">Easy returns within 14 days.</p>
+                        </div>
+                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
+                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">Our Address</h3>
+                            <p class="text-sm text-gray-500">123 Fashion Ave, Metro Manila, Philippines</p>
+                        </div>
+                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
+                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">Fast Response</h3>
+                            <p class="text-sm text-gray-500">Replies in under 1 business day.</p>
+                        </div>
+                    </div>
                 </div>
-                <form class="space-y-4" onsubmit="event.preventDefault(); showToast('Subscribed successfully!');">
-                    <input type="email" placeholder="Enter your email address" class="w-full border border-gray-300 rounded-full px-5 py-4 outline-none focus:border-black focus:ring-2 focus:ring-black/10" required>
-                    <button type="submit" class="w-full bg-black text-white rounded-full px-6 py-4 text-sm font-semibold hover:bg-gray-900 transition">Subscribe Now</button>
-                </form>
+
+                <div class="bg-white rounded-[40px] border border-gray-200 p-10 shadow-2xl">
+                    <span class="uppercase tracking-[.35em] text-sm text-gray-500">Get in touch</span>
+                    <h3 class="text-3xl font-bold mt-4">Send us a message</h3>
+                    <p class="text-gray-600 mt-3">Share your question and our team will respond quickly with the best recommendation.</p>
+                    <form class="mt-8 space-y-4" onsubmit="event.preventDefault(); showToast('Thanks! Your message was sent.'); this.reset();">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" required class="mt-2 w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition" placeholder="Juan dela Cruz">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" required class="mt-2 w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition" placeholder="you@example.com">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Message</label>
+                            <textarea required rows="5" class="mt-2 w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition" placeholder="Tell us what you need help with"></textarea>
+                        </div>
+                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-black text-white px-6 py-4 text-sm font-semibold hover:bg-gray-900 transition">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-secondary pt-16 pb-8">
+    <footer class="bg-[#f8fafc] pt-20 pb-10">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">CARTELLO</h3>
-                    <p class="text-gray-600 mb-4">
-                        We have clothes that suit your style and which you're proud to wear. From women to men.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
-                            <i class="fab fa-github"></i>
-                        </a>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-10">
+                <div class="lg:col-span-2 space-y-5">
+                    <h3 class="text-3xl font-bold">CARTELLO</h3>
+                    <p class="text-gray-600 max-w-xl">CARTELLO brings premium fashion, effortless styling, and fast delivery in one modern shopping destination. Shop with confidence across every collection.</p>
+                    <div class="flex items-center gap-3 text-sm text-gray-500">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>123 Fashion Ave, New York, NY</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-gray-500">
+                        <i class="fas fa-envelope"></i>
+                        <span>support@cartello.com</span>
                     </div>
                 </div>
-                
                 <div>
-                    <h4 class="font-semibold mb-4">COMPANY</h4>
-                    <ul class="space-y-2 text-gray-600">
-                        <li><a href="#" class="hover:text-black">About</a></li>
-                        <li><a href="#" class="hover:text-black">Features</a></li>
-                        <li><a href="#" class="hover:text-black">Works</a></li>
-                        <li><a href="#" class="hover:text-black">Career</a></li>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li><a href="#about" class="hover:text-black transition">About</a></li>
+                        <li><a href="#" class="hover:text-black transition">Careers</a></li>
+                        <li><a href="#" class="hover:text-black transition">Press</a></li>
+                        <li><a href="#" class="hover:text-black transition">Affiliates</a></li>
                     </ul>
                 </div>
-                
                 <div>
-                    <h4 class="font-semibold mb-4">HELP</h4>
-                    <ul class="space-y-2 text-gray-600">
-                        <li><a href="#" class="hover:text-black">Customer Support</a></li>
-                        <li><a href="#" class="hover:text-black">Delivery Details</a></li>
-                        <li><a href="#" class="hover:text-black">Terms & Conditions</a></li>
-                        <li><a href="#" class="hover:text-black">Privacy Policy</a></li>
+                    <h4 class="font-semibold mb-4">Shop</h4>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li><a href="pages/products.html" class="hover:text-black transition">All Products</a></li>
+                        <li><a href="#" class="hover:text-black transition">New Arrivals</a></li>
+                        <li><a href="#" class="hover:text-black transition">Best Sellers</a></li>
+                        <li><a href="#" class="hover:text-black transition">Sale</a></li>
                     </ul>
                 </div>
-                
                 <div>
-                    <h4 class="font-semibold mb-4">RESOURCES</h4>
-                    <ul class="space-y-2 text-gray-600">
-                        <li><a href="#" class="hover:text-black">Free eBooks</a></li>
-                        <li><a href="#" class="hover:text-black">Development Tutorial</a></li>
-                        <li><a href="#" class="hover:text-black">How to - Blog</a></li>
-                        <li><a href="#" class="hover:text-black">Youtube Playlist</a></li>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li><a href="#contact" class="hover:text-black transition">Contact</a></li>
+                        <li><a href="#" class="hover:text-black transition">Shipping</a></li>
+                        <li><a href="#" class="hover:text-black transition">Returns</a></li>
+                        <li><a href="#" class="hover:text-black transition">Privacy</a></li>
                     </ul>
                 </div>
             </div>
-            
-            <div class="border-t pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-600 mb-4 md:mb-0">
-                    CARTELLO © 2024-2025, All Rights Reserved
-                </p>
-                <div class="flex space-x-4">
+            <div class="border-t pt-6 flex flex-col lg:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+                <p>CARTELLO © 2024-2025. All rights reserved.</p>
+                <div class="flex items-center gap-4">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" class="h-6">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-6">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-6">
@@ -389,7 +445,7 @@
             </div>
         </div>
     </footer>
-    
+
     <!-- Custom Scripts -->
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>

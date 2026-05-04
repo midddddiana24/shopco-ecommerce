@@ -38,14 +38,34 @@
 
     <section id="profileContent" class="hidden bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
       <div class="flex flex-col lg:flex-row gap-8">
-        <div class="w-full lg:w-1/3 bg-gray-50 rounded-3xl p-6 text-center">
-          <div class="mx-auto mb-6 w-28 h-28 rounded-full overflow-hidden bg-black flex items-center justify-center text-white text-3xl font-bold" id="avatarCircle">U</div>
-          <h1 id="profileName" class="text-2xl font-bold mb-1"></h1>
-          <p id="profileRole" class="text-sm text-gray-500 mb-4"></p>
-          <button onclick="logout()" class="w-full bg-black text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition">Logout</button>
+        <div class="w-full lg:w-1/3 bg-gradient-to-b from-black via-slate-900 to-gray-900 text-white rounded-3xl p-8 shadow-xl">
+          <div class="flex flex-col items-center gap-4 text-center">
+            <div class="mx-auto w-28 h-28 rounded-full overflow-hidden bg-white text-black grid place-items-center text-4xl font-black" id="avatarCircle">U</div>
+            <div>
+              <p id="profileName" class="text-2xl font-bold"></p>
+              <p id="profileRole" class="text-sm text-gray-300 mt-1"></p>
+            </div>
+          </div>
+          <div class="mt-8 space-y-4">
+            <div class="rounded-3xl bg-white/10 p-5">
+              <p class="text-xs uppercase tracking-[.3em] text-gray-400 mb-2">Membership</p>
+              <p class="font-semibold text-lg">Premium Shopper</p>
+              <p class="text-xs text-gray-400 mt-2">Access exclusive deals, faster support, and personalized recommendations.</p>
+            </div>
+            <div class="rounded-3xl bg-white/10 p-5">
+              <p class="text-xs uppercase tracking-[.3em] text-gray-400 mb-2">Orders</p>
+              <p class="font-semibold text-lg">Track your purchases</p>
+              <p class="text-xs text-gray-400 mt-2">View your order history, shipping details, and order updates in one place.</p>
+            </div>
+          </div>
+          <button onclick="logout()" class="mt-8 w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-100 transition">Logout</button>
         </div>
 
         <div class="w-full lg:w-2/3">
+          <div class="mb-8 rounded-3xl border border-gray-200 bg-gray-50 p-6">
+            <h2 class="text-xl font-bold mb-3">Welcome back</h2>
+            <p class="text-gray-600">Update your profile, manage your information, and keep your account details current for faster checkout.</p>
+          </div>
           <h2 class="text-xl font-bold mb-4">Account Information</h2>
           <form id="profileForm" class="space-y-5">
             <div>

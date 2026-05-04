@@ -41,6 +41,11 @@
 
       <!-- Form -->
       <div class="lg:col-span-3 space-y-6">
+        <div class="rounded-3xl border border-gray-200 bg-[#f8fafc] p-6">
+          <p class="text-sm uppercase tracking-[.3em] text-gray-500">Fast & secure</p>
+          <h2 class="mt-3 text-2xl font-bold">Complete your order</h2>
+          <p class="text-gray-600 mt-3">Enter your shipping details and choose a payment method below to finalize your purchase.</p>
+        </div>
         <form id="checkoutForm">
 
           <!-- Shipping Info -->
@@ -173,7 +178,7 @@
     const API = 'http://localhost:5000/api';
 
     function formatCurrency(n) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+      return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
     }
 
     function requireAuth() {

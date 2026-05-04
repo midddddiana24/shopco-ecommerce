@@ -7,7 +7,7 @@ const fs = require('fs');
 // @access  Public
 exports.getProducts = async (req, res) => {
   try {
-    const { category, search, sort, minPrice, maxPrice, page = 1, limit = 12 } = req.query;
+    const { category, search, sort, minPrice, maxPrice, inStockOnly, page = 1, limit = 12 } = req.query;
 
     let query = {};
 
@@ -29,6 +29,11 @@ exports.getProducts = async (req, res) => {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);
       if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // Filter by stock
+    if (inStockOnly === 'true' || inStockOnly === true) {
+      query.stock = { $gt: 0 };
     }
 
     // Sort options

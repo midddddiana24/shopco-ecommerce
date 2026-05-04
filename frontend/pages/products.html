@@ -14,7 +14,7 @@
   <!-- Header -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="bg-black text-white text-center py-2 text-xs">
-      Free shipping on orders over $100 | Use code <strong>SAVE10</strong> for 10% off
+      Free shipping on orders over ₱2,500 | Use code <strong>SAVE10</strong> for 10% off
     </div>
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
       <div class="flex items-center gap-4">
@@ -34,8 +34,48 @@
           <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
         </a>
         <a href="profile.html" id="userIcon"><i class="fas fa-user text-xl"></i></a>
+        <a href="/pages/admin/dashboard.html" id="adminLink" class="hidden px-4 py-2 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition">Admin</a>
       </div>
     </nav>
+    <div id="mobileSearchBar" class="lg:hidden px-4 pb-4">
+      <div class="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
+        <i class="fas fa-search text-gray-500"></i>
+        <input id="mobileSearchInput" type="search" placeholder="Search for products..." class="bg-transparent outline-none w-full text-sm" />
+      </div>
+    </div>
+    <div id="mobileFilterPanel" class="fixed inset-0 z-50 hidden bg-black/40 lg:hidden">
+      <div class="absolute right-0 top-0 h-full w-80 bg-white p-6 shadow-2xl overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <span class="text-xs uppercase tracking-[.3em] text-gray-500">Filters</span>
+            <h2 class="text-xl font-semibold">Refine products</h2>
+          </div>
+          <button id="closeFilterBtn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="mb-6">
+          <h3 class="font-semibold text-sm mb-3">Category</h3>
+          <div id="mobileCategoryFilters" class="space-y-3"></div>
+        </div>
+        <div class="mb-6">
+          <h3 class="font-semibold text-sm mb-3">Price Range</h3>
+          <div class="flex items-center gap-2">
+            <input id="mobileMinPrice" type="number" placeholder="Min" min="0" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-black transition">
+            <span class="text-gray-400 text-sm">–</span>
+            <input id="mobileMaxPrice" type="number" placeholder="Max" min="0" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-black transition">
+          </div>
+          <button id="mobileApplyPrice" class="mt-3 w-full bg-black text-white text-sm py-2.5 rounded-xl hover:bg-gray-800 transition">Apply</button>
+        </div>
+        <div>
+          <h3 class="font-semibold text-sm mb-3">Availability</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="mobileInStockOnly" class="accent-black">
+            <span class="text-sm text-gray-700">In Stock Only</span>
+          </label>
+        </div>
+      </div>
+    </div>
   </header>
 
   <div class="container mx-auto px-4 py-8">
@@ -46,15 +86,23 @@
       <span class="text-black font-medium">Shop</span>
     </nav>
 
-    <div class="flex gap-8">
-
-      <!-- Sidebar Filters -->
-      <aside class="hidden lg:block w-64 flex-shrink-0">
-        <div class="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24">
-          <div class="flex items-center justify-between mb-5">
-            <h2 class="font-bold text-lg">Filters</h2>
-            <button onclick="resetFilters()" class="text-xs text-gray-500 hover:text-black transition underline">Reset All</button>
+      <section class="bg-[#f7fafc] rounded-[32px] border border-gray-200 p-8 mb-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div>
+            <p class="text-sm uppercase tracking-[.35em] text-gray-500 mb-3">Shop the collection</p>
+            <h1 class="text-4xl lg:text-5xl font-bold tracking-tight">Everything you need for a strong seasonal wardrobe.</h1>
+            <p class="max-w-2xl text-gray-600 mt-4">Find elevated basics, statement pieces, and essential accessories with fast shipping and flexible returns.</p>
           </div>
+          <div class="flex flex-wrap gap-3">
+            <span class="inline-flex items-center gap-2 rounded-full bg-white border border-gray-200 px-4 py-2 text-sm text-gray-700">Free shipping over ₱2,500</span>
+            <span class="inline-flex items-center gap-2 rounded-full bg-white border border-gray-200 px-4 py-2 text-sm text-gray-700">30-day returns</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="flex gap-8">
+        <aside class="hidden lg:block w-64 flex-shrink-0">
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24">
 
           <!-- Categories -->
           <div class="mb-6">
@@ -101,7 +149,7 @@
           </div>
           <div class="flex items-center gap-3">
             <!-- Mobile filter toggle -->
-            <button class="lg:hidden flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm hover:bg-gray-50 transition">
+            <button id="openFilterBtn" class="lg:hidden flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm hover:bg-gray-50 transition">
               <i class="fas fa-filter"></i> Filters
             </button>
             <select id="sortSelect"
@@ -116,7 +164,7 @@
         </div>
 
         <!-- Grid -->
-        <div id="productsGrid" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+        <div id="productsGrid" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div class="col-span-full flex justify-center items-center py-16">
             <i class="fas fa-spinner fa-spin text-3xl text-gray-300"></i>
           </div>
@@ -141,7 +189,7 @@
     let currentPage = 1;
 
     function formatCurrency(n) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+      return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
     }
 
     function renderStars(r) {
@@ -175,21 +223,29 @@
 
     function createCard(p) {
       const disc = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : null;
+      const categoryLabel = p.category?.name || 'Product';
+      const stockLabel = p.stock > 0 ? 'In stock' : 'Out of stock';
       return `
-        <div class="group cursor-pointer" onclick="location.href='product-detail.html?id=${p._id}'">
-          <div class="relative overflow-hidden rounded-2xl bg-gray-100 aspect-square mb-3">
-            <img src="${p.images[0] || 'https://via.placeholder.com/400'}" alt="${p.name}"
+        <div class="group cursor-pointer rounded-[28px] border border-gray-200 bg-white p-4 shadow-sm hover:shadow-xl transition duration-300" onclick="location.href='product-detail.html?id=${p._id}'">
+          <div class="relative overflow-hidden rounded-3xl bg-gray-100 aspect-square mb-4">
+            <img src="${p.images[0] || 'https://via.placeholder.com/400?text=No+Image'}" alt="${p.name}"
+                 onerror="this.src='https://via.placeholder.com/400?text=No+Image'"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-            ${disc ? `<span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">-${disc}%</span>` : ''}
+            <div class="absolute top-3 left-3 bg-black/80 text-white text-[11px] font-semibold uppercase tracking-[.12em] px-2.5 py-1 rounded-full">${categoryLabel}</div>
+            ${disc ? `<span class="absolute top-3 right-3 bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">-${disc}%</span>` : ''}
             <button onclick="event.stopPropagation();addToCart('${p._id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${p.images[0]}')"
               class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap hover:bg-gray-800">
               <i class="fas fa-cart-plus mr-1"></i> Add to Cart
             </button>
           </div>
-          <h3 class="font-medium text-gray-900 text-sm truncate">${p.name}</h3>
-          <div class="flex items-center gap-1 my-1">${renderStars(p.rating)}<span class="text-xs text-gray-400">(${p.numReviews})</span></div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-sm">${formatCurrency(p.price)}</span>
+          <h3 class="font-semibold text-base text-gray-900 truncate mb-2">${p.name}</h3>
+          <p class="text-sm text-gray-500 mb-3 line-clamp-2">${p.description || 'A stylish new piece to add to your wardrobe.'}</p>
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-2">${renderStars(p.rating)}<span class="text-xs text-gray-400">(${p.numReviews || 0})</span></div>
+            <span class="text-xs font-semibold uppercase text-${p.stock > 0 ? 'green' : 'red'}-500">${stockLabel}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-sm text-gray-900">${formatCurrency(p.price)}</span>
             ${p.originalPrice ? `<span class="text-gray-400 line-through text-xs">${formatCurrency(p.originalPrice)}</span>` : ''}
           </div>
         </div>`;
@@ -203,16 +259,24 @@
       const params = new URLSearchParams({ page, limit: 12, ...filters });
       try {
         const res = await fetch(`${API}/products?${params}`);
+        if (!res.ok) {
+          throw new Error(`API responded with status ${res.status}`);
+        }
         const data = await res.json();
         document.getElementById('resultsCount').textContent = `${data.total} products found`;
-        if (!data.products.length) {
+        if (!data.products || !data.products.length) {
           grid.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400"><i class="fas fa-box-open text-4xl mb-4"></i><p>No products found.</p></div>`;
           return;
         }
         grid.innerHTML = data.products.map(createCard).join('');
         renderPagination(data.totalPages, data.currentPage);
-      } catch {
-        grid.innerHTML = `<div class="col-span-full text-center py-16 text-red-400">Failed to load products.</div>`;
+      } catch (error) {
+        console.error('Product load error:', error);
+        grid.innerHTML = `<div class="col-span-full text-center py-16 text-red-500">
+            <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+            <p class="mb-4">Unable to load products right now.</p>
+            <button onclick="loadProducts(1,currentFilters)" class="inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-3 text-sm font-semibold hover:bg-gray-800 transition">Try again</button>
+          </div>`;
       }
     }
 
@@ -248,14 +312,18 @@
         const res = await fetch(`${API}/categories`);
         const data = await res.json();
         const cf = document.getElementById('categoryFilters');
+      const mobileCf = document.getElementById('mobileCategoryFilters');
         data.categories.forEach(cat => {
-          cf.innerHTML += `
+          const categoryOption = `
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="category" value="${cat._id}" class="accent-black">
               <span class="text-sm text-gray-700">${cat.name}</span>
             </label>`;
+          cf.innerHTML += categoryOption;
+          mobileCf.innerHTML += categoryOption;
         });
-        cf.querySelectorAll('input').forEach(inp => {
+        const allCategoryInputs = document.querySelectorAll('input[name="category"]');
+        allCategoryInputs.forEach(inp => {
           inp.addEventListener('change', () => loadProducts(1, { ...currentFilters, category: inp.value }));
         });
       } catch {}
@@ -274,10 +342,16 @@
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       document.getElementById('cartCount').textContent = cart.reduce((t,i) => t + i.quantity, 0);
 
-      // User icon
+      // User icon and admin link
       const user = JSON.parse(localStorage.getItem('user') || 'null');
       if (user) {
         document.getElementById('userIcon').innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">`;
+        if (user.role === 'admin') {
+          const adminLink = document.getElementById('adminLink');
+          if (adminLink) {
+            adminLink.classList.remove('hidden');
+          }
+        }
       }
     })();
 
@@ -298,6 +372,41 @@
       const min = document.getElementById('minPrice').value;
       const max = document.getElementById('maxPrice').value;
       loadProducts(1, { ...currentFilters, minPrice: min, maxPrice: max });
+    });
+
+    document.getElementById('openFilterBtn').addEventListener('click', () => {
+      document.getElementById('mobileFilterPanel').classList.remove('hidden');
+    });
+
+    document.getElementById('closeFilterBtn').addEventListener('click', () => {
+      document.getElementById('mobileFilterPanel').classList.add('hidden');
+    });
+
+    document.getElementById('mobileSearchInput').addEventListener('input', function() {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => {
+        document.getElementById('searchInput').value = this.value;
+        loadProducts(1, { ...currentFilters, search: this.value });
+      }, 400);
+    });
+
+    document.getElementById('mobileApplyPrice').addEventListener('click', () => {
+      const min = document.getElementById('mobileMinPrice').value;
+      const max = document.getElementById('mobileMaxPrice').value;
+      document.getElementById('minPrice').value = min;
+      document.getElementById('maxPrice').value = max;
+      loadProducts(1, { ...currentFilters, minPrice: min, maxPrice: max });
+      document.getElementById('mobileFilterPanel').classList.add('hidden');
+    });
+
+    document.getElementById('mobileInStockOnly').addEventListener('change', function() {
+      document.getElementById('inStockOnly').checked = this.checked;
+      loadProducts(1, { ...currentFilters, inStockOnly: this.checked });
+    });
+
+    document.getElementById('inStockOnly').addEventListener('change', function() {
+      document.getElementById('mobileInStockOnly').checked = this.checked;
+      loadProducts(1, { ...currentFilters, inStockOnly: this.checked });
     });
   </script>
 </body>

@@ -15,17 +15,18 @@ exports.register = async (req, res) => {
   try {
     const { username, fullName, name, email, password } = req.body;
     const resolvedFullName = fullName || name;
+    const normalizedEmail = email?.toLowerCase().trim();
     const cleanUsername = username?.trim() || undefined;
-    const baseUsername = cleanUsername || (resolvedFullName ? resolvedFullName.toLowerCase().replace(/\s+/g, '') : email.split('@')[0]);
+    const baseUsername = cleanUsername || (resolvedFullName ? resolvedFullName.toLowerCase().replace(/\s+/g, '') : normalizedEmail?.split('@')[0]);
 
-    if (!resolvedFullName || !email || !password) {
+    if (!resolvedFullName || !normalizedEmail || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide a full name, email, and password.'
       });
     }
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(400).json({
         success: false,
@@ -43,7 +44,7 @@ exports.register = async (req, res) => {
     const user = await User.create({
       username: uniqueUsername,
       fullName: resolvedFullName,
-      email,
+      email: normalizedEmail,
       password,
       role: 'user'
     });
@@ -84,8 +85,10 @@ exports.login = async (req, res) => {
       });
     }
 
+    const normalizedEmail = email?.toLowerCase().trim();
+
     // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
     if (!user) {
       return res.status(401).json({

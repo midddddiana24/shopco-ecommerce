@@ -78,6 +78,8 @@
   </div>
 
   <script>
+    const API = 'http://localhost:5000/api';
+
     // Toggle password visibility
     document.getElementById('togglePass').addEventListener('click', function() {
       const pw = document.getElementById('password');
@@ -105,7 +107,7 @@
       errorBanner.classList.add('hidden');
 
       try {
-        const res = await fetch('http://localhost:5000/api/auth/login', {
+        const res = await fetch(`${API}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -116,8 +118,8 @@
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        const redirect = new URLSearchParams(window.location.search).get('redirect') || '../index.html';
-        window.location.href = redirect;
+        const redirect = new URLSearchParams(window.location.search).get('redirect');
+        window.location.href = data.user.role === 'admin' ? '/pages/admin/dashboard.html' : (redirect || '/index.html');
       } catch (err) {
         errorText.textContent = err.message;
         errorBanner.classList.remove('hidden');

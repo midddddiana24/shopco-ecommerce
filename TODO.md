@@ -16,8 +16,8 @@
    - [x] Hover effects (scale+lift+glow)
    - [x] Micro-pulse idle animation
 
-3. [x] Test: Open index.html, verify staggered entrance, hovers, responsive, no conflicts with existing animations.
+3. [ ] Test: Open index.html, verify staggered entrance, hovers, responsive, no conflicts with existing animations.
 
 4. [ ] [Complete] Mark done, attempt_completion.
 
-**Status:** Complete! 🎉
+**Status:** Starting step 1...

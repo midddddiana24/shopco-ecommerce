@@ -60,11 +60,31 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// Resolve relative path for application pages
+function resolveAppPath(path) {
+    const currentPath = window.location.pathname;
+    
+    // Handle admin paths specially
+    if (path.includes('admin/dashboard')) {
+        if (currentPath.includes('/pages/admin/')) return 'dashboard.html';
+        if (currentPath.includes('/pages/')) return 'admin/dashboard.html';
+        return 'pages/admin/dashboard.html';
+    }
+    
+    if (!currentPath.includes('/pages/')) return path;
+
+    const relativePath = path.replace(/^pages\//, '');
+    const afterPages = currentPath.substring(currentPath.indexOf('/pages/') + 7);
+    const depth = afterPages.split('/').length - 1;
+    const prefix = '../'.repeat(Math.max(0, depth));
+    return prefix + relativePath;
+}
+
 // Format Currency
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PH', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'PHP'
     }).format(amount);
 }
 
@@ -100,9 +120,9 @@ function updateUserUI() {
                          alt="${user.name}" 
                          class="w-8 h-8 rounded-full object-cover cursor-pointer">
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block">
-                        <a href="/pages/profile.html" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-                <a href="/pages/orders.html" class="block px-4 py-2 hover:bg-gray-100">My Orders</a>
-                        ${user.role === 'admin' ? '<a href="/pages/admin/dashboard.html" class="block px-4 py-2 hover:bg-gray-100">Admin Dashboard</a>' : ''}
+                        <a href="${resolveAppPath('pages/profile.html')}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                        <a href="${resolveAppPath('pages/orders.html')}" class="block px-4 py-2 hover:bg-gray-100">My Orders</a>
+                        ${user.role === 'admin' ? `<a href="${resolveAppPath('pages/admin/dashboard.html')}" class="block px-4 py-2 hover:bg-gray-100">Admin Dashboard</a>` : ''}
                         <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
                     </div>
                 </div>
