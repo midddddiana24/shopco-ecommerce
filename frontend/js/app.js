@@ -1,6 +1,10 @@
 // API Configuration
-const API_URL = 'http://localhost:5000/api';
-// For production, change to: const API_URL = 'https://your-backend-url.onrender.com/api';
+const API_URL = (() => {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocal) return 'http://localhost:5000/api';
+    return `${window.location.protocol}//${window.location.host}/api`;
+})();
+window.API_URL = API_URL;
 
 // Helper Functions
 const getToken = () => localStorage.getItem('token');
