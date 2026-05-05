@@ -212,7 +212,7 @@
   </div>
 
   <script>
-    const API = '/api';
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://shopco-ecommerce-pm93.onrender.com/api';
     const headers = () => ({ 'Authorization': 'Bearer ' + localStorage.getItem('token') });
     let categories = [];
     let deleteTargetId = null;

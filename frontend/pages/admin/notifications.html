@@ -119,7 +119,8 @@
     // Load notifications
     async function loadNotifications() {
       try {
-        const response = await fetch('/api/notifications', {
+        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://shopco-ecommerce-pm93.onrender.com/api';
+        const response = await fetch(`${API}/notifications`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -208,7 +209,8 @@
     // Mark as read
     async function markAsRead(id) {
       try {
-          await fetch(`/api/notifications/${id}/read`, {
+        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://shopco-ecommerce-pm93.onrender.com/api';
+          await fetch(`${API}/notifications/${id}/read`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -229,8 +231,9 @@
     // Mark all as read
     async function markAllRead() {
       try {
+        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://shopco-ecommerce-pm93.onrender.com/api';
         for (const notification of notifications.filter(n => !n.read)) {
-          await fetch(`/api/notifications/${notification._id}/read`, {
+          await fetch(`${API}/notifications/${notification._id}/read`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${token}`,

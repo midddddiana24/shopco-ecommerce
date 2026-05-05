@@ -2,7 +2,7 @@
 const API_URL = (() => {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     if (isLocal) return 'http://localhost:5000/api';
-    return `${window.location.protocol}//${window.location.host}/api`;
+    return 'https://shopco-ecommerce-pm93.onrender.com/api';
 })();
 window.API_URL = API_URL;
 

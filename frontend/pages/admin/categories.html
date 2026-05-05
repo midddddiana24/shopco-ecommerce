@@ -107,7 +107,7 @@
   </div>
 
   <script>
-    const API = '/api';
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://shopco-ecommerce-pm93.onrender.com/api';
     const authHeaders = () => ({
       'Authorization': 'Bearer ' + localStorage.getItem('token'),
       'Content-Type': 'application/json'
