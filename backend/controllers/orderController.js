@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Notification = require('../models/Notification');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -58,7 +59,9 @@ exports.createOrder = async (req, res) => {
 // @access  Private
 exports.getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id }).sort('-createdAt');
+    const orders = await Order.find({ user: req.user.id })
+      .populate('orderItems.product', 'name images')
+      .sort('-createdAt');
 
     res.status(200).json({
       success: true,
@@ -80,7 +83,7 @@ exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('user', 'name email')
-      .populate('orderItems.product', 'name');
+      .populate('orderItems.product', 'name images');
 
     if (!order) {
       return res.status(404).json({
@@ -136,7 +139,7 @@ exports.getAllOrders = async (req, res) => {
 // @access  Private/Admin
 exports.updateOrderStatus = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate('user', 'name email');
 
     if (!order) {
       return res.status(404).json({
@@ -145,14 +148,36 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-    order.status = req.body.status;
+    const oldStatus = order.status;
+    const newStatus = req.body.status;
 
-    if (req.body.status === 'delivered') {
+    order.status = newStatus;
+
+    if (newStatus === 'delivered') {
       order.isDelivered = true;
       order.deliveredAt = Date.now();
     }
 
     await order.save();
+
+    // Create notification for user about status change
+    if (oldStatus !== newStatus) {
+      await Notification.create({
+        user: order.user._id,
+        name: order.user.name,
+        email: order.user.email,
+        title: `Order Status Updated`,
+        message: `Your order #${order._id.slice(-8).toUpperCase()} status has been updated to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}.`,
+        type: 'order_status',
+        recipient: 'user',
+        data: {
+          orderId: order._id,
+          oldStatus: oldStatus,
+          newStatus: newStatus
+        },
+        read: false
+      });
+    }
 
     res.status(200).json({
       success: true,

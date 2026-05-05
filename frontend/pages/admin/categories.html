@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+  <title>Manage Categories – CARTELLO Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+
+  <div class="flex min-h-screen">
+    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col">
+      <div class="p-6 border-b border-white/10">
+        <a href="../../index.html" class="text-2xl font-black">CARTELLO</a>
+        <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tachometer-alt w-4"></i> Dashboard
+        </a>
+        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-box w-4"></i> Products
+        </a>
+        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-shopping-bag w-4"></i> Orders
+        </a>
+        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm">
+          <i class="fas fa-tags w-4"></i> Categories
+        </a>
+        <a href="notifications.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-bell w-4"></i> Notifications
+        </a>
+      </nav>
+      <div class="p-4 border-t border-white/10">
+        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-sign-out-alt w-4"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+      <div class="p-8">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 class="text-2xl font-bold">Categories</h1>
+            <p class="text-gray-500 text-sm mt-0.5">Add, edit, and organize category labels for products.</p>
+          </div>
+          <button onclick="openCategoryModal()" class="bg-black text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i> Add Category
+          </button>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Slug</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="categoryTable" class="divide-y divide-gray-100">
+                <tr><td colspan="4" class="text-center py-10"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="categoryModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 id="categoryModalTitle" class="text-xl font-bold">Add Category</h2>
+        <button onclick="closeCategoryModal()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <form id="categoryForm" class="space-y-4">
+        <input type="hidden" id="categoryId">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+          <input id="categoryName" type="text" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition" placeholder="Women's Fashion">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+          <input id="categorySlug" type="text" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition" placeholder="womens-fashion">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <textarea id="categoryDescription" rows="3" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition" placeholder="Optional description."></textarea>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeCategoryModal()" class="flex-1 border border-gray-200 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition">Cancel</button>
+          <button type="submit" id="saveCategoryBtn" class="flex-1 bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    const authHeaders = () => ({
+      'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      'Content-Type': 'application/json'
+    });
+    let categories = [];
+    let deleteId = null;
+
+    function logout() {
+      if (confirm('Logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/pages/login.html';
+      }
+    }
+
+    function requireAdmin() {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (!user || user.role !== 'admin') {
+        alert('Access denied.');
+        window.location.href = '/index.html';
+      }
+    }
+    requireAdmin();
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-6 right-6 z-[999] ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium`;
+      toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${message}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    async function loadCategories() {
+      const table = document.getElementById('categoryTable');
+      table.innerHTML = `<tr><td colspan="4" class="text-center py-10"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></td></tr>`;
+      try {
+        const res = await fetch(`${API}/categories`);
+        const data = await res.json();
+        categories = data.categories || [];
+
+        if (!categories.length) {
+          table.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-gray-400 text-sm">No categories yet.</td></tr>`;
+          return;
+        }
+
+        table.innerHTML = categories.map(c => `
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 text-sm font-medium text-gray-800">${c.name}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${c.slug}</td>
+            <td class="px-6 py-4 text-sm text-gray-600 truncate max-w-xl">${c.description || '—'}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">
+              <div class="flex gap-2">
+                <button onclick="openEditCategory('${c._id}')" class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition" title="Edit">
+                  <i class="fas fa-pen text-xs text-gray-600"></i>
+                </button>
+                <button onclick="removeCategory('${c._id}')" class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center hover:bg-red-100 transition" title="Delete">
+                  <i class="fas fa-trash text-xs text-red-600"></i>
+                </button>
+              </div>
+            </td>
+          </tr>`).join('');
+      } catch (error) {
+        table.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-red-500 text-sm">Unable to load categories.</td></tr>`;
+      }
+    }
+
+    function openCategoryModal() {
+      document.getElementById('categoryModalTitle').textContent = 'Add Category';
+      document.getElementById('categoryId').value = '';
+      document.getElementById('categoryForm').reset();
+      document.getElementById('categoryModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function openEditCategory(id) {
+      const category = categories.find(c => c._id === id);
+      if (!category) return;
+      document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+      document.getElementById('categoryId').value = category._id;
+      document.getElementById('categoryName').value = category.name;
+      document.getElementById('categorySlug').value = category.slug;
+      document.getElementById('categoryDescription').value = category.description || '';
+      document.getElementById('categoryModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    async function removeCategory(id) {
+      if (!confirm('Delete this category?')) return;
+      try {
+        const res = await fetch(`${API}/categories/${id}`, {
+          method: 'DELETE',
+          headers: authHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Delete failed');
+        showToast('Category deleted successfully.');
+        loadCategories();
+      } catch (error) {
+        showToast(error.message || 'Failed to delete category.', 'error');
+      }
+    }
+
+    document.getElementById('categoryForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const id = document.getElementById('categoryId').value;
+      const name = document.getElementById('categoryName').value.trim();
+      const slug = document.getElementById('categorySlug').value.trim();
+      const description = document.getElementById('categoryDescription').value.trim();
+
+      if (!name || !slug) {
+        showToast('Category name and slug are required.', 'error');
+        return;
+      }
+
+      document.getElementById('saveCategoryBtn').disabled = true;
+      document.getElementById('saveCategoryBtn').textContent = id ? 'Updating...' : 'Saving...';
+
+      try {
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API}/categories/${id}` : `${API}/categories`;
+        const res = await fetch(url, {
+          method,
+          headers: authHeaders(),
+          body: JSON.stringify({ name, slug, description })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Save failed');
+
+        showToast(id ? 'Category updated successfully!' : 'Category created successfully!');
+        closeCategoryModal();
+        loadCategories();
+      } catch (error) {
+        showToast(error.message || 'Failed to save category.', 'error');
+      } finally {
+        document.getElementById('saveCategoryBtn').disabled = false;
+        document.getElementById('saveCategoryBtn').textContent = 'Save Category';
+      }
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target.id === 'categoryModal') {
+        closeCategoryModal();
+      }
+    });
+
+    loadCategories();
+  </script>
+</body>
+</html>

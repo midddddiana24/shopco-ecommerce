@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+  <title>Notifications – CARTELLO Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col">
+      <div class="p-6 border-b border-white/10">
+        <a href="../../index.html" class="text-2xl font-black">CARTELLO</a>
+        <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tachometer-alt w-4"></i> Dashboard
+        </a>
+        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-box w-4"></i> Products
+        </a>
+        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-shopping-bag w-4"></i> Orders
+        </a>
+        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tags w-4"></i> Categories
+        </a>
+        <a href="notifications.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm">
+          <i class="fas fa-bell w-4"></i> Notifications
+        </a>
+      </nav>
+      <div class="p-4 border-t border-white/10">
+        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-sign-out-alt w-4"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-2xl font-bold">Notifications</h1>
+            <p class="text-gray-500 text-sm mt-0.5">Manage contact messages and notifications</p>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="markAllRead()" class="bg-gray-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-700 transition flex items-center gap-2">
+              <i class="fas fa-check-double"></i> Mark All Read
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="bg-white border border-gray-200 rounded-2xl p-1 mb-6 flex">
+          <button onclick="filterNotifications('all')" id="filterAll" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition active-tab">
+            All <span id="allCount" class="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+          <button onclick="filterNotifications('unread')" id="filterUnread" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 transition">
+            Unread <span id="unreadCount" class="ml-2 bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+          <button onclick="filterNotifications('read')" id="filterRead" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 transition">
+            Read <span id="readCount" class="ml-2 bg-green-100 text-green-600 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="space-y-4" id="notificationsList">
+          <div class="text-center py-10">
+            <i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Notification Detail Modal -->
+  <div id="notificationModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
+        <h2 class="font-bold text-lg">Notification Details</h2>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <div class="p-6">
+        <div id="notificationDetail" class="space-y-4">
+          <!-- Content will be populated by JavaScript -->
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="replyToNotification()" class="bg-black text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition flex items-center gap-2">
+            <i class="fas fa-reply"></i> Reply
+          </button>
+          <button onclick="closeModal()" class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-300 transition">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let notifications = [];
+    let currentFilter = 'all';
+
+    // Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '../login.html';
+    }
+
+    // Load notifications
+    async function loadNotifications() {
+      try {
+        const response = await fetch('http://localhost:5000/api/notifications', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          notifications = await response.json();
+          renderNotifications();
+          updateCounts();
+        } else {
+          console.error('Failed to load notifications');
+        }
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
+    }
+
+    // Render notifications
+    function renderNotifications() {
+      const container = document.getElementById('notificationsList');
+      const filtered = notifications.filter(n => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'unread') return !n.read;
+        if (currentFilter === 'read') return n.read;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <i class="fas fa-bell-slash text-gray-300 text-4xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No notifications</h3>
+            <p class="text-gray-500">You're all caught up!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(notification => `
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all cursor-pointer ${!notification.read ? 'border-l-4 border-l-blue-500' : ''}" onclick="openNotification(${notification._id})">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="font-semibold text-gray-900">${notification.title}</h3>
+                ${!notification.read ? '<span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">New</span>' : ''}
+              </div>
+              <p class="text-gray-600 text-sm mb-2">${notification.message.substring(0, 150)}${notification.message.length > 150 ? '...' : ''}</p>
+              <div class="flex items-center gap-4 text-xs text-gray-500">
+                <span><i class="fas fa-user mr-1"></i>${notification.name}</span>
+                <span><i class="fas fa-envelope mr-1"></i>${notification.email}</span>
+                <span><i class="fas fa-clock mr-1"></i>${new Date(notification.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="event.stopPropagation(); markAsRead('${notification._id}')" class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-${notification.read ? 'check-circle text-green-500' : 'circle'}"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Update counts
+    function updateCounts() {
+      const all = notifications.length;
+      const unread = notifications.filter(n => !n.read).length;
+      const read = notifications.filter(n => n.read).length;
+
+      document.getElementById('allCount').textContent = all;
+      document.getElementById('unreadCount').textContent = unread;
+      document.getElementById('readCount').textContent = read;
+    }
+
+    // Filter notifications
+    function filterNotifications(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.active-tab').forEach(btn => btn.classList.remove('active-tab', 'bg-black', 'text-white'));
+      document.querySelectorAll('.active-tab').forEach(btn => btn.classList.add('text-gray-500'));
+      document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`).classList.add('active-tab', 'bg-black', 'text-white');
+      document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`).classList.remove('text-gray-500');
+      renderNotifications();
+    }
+
+    // Mark as read
+    async function markAsRead(id) {
+      try {
+          await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const notification = notifications.find(n => n._id === id);
+        if (notification) {
+          notification.read = true;
+          renderNotifications();
+          updateCounts();
+        }
+      } catch (error) {
+        console.error('Error marking as read:', error);
+      }
+    }
+
+    // Mark all as read
+    async function markAllRead() {
+      try {
+        for (const notification of notifications.filter(n => !n.read)) {
+          await fetch(`http://localhost:5000/api/notifications/${notification._id}/read`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          notification.read = true;
+        }
+        renderNotifications();
+        updateCounts();
+      } catch (error) {
+        console.error('Error marking all as read:', error);
+      }
+    }
+
+    // Open notification detail
+    function openNotification(id) {
+      const notification = notifications.find(n => n._id === id);
+      if (!notification) return;
+
+      const detail = document.getElementById('notificationDetail');
+      detail.innerHTML = `
+        <div class="border-b pb-4 mb-4">
+          <h3 class="text-xl font-bold text-gray-900 mb-2">${notification.title}</h3>
+          <div class="flex items-center gap-4 text-sm text-gray-500 mb-4">
+            <span><i class="fas fa-user mr-1"></i>${notification.name}</span>
+            <span><i class="fas fa-envelope mr-1"></i>${notification.email}</span>
+            <span><i class="fas fa-clock mr-1"></i>${new Date(notification.createdAt).toLocaleString()}</span>
+          </div>
+        </div>
+        <div class="prose max-w-none">
+          <p class="text-gray-700 whitespace-pre-line">${notification.message}</p>
+        </div>
+      `;
+
+      document.getElementById('notificationModal').classList.remove('hidden');
+      markAsRead(id);
+    }
+
+    // Reply to notification
+    function replyToNotification() {
+      // This could open an email client or show a reply form
+      alert('Reply functionality would integrate with email client');
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('notificationModal').classList.add('hidden');
+    }
+
+    // Logout
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '../login.html';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadNotifications();
+      filterNotifications('all');
+    });
+  </script>
+</body>
+</html>

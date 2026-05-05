@@ -3,80 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500 https://nominatim.openstreetmap.org; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
   <title>Checkout – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>body { font-family: 'Inter', sans-serif; }</style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .leaflet-container { z-index: 10 !important; }
+    .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-slate-50 text-slate-900">
 
-  <header class="bg-white shadow-sm">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
-      <div class="flex items-center gap-2 text-sm text-gray-500">
-        <i class="fas fa-lock text-green-500"></i> Secure Checkout
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="../index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
+        <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
+          <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-emerald-600 font-bold bg-emerald-50 px-4 py-2 rounded-full">
+        <i class="fas fa-lock"></i> Secure Checkout
       </div>
     </nav>
-    <!-- Steps -->
-    <div class="border-t">
-      <div class="container mx-auto px-4 py-3 flex items-center gap-2 text-sm overflow-x-auto">
-        <a href="cart.html" class="text-gray-400 hover:text-black flex items-center gap-1">
-          <span class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs">1</span> Cart
-        </a>
-        <i class="fas fa-chevron-right text-xs text-gray-300"></i>
-        <span class="flex items-center gap-1 font-semibold text-black">
-          <span class="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center text-xs">2</span> Checkout
-        </span>
-        <i class="fas fa-chevron-right text-xs text-gray-300"></i>
-        <span class="text-gray-400 flex items-center gap-1">
-          <span class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs">3</span> Confirmation
-        </span>
-      </div>
-    </div>
   </header>
 
   <main class="container mx-auto px-4 py-10">
-    <div class="max-w-5xl mx-auto grid lg:grid-cols-5 gap-8">
+    <!-- Progress Indicator -->
+    <div class="flex items-center justify-center gap-2 sm:gap-4 mb-12 animate-fade-in-up">
+      <div class="flex items-center gap-2 opacity-50">
+        <a href="cart.html" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm hover:bg-slate-300 transition">1</a>
+        <span class="font-bold text-slate-500 text-sm hidden sm:inline"><a href="cart.html" class="hover:text-slate-900">Cart</a></span>
+      </div>
+      <div class="w-8 sm:w-16 h-[2px] bg-slate-200"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm shadow-md">2</div>
+        <span class="font-bold text-slate-900 text-sm hidden sm:inline">Checkout</span>
+      </div>
+      <div class="w-8 sm:w-16 h-[2px] bg-slate-200"></div>
+      <div class="flex items-center gap-2 opacity-50">
+        <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">3</div>
+        <span class="font-bold text-slate-500 text-sm hidden sm:inline">Confirmation</span>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid lg:grid-cols-[1.5fr_1fr] gap-10 xl:gap-16">
 
       <!-- Form -->
-      <div class="lg:col-span-3 space-y-6">
-        <div class="rounded-3xl border border-gray-200 bg-[#f8fafc] p-6">
-          <p class="text-sm uppercase tracking-[.3em] text-gray-500">Fast & secure</p>
-          <h2 class="mt-3 text-2xl font-bold">Complete your order</h2>
-          <p class="text-gray-600 mt-3">Enter your shipping details and choose a payment method below to finalize your purchase.</p>
+      <div class="space-y-8 animate-fade-in-up">
+        <div class="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+          <div class="flex items-center gap-4 mb-2">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white shadow-md">1</span>
+            <p class="text-xs uppercase tracking-[.3em] text-slate-500 font-bold">Fast & secure</p>
+          </div>
+          <h2 class="text-3xl font-black text-slate-900">Complete your order</h2>
+          <p class="text-slate-500 mt-2">Enter your shipping details and choose a payment method below.</p>
         </div>
-        <form id="checkoutForm">
-
+        
+        <form id="checkoutForm" class="space-y-8">
           <!-- Shipping Info -->
-          <div class="bg-white rounded-3xl border border-gray-200 p-6">
-            <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
-              <i class="fas fa-map-marker-alt text-gray-400"></i> Shipping Information
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+          <div class="bg-white rounded-[32px] border border-slate-200 p-8 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+              <h2 class="font-bold text-xl text-slate-900 flex items-center gap-3">
+                <i class="fas fa-map-marker-alt text-slate-400"></i> Shipping Address
+              </h2>
+              <button type="button" id="locateMeBtn" class="text-xs uppercase tracking-widest bg-slate-100 hover:bg-slate-200 text-slate-900 px-4 py-2.5 rounded-full font-bold transition flex items-center gap-2 shadow-sm hover:shadow-md">
+                <i class="fas fa-location-crosshairs text-slate-500"></i> Use My Location
+              </button>
+            </div>
+
+            <div id="mapContainer" class="w-full h-48 bg-slate-100 rounded-2xl mb-8 border border-slate-200 overflow-hidden shadow-inner relative z-10 hidden"></div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div class="sm:col-span-2 space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500">Full Name *</label>
                 <input type="text" id="fullName" required placeholder="Juan dela Cruz"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+                  class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition">
               </div>
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Street Address *</label>
+              <div class="sm:col-span-2 space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500">Street Address *</label>
                 <input type="text" id="address" required placeholder="123 Main St, Apt 4B"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+                  class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition">
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500">City *</label>
                 <input type="text" id="city" required placeholder="Iloilo City"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+                  class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition">
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Postal Code *</label>
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500">Postal Code *</label>
                 <input type="text" id="postalCode" required placeholder="5000"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+                  class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition">
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Country *</label>
-                <select id="country" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition bg-white">
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500">Country *</label>
+                <select id="country" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition">
                   <option value="">Select Country</option>
                   <option value="Philippines">Philippines</option>
                   <option value="United States">United States</option>
@@ -85,47 +112,60 @@
                   <option value="Canada">Canada</option>
                 </select>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500">Phone Number *</label>
                 <input type="tel" id="phone" required placeholder="+63 912 345 6789"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition">
+                  class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition">
               </div>
             </div>
           </div>
 
           <!-- Payment -->
-          <div class="bg-white rounded-3xl border border-gray-200 p-6">
-            <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
-              <i class="fas fa-credit-card text-gray-400"></i> Payment Method
+          <div class="bg-white rounded-[32px] border border-slate-200 p-8 shadow-sm relative">
+            <div class="flex items-center gap-4 mb-2 absolute -top-4 right-8">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white shadow-md">2</span>
+            </div>
+            <h2 class="font-bold text-xl text-slate-900 mb-6 pb-6 border-b border-slate-100 flex items-center gap-3">
+              <i class="fas fa-wallet text-slate-400"></i> Payment Method
             </h2>
-            <div class="space-y-3">
-              <label class="flex items-center gap-4 p-4 border-2 border-black rounded-2xl cursor-pointer bg-gray-50">
-                <input type="radio" name="payment" value="COD" checked class="accent-black">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="flex items-center gap-4 p-5 border-2 border-slate-900 rounded-2xl cursor-pointer bg-slate-50 transition-all duration-300 hover:shadow-md">
+                <input type="radio" name="payment" value="GCash" checked class="accent-slate-900 w-4 h-4">
                 <div class="flex items-center gap-3">
-                  <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+                  <div class="w-10 h-10 rounded-full bg-[#0052fe]/10 text-[#0052fe] flex items-center justify-center font-black text-lg shadow-inner">G</div>
                   <div>
-                    <p class="font-semibold text-sm">Cash on Delivery</p>
-                    <p class="text-xs text-gray-500">Pay when your order arrives</p>
+                    <p class="font-bold text-slate-900">GCash</p>
+                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">E-Wallet</p>
                   </div>
                 </div>
               </label>
-              <label class="flex items-center gap-4 p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-gray-300 transition">
-                <input type="radio" name="payment" value="Card" class="accent-black">
+              <label class="flex items-center gap-4 p-5 border-2 border-slate-100 rounded-2xl cursor-pointer bg-white transition-all duration-300 hover:border-slate-300 hover:shadow-sm">
+                <input type="radio" name="payment" value="Maya" class="accent-slate-900 w-4 h-4">
                 <div class="flex items-center gap-3">
-                  <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                  <div class="w-10 h-10 rounded-full bg-[#000000]/5 text-black flex items-center justify-center font-black text-lg shadow-inner"><i class="fas fa-m"></i></div>
                   <div>
-                    <p class="font-semibold text-sm">Credit / Debit Card</p>
-                    <p class="text-xs text-gray-500">Visa, Mastercard, etc.</p>
+                    <p class="font-bold text-slate-900">Maya</p>
+                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">E-Wallet</p>
                   </div>
                 </div>
               </label>
-              <label class="flex items-center gap-4 p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-gray-300 transition">
-                <input type="radio" name="payment" value="PayPal" class="accent-black">
+              <label class="flex items-center gap-4 p-5 border-2 border-slate-100 rounded-2xl cursor-pointer bg-white transition-all duration-300 hover:border-slate-300 hover:shadow-sm">
+                <input type="radio" name="payment" value="Card" class="accent-slate-900 w-4 h-4">
                 <div class="flex items-center gap-3">
-                  <i class="fab fa-paypal text-blue-700 text-xl"></i>
+                  <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-lg shadow-inner"><i class="fas fa-credit-card"></i></div>
                   <div>
-                    <p class="font-semibold text-sm">PayPal</p>
-                    <p class="text-xs text-gray-500">Fast and secure checkout</p>
+                    <p class="font-bold text-slate-900">Card</p>
+                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">Visa / MC</p>
+                  </div>
+                </div>
+              </label>
+              <label class="flex items-center gap-4 p-5 border-2 border-slate-100 rounded-2xl cursor-pointer bg-white transition-all duration-300 hover:border-slate-300 hover:shadow-sm">
+                <input type="radio" name="payment" value="COD" class="accent-slate-900 w-4 h-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg shadow-inner"><i class="fas fa-money-bill-wave"></i></div>
+                  <div>
+                    <p class="font-bold text-slate-900">COD</p>
+                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">Cash on Delivery</p>
                   </div>
                 </div>
               </label>
@@ -133,46 +173,128 @@
           </div>
 
           <!-- Error -->
-          <div id="checkoutError" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-2xl px-4 py-3 flex items-center gap-2">
-            <i class="fas fa-exclamation-circle"></i><span id="checkoutErrorText"></span>
+          <div id="checkoutError" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold rounded-2xl px-5 py-4 flex items-center gap-3 shadow-sm animate-pulse">
+            <i class="fas fa-exclamation-circle text-lg"></i><span id="checkoutErrorText"></span>
           </div>
 
-          <button type="submit" id="placeOrderBtn"
-            class="w-full bg-black text-white py-4 rounded-2xl font-bold text-base hover:bg-gray-800 transition flex items-center justify-center gap-2">
-            <i class="fas fa-lock text-sm"></i> Place Order
-          </button>
+          <!-- The button has been moved to the sidebar -->
         </form>
       </div>
 
       <!-- Order Summary Sidebar -->
-      <div class="lg:col-span-2">
-        <div class="bg-white rounded-3xl border border-gray-200 p-6 sticky top-6">
-          <h2 class="font-bold text-lg mb-5">Order Summary</h2>
-          <div id="checkoutItems" class="space-y-4 mb-5 max-h-60 overflow-y-auto pr-1"></div>
-          <div class="border-t pt-4 space-y-2 text-sm">
-            <div class="flex justify-between text-gray-600"><span>Subtotal</span><span id="subtotalDisplay">-</span></div>
-            <div class="flex justify-between text-gray-600"><span>Shipping</span><span id="shippingDisplay">-</span></div>
-            <div class="flex justify-between font-bold text-base pt-2 border-t"><span>Total</span><span id="totalDisplay">-</span></div>
+      <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="bg-white rounded-[32px] border border-slate-200 p-8 sticky top-24 shadow-2xl">
+          <h2 class="font-black text-2xl text-slate-900 mb-6 pb-6 border-b border-slate-100">Order Summary</h2>
+          <div id="checkoutItems" class="space-y-5 mb-8 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent"></div>
+          <div class="border-t border-slate-100 pt-6 space-y-4 text-sm font-medium mb-8">
+            <div class="flex justify-between text-slate-500"><span>Subtotal</span><span id="subtotalDisplay" class="text-slate-900">-</span></div>
+            <div class="flex justify-between text-slate-500"><span>Shipping</span><span id="shippingDisplay" class="text-emerald-600">-</span></div>
+            <div class="flex justify-between font-black text-xl pt-4 border-t border-slate-200 text-slate-900"><span>Total</span><span id="totalDisplay">-</span></div>
           </div>
+          
+          <button type="submit" form="checkoutForm" id="placeOrderBtn"
+            class="w-full bg-slate-900 text-white py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20 transform hover:-translate-y-1">
+            <i class="fas fa-lock text-slate-400"></i> Place Order Securely
+          </button>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Success Modal -->
-  <div id="successModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-    <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-      <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <i class="fas fa-check text-green-600 text-2xl"></i>
+  <!-- Premium Success Modal -->
+  <div id="successModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center px-4 transition-all duration-500 opacity-0 scale-95 data-[open=true]:opacity-100 data-[open=true]:scale-100 overflow-y-auto py-10">
+    <div class="bg-white rounded-[40px] w-full max-w-lg shadow-2xl shadow-slate-900/40 transform transition-transform overflow-hidden my-auto relative">
+      <div class="absolute top-0 left-0 w-full h-32 bg-slate-900"></div>
+      
+      <div class="relative pt-12 px-10 pb-10 text-center">
+        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl border-4 border-slate-50 relative z-10">
+          <i class="fas fa-check text-emerald-500 text-4xl"></i>
+        </div>
+        
+        <h2 class="text-3xl font-black text-slate-900 mb-2">Order Confirmed</h2>
+        <p class="text-slate-500 text-sm font-medium mb-8">Thank you for your purchase. We've received your order and will notify you once it ships.</p>
+        
+        <div class="bg-slate-50 rounded-3xl p-6 text-left mb-8 border border-slate-100 relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 opacity-5"><i class="fas fa-receipt text-9xl"></i></div>
+          <div class="relative z-10 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+              <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Order Ref</span>
+              <span class="text-sm font-black text-slate-900">#ORD-<span id="orderRefDisplay">...</span></span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+              <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Date</span>
+              <span class="text-sm font-bold text-slate-900" id="orderDateDisplay">Today</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Paid</span>
+              <span class="text-lg font-black text-slate-900" id="orderTotalDisplay">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="orders.html" class="flex-1 bg-slate-900 text-white py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 hover:-translate-y-1">
+            Track Order
+          </a>
+          <a href="../index.html" class="flex-1 bg-slate-100 text-slate-900 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-slate-200 transition">
+            Continue Shopping
+          </a>
+        </div>
       </div>
-      <h2 class="text-2xl font-bold mb-2">Order Placed!</h2>
-      <p class="text-gray-600 text-sm mb-6">Thank you for your purchase. We'll send you an update once your order is on the way.</p>
-      <a href="orders.html" class="block w-full bg-black text-white py-3.5 rounded-2xl font-semibold hover:bg-gray-800 transition mb-3">
-        View My Orders
-      </a>
-      <a href="../index.html" class="block text-sm text-gray-500 hover:text-black transition">Back to Home</a>
     </div>
   </div>
+
+  <!-- Premium Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-20">
+    <div class="container mx-auto px-4 py-14">
+      <div class="grid gap-10 lg:grid-cols-4">
+        <div class="space-y-4">
+          <p class="text-2xl font-black text-slate-900">CARTELLO</p>
+          <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+          <div class="flex gap-4 pt-2">
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="products.html" class="hover:text-slate-900 transition">All Products</a></li>
+            <li><a href="products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
+            <li><a href="products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
+            <li><a href="products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
+            <li><a href="orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
+            <li><a href="cart.html" class="hover:text-slate-900 transition">Cart</a></li>
+            <li><a href="login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
+            <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
+            <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
+            <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+        <p>CARTELLO © 2024–2025. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
+          <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
+          <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <script>
     const API = 'http://localhost:5000/api';
@@ -183,13 +305,13 @@
 
     function requireAuth() {
       const token = localStorage.getItem('token');
-      if (!token) window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname);
+      if (!token) window.location.href = '/pages/login.html?redirect=' + encodeURIComponent(window.location.pathname);
     }
     requireAuth();
 
     // Load cart summary
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    if (cart.length === 0) window.location.href = 'cart.html';
+    if (cart.length === 0) window.location.href = '/pages/cart.html';
 
     const subtotal = cart.reduce((t, i) => t + i.price * i.quantity, 0);
     const shipping = subtotal >= 100 ? 0 : 9.99;
@@ -216,15 +338,110 @@
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (user) document.getElementById('fullName').value = user.name || '';
 
+    // --- Map Initialization ---
+    const map = L.map('mapContainer').setView([14.5995, 120.9842], 13); // Default to Manila
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    let marker;
+
+    function updateMarker(lat, lng) {
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+      } else {
+        marker = L.marker([lat, lng]).addTo(map);
+      }
+      map.setView([lat, lng], 16);
+    }
+
+    async function reverseGeocode(lat, lng) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+        const data = await res.json();
+        if (data && data.address) {
+          const addr = data.address;
+          const street = addr.road || addr.pedestrian || addr.suburb || '';
+          const houseNumber = addr.house_number || '';
+          const newAddress = `${houseNumber} ${street}`.trim() || (data.display_name ? data.display_name.split(',')[0] : '');
+          
+          if (newAddress) document.getElementById('address').value = newAddress;
+          
+          const city = addr.city || addr.town || addr.village || addr.county || '';
+          if (city) document.getElementById('city').value = city;
+          
+          if (addr.postcode) document.getElementById('postalCode').value = addr.postcode;
+          
+          const countrySelect = document.getElementById('country');
+          const countryName = addr.country;
+          if (countryName) {
+            let found = false;
+            for (let i = 0; i < countrySelect.options.length; i++) {
+              if (countrySelect.options[i].text.toLowerCase() === countryName.toLowerCase()) {
+                countrySelect.selectedIndex = i;
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              const newOption = new Option(countryName, countryName, true, true);
+              countrySelect.add(newOption);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Geocoding error:', err);
+      }
+    }
+
+    map.on('click', function(e) {
+      updateMarker(e.latlng.lat, e.latlng.lng);
+      reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    document.getElementById('locateMeBtn').addEventListener('click', () => {
+      const btn = document.getElementById('locateMeBtn');
+      const mapContainer = document.getElementById('mapContainer');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
+      btn.disabled = true;
+      
+      mapContainer.classList.remove('hidden');
+      map.invalidateSize(); // Fix leaflet map sizing issue after unhiding
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            updateMarker(latitude, longitude);
+            reverseGeocode(latitude, longitude);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          },
+          (error) => {
+            alert('Unable to retrieve your location. Please check your browser permissions.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by your browser');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+    // --- End Map Initialization ---
+
     // Payment radio styling
     document.querySelectorAll('input[name="payment"]').forEach(radio => {
       radio.addEventListener('change', function() {
         document.querySelectorAll('input[name="payment"]').forEach(r => {
-          r.closest('label').classList.remove('border-black', 'bg-gray-50');
-          r.closest('label').classList.add('border-gray-200');
+          r.closest('label').classList.remove('border-slate-900', 'bg-slate-50', 'shadow-md');
+          r.closest('label').classList.add('border-slate-100', 'bg-white');
         });
-        this.closest('label').classList.add('border-black', 'bg-gray-50');
-        this.closest('label').classList.remove('border-gray-200');
+        this.closest('label').classList.add('border-slate-900', 'bg-slate-50', 'shadow-md');
+        this.closest('label').classList.remove('border-slate-100', 'bg-white');
       });
     });
 
@@ -278,8 +495,28 @@
         if (!res.ok) throw new Error(data.message || 'Order failed');
 
         localStorage.removeItem('cart');
-        document.getElementById('successModal').classList.remove('hidden');
+        
+        const orderRefDisplay = document.getElementById('orderRefDisplay');
+        if (orderRefDisplay && data._id) orderRefDisplay.textContent = data._id.substring(data._id.length - 6).toUpperCase();
+        
+        const orderDateDisplay = document.getElementById('orderDateDisplay');
+        if (orderDateDisplay) orderDateDisplay.textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        
+        const orderTotalDisplay = document.getElementById('orderTotalDisplay');
+        if (orderTotalDisplay) orderTotalDisplay.textContent = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(total);
+
+        const modal = document.getElementById('successModal');
+        modal.classList.remove('hidden');
+        // Trigger animation
+        setTimeout(() => modal.setAttribute('data-open', 'true'), 10);
       } catch (err) {
+        if (err.message.includes('User not found') || err.message.includes('Token is not valid') || err.message.includes('No token')) {
+          alert('Your session has expired. Please log in again.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = 'login.html?redirect=checkout.html';
+          return;
+        }
         errText.textContent = err.message;
         errBanner.classList.remove('hidden');
         btn.disabled = false;

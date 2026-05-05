@@ -1,24 +1,27 @@
 const multer = require('multer');
-const path = require('path');
+const cloudinary = require('../config/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Configure multer storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+// Configure Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'cartello/products',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    transformation: [
+      { width: 800, height: 800, crop: 'limit' },
+      { quality: 'auto' },
+      { fetch_format: 'auto' }
+    ]
   }
 });
 
-// File filter
+// File size & type limits
 const fileFilter = (req, file, cb) => {
-  // Accept images only
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error('Not an image! Please upload only images.'), false);
+    cb(new Error('Only image files are allowed (JPG, PNG, WebP, GIF)'), false);
   }
 };
 
@@ -26,7 +29,8 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max
+    fileSize: 5 * 1024 * 1024, // 5MB
+    files: 6 // Max 6 images per product
   }
 });
 

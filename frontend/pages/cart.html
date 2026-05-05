@@ -3,210 +3,431 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
   <title>Cart – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>body { font-family: 'Inter', sans-serif; }</style>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
-<body class="bg-white">
+<body class="bg-slate-50 text-slate-900">
 
+  <!-- Universal Navbar -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
-      <div class="flex items-center gap-4">
-        <a href="cart.html" class="relative font-semibold text-sm flex items-center gap-2">
+    <nav class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="../index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
+        <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
+          <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
+          <a href="../index.html#about" class="hover:text-slate-900 transition">About Us</a>
+          <a href="../index.html#contact" class="hover:text-slate-900 transition">Contact</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="cart.html" class="relative p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
           <i class="fas fa-shopping-cart text-xl"></i>
-          <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+          <span id="cartCount" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">0</span>
         </a>
-        <a href="profile.html" id="userIcon"><i class="fas fa-user text-xl"></i></a>
+        <div id="authSection" class="relative hidden lg:block">
+          <a href="login.html" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Sign In</a>
+        </div>
+        <button id="mobileMenuBtn" class="lg:hidden p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
       </div>
     </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 z-50 pointer-events-none">
+      <div id="mobileMenuOverlay" class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300"></div>
+      <div id="mobileMenuContent" class="absolute right-0 top-0 h-full w-72 md:w-80 bg-white shadow-2xl flex flex-col p-6 gap-6 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex items-center justify-between">
+          <span class="text-xl font-black">CARTELLO</span>
+          <button id="closeMobileMenu" class="p-2 rounded-full bg-slate-100 hover:bg-slate-200"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="flex flex-col gap-4 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-black transition">Home</a>
+          <a href="products.html" class="hover:text-black transition">Shop</a>
+          <a href="../index.html#about" class="hover:text-black transition">About</a>
+          <a href="../index.html#contact" class="hover:text-black transition">Contact</a>
+          <hr class="border-slate-200">
+          <div id="mobileAuthLinks" class="flex flex-col gap-4">
+             <a href="login.html" class="hover:text-black transition">Sign In</a>
+             <a href="register.html" class="hover:text-black transition">Create Account</a>
+          </div>
+          <hr class="border-slate-200">
+          <a href="orders.html" class="hover:text-black transition">My Orders</a>
+          <a href="profile.html" class="hover:text-black transition">Profile</a>
+          <a href="cart.html" class="hover:text-black transition">Cart</a>
+        </nav>
+      </div>
+    </div>
   </header>
+  <script>
+    (function() {
+      // Mobile menu logic
+      const btn = document.getElementById('mobileMenuBtn');
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      const content = document.getElementById('mobileMenuContent');
+      const close = document.getElementById('closeMobileMenu');
+      
+      const closeMenu = () => {
+        if(content) content.classList.add('translate-x-full');
+        if(overlay) {
+          overlay.classList.add('opacity-0');
+          setTimeout(() => menu.classList.add('pointer-events-none'), 300);
+        } else if(menu) menu.classList.add('hidden');
+      };
+
+      if (btn) btn.addEventListener('click', () => {
+        menu.classList.remove('pointer-events-none');
+        if(overlay) overlay.classList.remove('opacity-0');
+        if(content) content.classList.remove('translate-x-full');
+        menu.classList.remove('hidden');
+      });
+      if (close) close.addEventListener('click', closeMenu);
+      if (overlay) overlay.addEventListener('click', closeMenu);
+      else if (menu) menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+
+      // Auth logic for navbar
+      const authSection = document.getElementById('authSection');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = localStorage.getItem('token');
+      
+      if (user && token && authSection) {
+        authSection.innerHTML = `
+          <button id="userMenuToggle" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50" style="transition: none !important; animation: none !important; transform: none !important;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=24" class="w-6 h-6 rounded-full">
+            <span class="hidden xl:inline">${(user.name||user.fullName||'').split(' ')[0]}</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </button>
+          <div id="userMenu" class="absolute top-full mt-2 right-0 w-48 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50">
+            <a href="profile.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-user w-4"></i> Profile</a>
+            <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-shopping-bag w-4"></i> Orders</a>
+            <hr class="my-2 border-slate-200">
+            <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition w-full text-left"><i class="fas fa-sign-out-alt w-4"></i> Sign Out</button>
+          </div>
+        `;
+        
+        const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+        if (mobileAuthLinks) {
+            mobileAuthLinks.innerHTML = `
+                <div class="flex items-center gap-3 mb-2">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">
+                    <span class="font-bold text-slate-900">${user.name||user.fullName}</span>
+                </div>
+                <a href="profile.html" class="hover:text-black transition"><i class="fas fa-user w-5"></i> Profile</a>
+                <a href="orders.html" class="hover:text-black transition"><i class="fas fa-shopping-bag w-5"></i> My Orders</a>
+                <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="text-left text-red-600 hover:text-red-700 transition font-bold mt-2"><i class="fas fa-sign-out-alt w-5"></i> Sign Out</button>
+            `;
+        }
+        
+        const userMenuToggle = document.getElementById('userMenuToggle');
+        const userMenu = document.getElementById('userMenu');
+        if (userMenuToggle && userMenu) {
+            userMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        }
+      }
+      
+      // Initial cart count
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cartCountEl = document.getElementById('cartCount');
+      if (cartCountEl) {
+        cartCountEl.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      }
+    })();
+  </script>
 
   <main class="container mx-auto px-4 py-10">
-    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
-      <a href="../index.html" class="hover:text-black">Home</a>
-      <i class="fas fa-chevron-right text-xs"></i>
-      <span class="text-black font-medium">Cart</span>
-    </nav>
+    <!-- Progress Indicator -->
+    <div class="flex items-center justify-center gap-2 sm:gap-4 mb-12 animate-fade-in-up">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm shadow-md">1</div>
+        <span class="font-bold text-slate-900 text-sm hidden sm:inline">Cart</span>
+      </div>
+      <div class="w-8 sm:w-16 h-[2px] bg-slate-200"></div>
+      <div class="flex items-center gap-2 opacity-50">
+        <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">2</div>
+        <span class="font-bold text-slate-500 text-sm hidden sm:inline">Checkout</span>
+      </div>
+      <div class="w-8 sm:w-16 h-[2px] bg-slate-200"></div>
+      <div class="flex items-center gap-2 opacity-50">
+        <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">3</div>
+        <span class="font-bold text-slate-500 text-sm hidden sm:inline">Confirmation</span>
+      </div>
+    </div>
 
-    <h1 class="text-3xl font-bold mb-4">Your Cart</h1>
-    <p class="text-gray-600 mb-6 max-w-2xl">Review your selected items and adjust quantities before you proceed to a smooth, secure checkout.</p>
-    <div class="rounded-3xl border border-gray-200 bg-[#f9fafb] p-6 mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="mb-8">
+      <h1 class="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Shopping Cart</h1>
+      <p class="mt-3 text-slate-500">Review your selection and proceed to secure checkout.</p>
+    </div>
+
+    <div id="emptyCart" class="hidden rounded-[32px] border border-slate-200 bg-white p-14 text-center shadow-lg">
+      <div class="mx-auto mb-6 h-24 w-24 rounded-full bg-slate-100 text-slate-500 grid place-items-center text-4xl"><i class="fas fa-shopping-cart"></i></div>
+      <h2 class="text-3xl font-bold text-slate-900 mb-2">Your cart is empty</h2>
+      <p class="mb-6 text-slate-500">Add items from the shop to start building your new outfit.</p>
+      <a href="products.html" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"><i class="fas fa-arrow-right"></i> Start shopping</a>
+    </div>
+
+    <div id="cartContent" class="hidden grid gap-10 lg:grid-cols-[1.5fr_1fr] mb-24 animate-fade-in-up">
+      <section class="rounded-[32px] bg-white p-8 shadow-sm border border-slate-200">
+        <div id="cartContainer" class="divide-y divide-slate-100"></div>
+      </section>
+
+      <section id="cartSummary" class="sticky top-24 self-start"></section>
+    </div>
+
+    <div class="my-16 border-t border-slate-200"></div>
+
+    <section class="rounded-[40px] bg-white p-10 shadow-sm border border-slate-200 animate-fade-in-up" style="animation-delay: 0.2s;">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-8 border-b border-slate-100">
         <div>
-          <p class="text-sm uppercase tracking-[.3em] text-gray-500">Shipping perk</p>
-          <p class="font-semibold text-gray-900">Free shipping on orders over ₱2,500.</p>
+          <p class="text-xs font-bold uppercase tracking-[.3em] text-slate-500">Recommended</p>
+          <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Complete your look</h2>
         </div>
-        <div class="text-sm text-gray-500">Add more items to get free delivery.</div>
+        <a href="products.html" class="inline-flex items-center gap-3 rounded-full bg-slate-100 px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-200 transition">Browse more <i class="fas fa-arrow-right"></i></a>
       </div>
-    </div>
-
-    <!-- Empty Cart -->
-    <div id="emptyCart" class="hidden text-center py-20">
-      <i class="fas fa-shopping-cart text-6xl text-gray-200 mb-6"></i>
-      <h2 class="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h2>
-      <p class="text-gray-400 mb-6">Looks like you haven't added anything yet.</p>
-      <a href="products.html" class="bg-black text-white px-8 py-3.5 rounded-full font-semibold hover:bg-gray-800 transition">
-        Start Shopping
-      </a>
-    </div>
-
-    <!-- Cart Content -->
-    <div id="cartContent" class="hidden lg:grid lg:grid-cols-3 gap-8">
-      <!-- Items -->
-      <div class="lg:col-span-2">
-        <div id="cartContainer" class="bg-white border border-gray-200 rounded-3xl divide-y divide-gray-100 overflow-hidden"></div>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="group rounded-[32px] overflow-hidden bg-slate-50 shadow-sm hover:shadow-xl transition duration-500 border border-slate-100">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80" alt="Sneakers" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700" onerror="this.src='https://via.placeholder.com/900x520?text=Image+Unavailable'">
+          </div>
+          <div class="p-6">
+            <h3 class="font-bold text-lg text-slate-900">Street steel sneakers</h3>
+            <p class="mt-2 text-sm text-slate-500 font-medium">Add a bold finish to any outfit.</p>
+          </div>
+        </div>
+        <div class="group rounded-[32px] overflow-hidden bg-slate-50 shadow-sm hover:shadow-xl transition duration-500 border border-slate-100">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80" alt="Jacket" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700" onerror="this.src='https://via.placeholder.com/900x520?text=Image+Unavailable'">
+          </div>
+          <div class="p-6">
+            <h3 class="font-bold text-lg text-slate-900">Layered jackets</h3>
+            <p class="mt-2 text-sm text-slate-500 font-medium">Perfect for cooler evenings.</p>
+          </div>
+        </div>
+        <div class="group rounded-[32px] overflow-hidden bg-slate-50 shadow-sm hover:shadow-xl transition duration-500 border border-slate-100">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&q=80" alt="Accessories" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700" onerror="this.src='https://via.placeholder.com/900x520?text=Image+Unavailable'">
+          </div>
+          <div class="p-6">
+            <h3 class="font-bold text-lg text-slate-900">Modern accessories</h3>
+            <p class="mt-2 text-sm text-slate-500 font-medium">Complete your daily outfit.</p>
+          </div>
+        </div>
       </div>
-
-      <!-- Summary -->
-      <div id="cartSummary"></div>
-    </div>
+    </section>
   </main>
 
-  <footer class="bg-gray-50 border-t mt-16 py-8">
-    <div class="container mx-auto px-4 text-center text-sm text-gray-500">CARTELLO © 2024–2025</div>
+  <!-- Premium Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-20">
+    <div class="container mx-auto px-4 py-14">
+      <div class="grid gap-10 lg:grid-cols-4">
+        <div class="space-y-4">
+          <p class="text-2xl font-black text-slate-900">CARTELLO</p>
+          <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+          <div class="flex gap-4 pt-2">
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="products.html" class="hover:text-slate-900 transition">All Products</a></li>
+            <li><a href="products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
+            <li><a href="products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
+            <li><a href="products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
+            <li><a href="orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
+            <li><a href="cart.html" class="hover:text-slate-900 transition">Cart</a></li>
+            <li><a href="login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
+            <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
+            <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
+            <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+        <p>CARTELLO © 2024–2025. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
+          <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
+          <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script>
-    function formatCurrency(n) {
-      return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
+    let promoState = { code: '', discount: 0, freeShipping: false };
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount);
     }
 
-    function getCart() { return JSON.parse(localStorage.getItem('cart') || '[]'); }
-    function saveCart(c) { localStorage.setItem('cart', JSON.stringify(c)); }
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart') || '[]');
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
 
     function updateCartCount() {
-      const n = getCart().reduce((t, i) => t + i.quantity, 0);
-      document.getElementById('cartCount').textContent = n;
+      const count = getCart().reduce((total, item) => total + item.quantity, 0);
+      document.getElementById('cartCount').textContent = count;
     }
 
-    function removeFromCart(idx) {
+    function removeFromCart(index) {
       const cart = getCart();
-      cart.splice(idx, 1);
+      cart.splice(index, 1);
       saveCart(cart);
       renderAll();
     }
 
-    function changeQty(idx, delta) {
+    function changeQty(index, delta) {
       const cart = getCart();
-      cart[idx].quantity += delta;
-      if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) cart.splice(index, 1);
       saveCart(cart);
       renderAll();
     }
 
-    function showToast(msg, type = 'success') {
-      const t = document.createElement('div');
-      t.className = `fixed bottom-6 right-6 z-50 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-xl text-sm`;
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2500);
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-6 right-6 z-50 rounded-3xl px-5 py-3 text-sm text-white shadow-2xl ${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    function applyPromo() {
+      const code = document.getElementById('promoInput').value.trim().toUpperCase();
+      const promoMsg = document.getElementById('promoMsg');
+      if (code === 'SAVE10') {
+        promoState = { code, discount: 0.10, freeShipping: false };
+        promoMsg.className = 'text-xs mt-2 text-emerald-600';
+        promoMsg.textContent = '✓ 10% discount will be applied at checkout.';
+      } else if (code === 'FREESHIP') {
+        promoState = { code, discount: 0, freeShipping: true };
+        promoMsg.className = 'text-xs mt-2 text-emerald-600';
+        promoMsg.textContent = '✓ Free shipping applied to your order.';
+      } else {
+        promoState = { code: '', discount: 0, freeShipping: false };
+        promoMsg.className = 'text-xs mt-2 text-rose-500';
+        promoMsg.textContent = '✗ Invalid code. Try SAVE10 or FREESHIP.';
+      }
+      promoMsg.classList.remove('hidden');
+      renderAll();
     }
 
     function renderAll() {
       const cart = getCart();
       updateCartCount();
+      const emptyCart = document.getElementById('emptyCart');
+      const cartContent = document.getElementById('cartContent');
+      const cartContainer = document.getElementById('cartContainer');
+      const cartSummary = document.getElementById('cartSummary');
 
-      if (cart.length === 0) {
-        document.getElementById('emptyCart').classList.remove('hidden');
-        document.getElementById('cartContent').classList.add('hidden');
+      if (!cart.length) {
+        emptyCart.classList.remove('hidden');
+        cartContent.classList.add('hidden');
         return;
       }
 
-      document.getElementById('emptyCart').classList.add('hidden');
-      document.getElementById('cartContent').classList.remove('hidden');
+      emptyCart.classList.add('hidden');
+      cartContent.classList.remove('hidden');
 
-      // Items
-      document.getElementById('cartContainer').innerHTML = cart.map((item, i) => `
-        <div class="flex gap-4 p-5">
-          <a href="product-detail.html?id=${item.id}">
-            <img src="${item.image || 'https://via.placeholder.com/100'}" alt="${item.name}"
-              class="w-24 h-24 object-cover rounded-2xl bg-gray-100 flex-shrink-0 hover:opacity-90 transition">
-          </a>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-start justify-between">
+      cartContainer.innerHTML = cart.map((item, index) => `
+        <div class="flex flex-col gap-5 p-6 ${index !== cart.length - 1 ? 'border-b border-slate-200' : ''}">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="flex gap-4">
+              <a href="product-detail.html?id=${item.id}" class="block overflow-hidden rounded-3xl bg-slate-100">
+                <img src="${item.image || 'https://via.placeholder.com/120?text=No+Image'}" alt="${item.name}" class="h-28 w-28 object-cover" onerror="this.src='https://via.placeholder.com/120?text=No+Image'">
+              </a>
               <div>
-                <a href="product-detail.html?id=${item.id}" class="font-semibold text-gray-900 hover:underline line-clamp-2">${item.name}</a>
-                ${item.size ? `<p class="text-xs text-gray-500 mt-0.5">Size: ${item.size}</p>` : ''}
-                ${item.color ? `<p class="text-xs text-gray-500">Color: ${item.color}</p>` : ''}
+                <a href="product-detail.html?id=${item.id}" class="text-lg font-semibold text-slate-900 hover:underline">${item.name}</a>
+                <p class="mt-2 text-sm text-slate-500">Comfortable fabric and updated fit for everyday wear.</p>
               </div>
-              <button onclick="removeFromCart(${i})" class="text-gray-300 hover:text-red-500 transition ml-2 p-1">
-                <i class="fas fa-times"></i>
-              </button>
             </div>
-            <div class="flex items-center justify-between mt-3">
-              <div class="flex items-center border border-gray-200 rounded-full overflow-hidden">
-                <button onclick="changeQty(${i},-1)" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition">
-                  <i class="fas fa-minus text-xs"></i>
-                </button>
-                <span class="w-8 text-center text-sm font-semibold">${item.quantity}</span>
-                <button onclick="changeQty(${i},1)" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition">
-                  <i class="fas fa-plus text-xs"></i>
-                </button>
-              </div>
-              <span class="font-bold">${formatCurrency(item.price * item.quantity)}</span>
-            </div>
+            <button onclick="removeFromCart(${index})" class="self-start rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-700 hover:bg-slate-200 transition">Remove</button>
           </div>
-        </div>`).join('');
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2">
+              <button onclick="changeQty(${index}, -1)" class="h-9 w-9 rounded-full bg-white text-slate-700 shadow-sm hover:bg-slate-100 transition"><i class="fas fa-minus"></i></button>
+              <span class="w-10 text-center text-sm font-semibold">${item.quantity}</span>
+              <button onclick="changeQty(${index}, 1)" class="h-9 w-9 rounded-full bg-white text-slate-700 shadow-sm hover:bg-slate-100 transition"><i class="fas fa-plus"></i></button>
+            </div>
+            <span class="text-lg font-bold text-slate-900">${formatCurrency(item.price * item.quantity)}</span>
+          </div>
+        </div>
+      `).join('');
 
-      // Summary
-      const subtotal = cart.reduce((t, i) => t + i.price * i.quantity, 0);
-      const shipping = subtotal >= 100 ? 0 : 9.99;
-      const discount = subtotal >= 200 ? subtotal * 0.1 : 0;
+      const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+      const shipping = promoState.freeShipping || subtotal >= 2500 ? 0 : 150;
+      const discount = subtotal * promoState.discount;
       const total = subtotal + shipping - discount;
+      let shippingLabel = shipping === 0 ? 'FREE' : formatCurrency(shipping);
+      if (promoState.freeShipping) shippingLabel = 'FREE';
 
-      document.getElementById('cartSummary').innerHTML = `
-        <div class="space-y-4">
-          <div class="bg-white border border-gray-200 rounded-3xl p-6">
-            <h2 class="text-xl font-bold mb-5">Order Summary</h2>
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between"><span class="text-gray-600">Subtotal (${cart.reduce((t,i)=>t+i.quantity,0)} items)</span><span class="font-medium">${formatCurrency(subtotal)}</span></div>
-              ${discount > 0 ? `<div class="flex justify-between text-green-600 font-medium"><span>Loyalty Discount (10%)</span><span>-${formatCurrency(discount)}</span></div>` : ''}
-              <div class="flex justify-between"><span class="text-gray-600">Shipping</span><span class="${shipping === 0 ? 'text-green-600 font-medium' : ''}">${shipping === 0 ? 'FREE' : formatCurrency(shipping)}</span></div>
-              ${subtotal < 2500 ? `<p class="text-xs text-gray-400 bg-gray-50 rounded-xl px-3 py-2">Add ${formatCurrency(2500 - subtotal)} more to get free shipping!</p>` : ''}
-              <div class="border-t pt-3 flex justify-between text-base font-bold"><span>Total</span><span>${formatCurrency(total)}</span></div>
+      cartSummary.innerHTML = `
+        <div class="space-y-6">
+          <div class="rounded-[32px] bg-white p-8 shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-black text-slate-900 mb-6 pb-4 border-b border-slate-100">Order Summary</h2>
+            <div class="space-y-4 text-sm text-slate-600 font-medium">
+              <div class="flex justify-between"><span>Subtotal (${cart.reduce((sum, item) => sum + item.quantity, 0)} items)</span><span class="font-bold text-slate-900">${formatCurrency(subtotal)}</span></div>
+              ${discount > 0 ? `<div class="flex justify-between text-emerald-600 font-bold"><span>Discount</span><span>- ${formatCurrency(discount)}</span></div>` : ''}
+              <div class="flex justify-between"><span>Shipping</span><span class="font-bold ${shipping === 0 ? 'text-emerald-600' : ''}">${shippingLabel}</span></div>
+              ${subtotal < 2500 ? `<p class="rounded-2xl bg-slate-50 px-4 py-3 text-xs text-slate-500 font-medium border border-slate-100">Spend <span class="font-bold text-slate-900">${formatCurrency(2500 - subtotal)}</span> more to get free shipping.</p>` : '<p class="rounded-2xl bg-emerald-50 px-4 py-3 text-xs text-emerald-700 font-bold">You qualify for free shipping!</p>'}
+              <div class="border-t border-slate-100 pt-5 mt-2 flex justify-between text-xl font-black text-slate-900"><span>Total</span><span>${formatCurrency(total)}</span></div>
             </div>
-            <a href="checkout.html" class="mt-5 block text-center bg-black text-white py-4 rounded-2xl font-semibold hover:bg-gray-800 transition">
-              Checkout <i class="fas fa-arrow-right ml-2"></i>
-            </a>
-            <a href="products.html" class="mt-3 block text-center text-sm text-gray-500 hover:text-black transition">
-              ← Continue Shopping
-            </a>
+            <a href="checkout.html" class="mt-8 flex w-full items-center justify-center rounded-full bg-slate-900 px-6 py-5 text-sm font-bold uppercase tracking-widest text-white hover:bg-slate-800 transition shadow-xl shadow-slate-900/20 hover:-translate-y-1">Proceed to Checkout <i class="fas fa-arrow-right ml-2"></i></a>
           </div>
-
-          <!-- Promo -->
-          <div class="bg-white border border-gray-200 rounded-3xl p-5">
-            <h3 class="font-semibold text-sm mb-3">Promo Code</h3>
-            <div class="flex gap-2">
-              <input id="promoInput" type="text" placeholder="e.g. SAVE10"
-                class="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-black transition">
-              <button onclick="applyPromo()" class="bg-black text-white px-4 py-2 rounded-xl text-sm hover:bg-gray-800 transition">Apply</button>
+          <div class="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-slate-900 mb-4">Apply Promo Code</h3>
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <input id="promoInput" type="text" placeholder="SAVE10 or FREESHIP" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-medium outline-none focus:border-slate-900 focus:bg-white transition" />
+              <button onclick="applyPromo()" class="rounded-2xl bg-slate-100 px-6 py-4 text-sm font-bold text-slate-900 hover:bg-slate-200 transition">Apply</button>
             </div>
-            <p id="promoMsg" class="text-xs mt-2 hidden"></p>
+            <p id="promoMsg" class="hidden text-xs mt-3 font-semibold"></p>
           </div>
-        </div>`;
+        </div>
+      `;
     }
 
-    function applyPromo() {
-      const code = document.getElementById('promoInput').value.trim().toUpperCase();
-      const msg = document.getElementById('promoMsg');
-      const valid = { 'SAVE10': '10% discount applied!', 'FREESHIP': 'Free shipping unlocked!' };
-      if (valid[code]) {
-        msg.className = 'text-xs mt-2 text-green-600';
-        msg.textContent = '✓ ' + valid[code];
-      } else {
-        msg.className = 'text-xs mt-2 text-red-500';
-        msg.textContent = '✗ Invalid code. Try SAVE10 or FREESHIP.';
-      }
-      msg.classList.remove('hidden');
-    }
-
-    // Init
     renderAll();
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (user) document.getElementById('userIcon').innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">`;
+    if (user) {
+      document.getElementById('userIcon').innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full" alt="Profile">`;
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+  <title>Manage Orders – CARTELLO Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col">
+      <div class="p-6 border-b border-white/10">
+        <a href="../../index.html" class="text-2xl font-black">CARTELLO</a>
+        <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tachometer-alt w-4"></i> Dashboard
+        </a>
+        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-box w-4"></i> Products
+        </a>
+        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm">
+          <i class="fas fa-shopping-bag w-4"></i> Orders
+        </a>
+        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-tags w-4"></i> Categories
+        </a>
+        <a href="notifications.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-bell w-4"></i> Notifications
+        </a>
+      </nav>
+      <div class="p-4 border-t border-white/10">
+        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+          <i class="fas fa-sign-out-alt w-4"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-2xl font-bold">Orders</h1>
+            <p class="text-gray-500 text-sm mt-0.5">Manage and track customer orders</p>
+          </div>
+          <div class="text-sm text-gray-400" id="lastUpdated"></div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input id="searchInput" type="text" placeholder="Search by order ID or customer name..."
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-black transition">
+          </div>
+          <select id="statusFilter" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none bg-white min-w-max">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500 font-medium mb-1">Total Orders</p>
+            <h3 id="totalOrders" class="text-2xl font-bold">–</h3>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500 font-medium mb-1">Pending</p>
+            <h3 id="pendingOrders" class="text-2xl font-bold text-yellow-600">–</h3>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500 font-medium mb-1">Confirmed</p>
+            <h3 id="processingOrders" class="text-2xl font-bold text-blue-600">–</h3>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500 font-medium mb-1">Delivered</p>
+            <h3 id="deliveredOrders" class="text-2xl font-bold text-green-600">–</h3>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Items</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTable" class="divide-y divide-gray-100">
+                <tr><td colspan="7" class="text-center py-10"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="orderModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
+        <h2 id="modalTitle" class="font-bold text-lg">Order Details</h2>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-6">
+        <!-- Order Info -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-xs text-gray-500 font-medium mb-1">Order ID</p>
+            <p id="detailOrderId" class="font-semibold text-sm break-all"></p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium mb-1">Order Date</p>
+            <p id="detailOrderDate" class="font-semibold text-sm"></p>
+          </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div>
+          <p class="text-sm font-semibold mb-3">Customer Information</p>
+          <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div class="flex justify-between items-start">
+              <p class="text-xs text-gray-500">Name</p>
+              <p id="detailCustomerName" class="text-sm font-medium"></p>
+            </div>
+            <div class="flex justify-between items-start">
+              <p class="text-xs text-gray-500">Email</p>
+              <p id="detailCustomerEmail" class="text-sm font-medium"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div>
+          <p class="text-sm font-semibold mb-3">Order Items</p>
+          <div id="detailOrderItems" class="space-y-2"></div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div>
+          <p class="text-sm font-semibold mb-3">Shipping Address</p>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p id="detailShippingAddress" class="text-sm text-gray-700"></p>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="border-t pt-4">
+          <div class="flex justify-between mb-2">
+            <p class="text-sm text-gray-600">Items Total</p>
+            <p id="detailItemsPrice" class="text-sm font-medium"></p>
+          </div>
+          <div class="flex justify-between mb-3">
+            <p class="text-sm text-gray-600">Shipping</p>
+            <p id="detailShippingPrice" class="text-sm font-medium"></p>
+          </div>
+          <div class="flex justify-between border-t pt-3">
+            <p class="text-sm font-semibold">Total Amount</p>
+            <p id="detailTotalPrice" class="text-lg font-bold"></p>
+          </div>
+        </div>
+
+        <!-- Status Update -->
+        <div class="bg-blue-50 rounded-xl p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Order Status</label>
+          <select id="statusSelect" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-black transition bg-white">
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button onclick="updateOrderStatus()" class="w-full mt-3 bg-black text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition">Update Status</button>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="closeModal()" class="flex-1 border border-gray-200 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    const headers = () => ({ 'Authorization': 'Bearer ' + localStorage.getItem('token') });
+    let allOrders = [];
+    let currentOrderId = null;
+
+    function formatCurrency(n) {
+      return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
+    }
+
+    function formatDate(d) {
+      return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function logout() {
+      if (confirm('Logout?')) { 
+        localStorage.removeItem('token'); 
+        localStorage.removeItem('user'); 
+        window.location.href = '/pages/login.html'; 
+      }
+    }
+
+    function requireAdmin() {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if (!user || user.role !== 'admin') { 
+        alert('Access denied.'); 
+        window.location.href = '../../index.html'; 
+      }
+    }
+    requireAdmin();
+
+    function showToast(msg, type = 'success') {
+      const t = document.createElement('div');
+      t.className = `fixed bottom-6 right-6 z-[999] ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium`;
+      t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${msg}`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    async function loadOrders(search = '', status = '') {
+      const table = document.getElementById('ordersTable');
+      table.innerHTML = `<tr><td colspan="7" class="text-center py-10"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></td></tr>`;
+      
+      try {
+        const res = await fetch(`${API}/orders`, { headers: headers() });
+        const data = await res.json();
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to load orders');
+        }
+
+        allOrders = data.orders || [];
+        let filtered = allOrders;
+
+        if (search) {
+          const searchLower = search.toLowerCase();
+          filtered = filtered.filter(o => 
+            o._id.toLowerCase().includes(searchLower) || 
+            (o.user && o.user.name && o.user.name.toLowerCase().includes(searchLower))
+          );
+        }
+
+        if (status) {
+          filtered = filtered.filter(o => o.status === status);
+        }
+
+        if (!filtered.length) {
+          table.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-gray-400 text-sm">No orders found.</td></tr>`;
+          updateStats(allOrders);
+          return;
+        }
+
+        table.innerHTML = filtered.map(o => {
+          const statusColors = {
+            pending: 'bg-yellow-100 text-yellow-700',
+            confirmed: 'bg-blue-100 text-blue-700',
+            shipped: 'bg-purple-100 text-purple-700',
+            delivered: 'bg-green-100 text-green-700',
+            cancelled: 'bg-red-100 text-red-700'
+          };
+          const itemCount = (o.orderItems || []).length;
+          return `
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-4">
+                <span class="font-mono text-xs font-semibold text-gray-600">${o._id.slice(-8).toUpperCase()}</span>
+              </td>
+              <td class="px-6 py-4">
+                <p class="text-sm font-medium">${o.user?.name || 'Unknown'}</p>
+                <p class="text-xs text-gray-400">${o.user?.email || '–'}</p>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-xs font-semibold">${itemCount}</span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-sm font-semibold">${formatCurrency(o.totalPrice || 0)}</span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[o.status] || 'bg-gray-100 text-gray-700'}">
+                  ${o.status.charAt(0).toUpperCase() + o.status.slice(1)}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600">${formatDate(o.createdAt)}</td>
+              <td class="px-6 py-4">
+                <button onclick="openOrderModal('${o._id}')" class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition" title="View Details">
+                  <i class="fas fa-eye text-xs text-gray-600"></i>
+                </button>
+              </td>
+            </tr>`;
+        }).join('');
+
+        updateStats(allOrders);
+      } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-red-400 text-sm">Failed to load orders. ${err.message}</td></tr>`;
+      }
+    }
+
+    function updateStats(orders) {
+      const stats = {
+        pending: 0,
+        confirmed: 0,
+        delivered: 0
+      };
+
+      orders.forEach(o => {
+        if (o.status === 'pending') stats.pending++;
+        else if (o.status === 'confirmed') stats.confirmed++;
+        else if (o.status === 'delivered') stats.delivered++;
+      });
+
+      document.getElementById('totalOrders').textContent = orders.length;
+      document.getElementById('pendingOrders').textContent = stats.pending;
+      document.getElementById('processingOrders').textContent = stats.confirmed;
+      document.getElementById('deliveredOrders').textContent = stats.delivered;
+    }
+
+    async function openOrderModal(orderId) {
+      const order = allOrders.find(o => o._id === orderId);
+      if (!order) return;
+
+      currentOrderId = orderId;
+
+      document.getElementById('detailOrderId').textContent = orderId;
+      document.getElementById('detailOrderDate').textContent = formatDate(order.createdAt);
+      document.getElementById('detailCustomerName').textContent = order.user?.name || 'Unknown';
+      document.getElementById('detailCustomerEmail').textContent = order.user?.email || '–';
+      document.getElementById('detailItemsPrice').textContent = formatCurrency(order.itemsPrice);
+      document.getElementById('detailShippingPrice').textContent = formatCurrency(order.shippingPrice);
+      document.getElementById('detailTotalPrice').textContent = formatCurrency(order.totalPrice);
+      document.getElementById('statusSelect').value = order.status;
+
+      // Shipping Address
+      const addr = order.shippingAddress;
+      const addressText = addr ? 
+        `${addr.street || ''}<br>${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}<br>${addr.country || ''}` 
+        : 'No address provided';
+      document.getElementById('detailShippingAddress').innerHTML = addressText;
+
+      // Order Items
+      const itemsHtml = (order.orderItems || []).map(item => `
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium">${item.name || item.product?.name || 'Product'}</p>
+            <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
+          </div>
+          <p class="text-sm font-semibold">${formatCurrency(item.price * item.quantity)}</p>
+        </div>
+      `).join('');
+      document.getElementById('detailOrderItems').innerHTML = itemsHtml || '<p class="text-sm text-gray-500">No items</p>';
+
+      document.getElementById('orderModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('orderModal').classList.add('hidden');
+      document.body.style.overflow = '';
+      currentOrderId = null;
+    }
+
+    async function updateOrderStatus() {
+      if (!currentOrderId) return;
+
+      const newStatus = document.getElementById('statusSelect').value;
+      const btn = event.target;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
+      try {
+        const res = await fetch(`${API}/orders/${currentOrderId}/status`, {
+          method: 'PUT',
+          headers: { ...headers(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Update failed');
+
+        showToast('Order status updated!');
+        closeModal();
+        loadOrders(document.getElementById('searchInput').value, document.getElementById('statusFilter').value);
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Update Status';
+      }
+    }
+
+    // Search debounce
+    let debounce;
+    document.getElementById('searchInput').addEventListener('input', function() {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => loadOrders(this.value, document.getElementById('statusFilter').value), 400);
+    });
+
+    document.getElementById('statusFilter').addEventListener('change', function() {
+      loadOrders(document.getElementById('searchInput').value, this.value);
+    });
+
+    // Initialize
+    document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    loadOrders();
+  </script>
+</body>
+</html>

@@ -1,23 +1,8 @@
-# TODO: Add animations and effects to brands (VERSACE, ZARA, GUCCI, PRADA, Calvin Klein)
+# Fix Navbar Blur Issue in index.html
 
-## Plan Steps:
+## Steps:
 
-1. [x] Update `frontend/index.html`: Add unique classes (`brand-item brand-{name}`) and `--delay` custom props to each brand h2.
-   - Versace: --delay: 0.1s
-   - Zara: 0.2s
-   - Gucci: 0.3s
-   - Prada: 0.4s
-   - Calvin Klein: 0.5s
-
-2. [x] Update `frontend/css/styles.css`: Add brand animations.
-   - [x] `@keyframes brandReveal`
-   - [x] `.brand-item` base styles + stagger via `--delay`
-   - [x] Brand-specific colors (Versace gold, etc.)
-   - [x] Hover effects (scale+lift+glow)
-   - [x] Micro-pulse idle animation
-
-3. [ ] Test: Open index.html, verify staggered entrance, hovers, responsive, no conflicts with existing animations.
-
-4. [ ] [Complete] Mark done, attempt_completion.
-
-**Status:** Starting step 1...
+- [x] Create TODO.md
+- [x] Edit index.html to remove navbar blur effect (remove backdrop-filter: blur(10px))
+- [x] Verify navbar is crisp without blur
+- [x] Mark complete and attempt_completion

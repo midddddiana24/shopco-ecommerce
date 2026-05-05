@@ -5,7 +5,7 @@ const { protect, authorize } = require("../middleware/auth");
 const router = express.Router();
 
 router.post("/", protect, orderController.createOrder);
-router.get("/user/:userId", protect, orderController.getMyOrders);
+router.get("/myorders", protect, orderController.getMyOrders);
 router.get("/:id", protect, orderController.getOrderById);
 router.put(
   "/:id/status",

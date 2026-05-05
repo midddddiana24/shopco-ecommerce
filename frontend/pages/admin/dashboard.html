@@ -3,146 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
   <title>Admin Dashboard – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/styles.css">
   <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-gray-50">
 
   <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col">
+    <aside class="w-64 bg-black text-white flex-shrink-0 flex flex-col glass-effect">
       <div class="p-6 border-b border-white/10">
-        <a href="../../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
+        <a href="../../index.html" class="text-2xl font-black tracking-tight float">CARTELLO</a>
         <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
       </div>
-      <nav class="flex-1 p-4 space-y-1">
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm">
+      <nav class="flex-1 p-4 space-y-1 stagger-children">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 font-medium text-sm hover:bg-white/20 transition transform hover:scale-105">
           <i class="fas fa-tachometer-alt w-4"></i> Dashboard
         </a>
-        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+        <a href="products.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm transform hover:scale-105">
           <i class="fas fa-box w-4"></i> Products
         </a>
-        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm transform hover:scale-105">
           <i class="fas fa-shopping-bag w-4"></i> Orders
         </a>
-        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+        <a href="categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm transform hover:scale-105">
           <i class="fas fa-tags w-4"></i> Categories
+        </a>
+        <a href="notifications.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm transform hover:scale-105">
+          <i class="fas fa-bell w-4"></i> Notifications
         </a>
       </nav>
       <div class="p-4 border-t border-white/10">
         <div id="adminInfo" class="flex items-center gap-3 mb-3"></div>
-        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm">
+        <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-white/10 transition text-gray-300 text-sm transform hover:scale-105">
           <i class="fas fa-sign-out-alt w-4"></i> Logout
         </button>
       </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-auto">
-      <div class="p-8">
+<main class="flex-1 overflow-auto">
+      <div class="container mx-auto px-4 py-8 lg:py-12 max-w-6xl">
+        <nav class="text-sm text-slate-500 mb-6 flex items-center gap-2">
+        <a href="/index.html" class="hover:text-slate-900 transition">Home</a>
+          <i class="fas fa-chevron-right text-xs"></i>
+          <span class="text-black font-medium">Dashboard</span>
+        </nav>
+        
         <div class="flex items-center justify-between mb-8">
           <div>
-            <h1 class="text-2xl font-bold">Dashboard</h1>
-            <p class="text-gray-500 text-sm mt-0.5">Welcome back! Here's what's happening.</p>
+            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <p class="text-slate-600 text-sm mt-2 max-w-md">Welcome back! Here's what's happening with your store.</p>
           </div>
-          <div class="text-sm text-gray-400" id="lastUpdated"></div>
+          <div class="text-sm text-slate-400" id="lastUpdated"></div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-sm text-gray-500 font-medium">Total Orders</p>
-              <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-shopping-bag text-blue-600"></i>
+        <!-- Stats Cards - Matched to products.html style -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-sm font-medium text-slate-500 uppercase tracking-[.2em]">Total Orders</p>
+              <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-shopping-bag text-blue-600 text-lg"></i>
               </div>
             </div>
-            <h3 id="totalOrders" class="text-3xl font-bold">–</h3>
-            <p class="text-xs text-green-600 mt-1"><i class="fas fa-arrow-up mr-1"></i>All time</p>
+            <h3 id="totalOrders" class="text-3xl font-bold text-slate-900 mb-1">–</h3>
+            <p class="text-xs text-emerald-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>All time</p>
           </div>
 
-          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-sm text-gray-500 font-medium">Total Products</p>
-              <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-box text-purple-600"></i>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-sm font-medium text-slate-500 uppercase tracking-[.2em]">Total Products</p>
+              <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-box text-purple-600 text-lg"></i>
               </div>
             </div>
-            <h3 id="totalProducts" class="text-3xl font-bold">–</h3>
-            <p class="text-xs text-gray-400 mt-1">In catalog</p>
+            <h3 id="totalProducts" class="text-3xl font-bold text-slate-900 mb-2">–</h3>
+            <p class="text-xs text-slate-400 font-medium">In catalog</p>
           </div>
 
-          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-sm text-gray-500 font-medium">Categories</p>
-              <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-tags text-orange-600"></i>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-sm font-medium text-slate-500 uppercase tracking-[.2em]">Categories</p>
+              <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-tags text-orange-600 text-lg"></i>
               </div>
             </div>
-            <h3 id="totalCategories" class="text-3xl font-bold">–</h3>
-            <p class="text-xs text-gray-400 mt-1">Active categories</p>
+            <h3 id="totalCategories" class="text-3xl font-bold text-slate-900 mb-2">–</h3>
+            <p class="text-xs text-slate-400 font-medium">Active categories</p>
           </div>
 
-          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-sm text-gray-500 font-medium">Total Revenue</p>
-              <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-dollar-sign text-green-600"></i>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-blue-500/5"></div>
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <p class="text-sm font-medium text-slate-500 uppercase tracking-[.2em]">Total Revenue</p>
+              <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-dollar-sign text-emerald-600 text-lg"></i>
               </div>
             </div>
-            <h3 id="totalRevenue" class="text-3xl font-bold">–</h3>
-            <p class="text-xs text-green-600 mt-1"><i class="fas fa-check-circle mr-1"></i>All orders</p>
+            <h3 id="totalRevenue" class="text-3xl font-bold text-slate-900 mb-1 relative z-10">–</h3>
+            <p class="text-xs text-emerald-600 font-medium relative z-10"><i class="fas fa-check-circle mr-1"></i>All orders</p>
           </div>
         </div>
 
-        <!-- Recent Orders + Quick Actions -->
+        <!-- Main Content Grid - Matched Layout -->
         <div class="grid lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 class="font-bold">Recent Orders</h2>
-              <a href="orders.html" class="text-sm text-gray-500 hover:text-black transition">View All →</a>
+          <!-- Recent Orders -->
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 bg-slate-50/50">
+              <h2 class="text-xl font-bold text-slate-900">Recent Orders</h2>
+              <a href="orders.html" class="text-sm font-medium text-slate-700 hover:text-slate-900 transition flex items-center gap-1">View All <i class="fas fa-arrow-right text-xs"></i></a>
             </div>
-            <div id="recentOrders" class="divide-y divide-gray-50">
-              <div class="flex justify-center py-8"><i class="fas fa-spinner fa-spin text-gray-300 text-2xl"></i></div>
+            <div id="recentOrders" class="divide-y divide-slate-100 max-h-96 overflow-auto">
+              <div class="flex justify-center py-12"><i class="fas fa-spinner fa-spin text-slate-300 text-2xl"></i></div>
             </div>
           </div>
 
-          <div class="space-y-4">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 class="font-bold mb-4">Quick Actions</h2>
-              <div class="space-y-2">
-                <a href="products.html#add" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
-                  <div class="w-9 h-9 bg-black rounded-xl flex items-center justify-center group-hover:bg-gray-800 transition">
-                    <i class="fas fa-plus text-white text-sm"></i>
-                  </div>
-                  <span class="text-sm font-medium">Add New Product</span>
-                </a>
-                <a href="categories.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
-                  <div class="w-9 h-9 bg-purple-600 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-tag text-white text-sm"></i>
-                  </div>
-                  <span class="text-sm font-medium">Manage Categories</span>
-                </a>
-                <a href="orders.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
-                  <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-truck text-white text-sm"></i>
-                  </div>
-                  <span class="text-sm font-medium">Update Order Status</span>
-                </a>
-                <a href="../../index.html" target="_blank" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group">
-                  <div class="w-9 h-9 bg-green-600 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-store text-white text-sm"></i>
-                  </div>
-                  <span class="text-sm font-medium">View Store</span>
-                </a>
+          <div class="space-y-6 lg:space-y-4">
+            <!-- Notifications -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div class="flex items-center justify-between mb-5">
+                <h2 class="font-bold text-slate-900 text-lg">Notifications</h2>
+                <div class="flex items-center gap-3">
+                  <span id="notificationBadge" class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">0 unread</span>
+                  <a href="notifications.html" class="text-sm font-medium text-slate-700 hover:text-slate-900 transition flex items-center gap-1">View All <i class="fas fa-arrow-right text-xs"></i></a>
+                </div>
               </div>
+              <div id="notificationList" class="space-y-3 max-h-72 overflow-y-auto text-sm text-slate-600 pr-2">
+                <p class="text-slate-400 italic">Loading notifications...</p>
+              </div>
+              <button id="markAllReadBtn" onclick="markAllNotificationsRead()" class="mt-4 w-full bg-slate-900 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition filter-btn">Mark all read</button>
             </div>
 
-            <div id="orderStatusChart" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 class="font-bold mb-4">Order Status</h2>
+            <!-- Order Status Chart -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <h2 class="font-bold text-slate-900 mb-5 text-lg">Order Status</h2>
               <div id="statusBreakdown" class="space-y-3"></div>
             </div>
           </div>
@@ -151,6 +150,7 @@
     </main>
   </div>
 
+  <script src="../../js/app.js"></script>
   <script>
     const API = 'http://localhost:5000/api';
 
@@ -166,15 +166,15 @@
       if (confirm('Logout?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '../login.html';
+        window.location.href = '/pages/login.html';
       }
     }
 
     function requireAdmin() {
       const token = localStorage.getItem('token');
       const user = JSON.parse(localStorage.getItem('user') || 'null');
-      if (!token || !user) return window.location.href = '../login.html';
-      if (user.role !== 'admin') { alert('Access denied.'); window.location.href = '../../index.html'; }
+      if (!token || !user) return window.location.href = '/pages/login.html';
+      if (user.role !== 'admin') { alert('Access denied.'); window.location.href = '/index.html'; }
       const info = document.getElementById('adminInfo');
       if (info) info.innerHTML = `
         <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=fff&color=000&size=32" class="w-8 h-8 rounded-full">
@@ -193,6 +193,63 @@
     };
 
     const headers = { 'Authorization': 'Bearer ' + localStorage.getItem('token') };
+
+    async function loadNotifications() {
+      try {
+        const res = await fetch(`${API}/notifications`, { headers });
+        if (!res.ok) return;
+        const data = await res.json();
+        const notifications = data.notifications || [];
+        const badge = document.getElementById('notificationBadge');
+        const list = document.getElementById('notificationList');
+
+        const unread = notifications.filter(n => !n.read).length;
+        badge.textContent = `${unread} unread`;
+
+        if (!notifications.length) {
+          list.innerHTML = '<p class="text-sm text-gray-400">No recent notifications.</p>';
+          return;
+        }
+
+        list.innerHTML = notifications.slice(0, 5).map(note => `
+          <div class="rounded-2xl border border-gray-100 p-4 bg-gray-50">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold text-slate-900">${note.title}</p>
+                <p class="text-xs text-slate-500 mt-1">${new Date(note.createdAt).toLocaleString()}</p>
+              </div>
+              ${note.read ? '<span class="text-xs text-green-600">Read</span>' : '<span class="text-xs text-red-600">New</span>'}
+            </div>
+            <p class="mt-3 text-sm text-slate-600">${note.message}</p>
+            <button onclick="markNotificationRead('${note._id}')" class="mt-3 text-xs font-semibold text-slate-700 hover:text-black">Mark read</button>
+          </div>`).join('');
+      } catch (err) {
+        console.error('Failed to load notifications', err);
+      }
+    }
+
+    async function markNotificationRead(id) {
+      try {
+        const res = await fetch(`${API}/notifications/${id}/read`, {
+          method: 'PUT',
+          headers
+        });
+        if (!res.ok) throw new Error('Unable to mark notification as read');
+        await loadNotifications();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function markAllNotificationsRead() {
+      const cards = document.querySelectorAll('#notificationList button');
+      for (const button of cards) {
+        const id = button.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+        if (id) {
+          await markNotificationRead(id);
+        }
+      }
+    }
 
     (async () => {
       try {
@@ -248,6 +305,7 @@
           </div>`;
         }).join('') || '<p class="text-sm text-gray-400">No data yet.</p>';
 
+        await loadNotifications();
       } catch (err) {
         console.error(err);
       }

@@ -46,12 +46,14 @@ function renderProductCard(product) {
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : 0;
 
+    const imageUrl = Array.isArray(product.images) && product.images[0] ? product.images[0] : 'https://via.placeholder.com/400';
     return `
         <div class="group cursor-pointer" onclick="viewProduct('${product._id}')">
             <div class="relative overflow-hidden rounded-lg bg-gray-100 mb-4">
-                <img src="${product.images[0] || 'https://via.placeholder.com/400'}" 
+                <img src="${imageUrl}" 
                      alt="${product.name}"
-                     class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-300">
+                     class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-300"
+                     onerror="this.src='https://via.placeholder.com/400'">
                 ${discountPercent > 0 ? `
                     <span class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                         -${discountPercent}%
@@ -314,21 +316,24 @@ function renderProductDetail(product) {
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : 0;
 
+    const mainImageUrl = Array.isArray(product.images) && product.images[0] ? product.images[0] : 'https://via.placeholder.com/600';
     container.innerHTML = `
         <div class="grid lg:grid-cols-2 gap-12">
             <!-- Images -->
             <div>
                 <div class="mb-4 bg-gray-100 rounded-lg overflow-hidden">
-                    <img id="mainImage" src="${product.images[0] || 'https://via.placeholder.com/600'}" 
+                    <img id="mainImage" src="${mainImageUrl}" 
                          alt="${product.name}"
-                         class="w-full h-96 object-cover">
+                         class="w-full h-96 object-cover"
+                         onerror="this.src='https://via.placeholder.com/600'">
                 </div>
-                ${product.images.length > 1 ? `
+                ${Array.isArray(product.images) && product.images.length > 1 ? `
                     <div class="grid grid-cols-4 gap-4">
                         ${product.images.map((img, index) => `
-                            <img src="${img}" 
+                            <img src="${img || 'https://via.placeholder.com/150'}" 
                                  alt="${product.name} ${index + 1}"
-                                 onclick="document.getElementById('mainImage').src='${img}'"
+                                 onclick="document.getElementById('mainImage').src='${img || 'https://via.placeholder.com/600'}'"
+                                 onerror="this.src='https://via.placeholder.com/150'"
                                  class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-75">
                         `).join('')}
                     </div>

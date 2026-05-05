@@ -3,76 +3,252 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
   <title>My Orders – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>body { font-family: 'Inter', sans-serif; }</style>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
-<body class="bg-gray-50">
+<body class="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
 
+  <!-- Universal Navbar -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
-      <div class="flex items-center gap-4">
-        <a href="cart.html" class="relative">
+    <nav class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="../index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
+        <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
+          <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
+          <a href="../index.html#about" class="hover:text-slate-900 transition">About Us</a>
+          <a href="../index.html#contact" class="hover:text-slate-900 transition">Contact</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="cart.html" class="relative p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
           <i class="fas fa-shopping-cart text-xl"></i>
-          <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+          <span id="cartCount" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">0</span>
         </a>
+        <div id="authSection" class="relative hidden lg:block">
+          <a href="login.html" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Sign In</a>
+        </div>
+        <button id="mobileMenuBtn" class="lg:hidden p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
       </div>
     </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm">
+      <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col p-6 gap-6">
+        <div class="flex items-center justify-between">
+          <span class="text-xl font-black">CARTELLO</span>
+          <button id="closeMobileMenu" class="p-2 rounded-full bg-slate-100 hover:bg-slate-200"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="flex flex-col gap-4 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-black transition">Home</a>
+          <a href="products.html" class="hover:text-black transition">Shop</a>
+          <a href="../index.html#about" class="hover:text-black transition">About</a>
+          <a href="../index.html#contact" class="hover:text-black transition">Contact</a>
+          <hr class="border-slate-200">
+          <a href="orders.html" class="hover:text-black transition">My Orders</a>
+          <a href="profile.html" class="hover:text-black transition">Profile</a>
+          <a href="cart.html" class="hover:text-black transition">Cart</a>
+        </nav>
+      </div>
+    </div>
   </header>
+  <script>
+    (function() {
+      // Mobile menu logic
+      const btn = document.getElementById('mobileMenuBtn');
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      const content = document.getElementById('mobileMenuContent');
+      const close = document.getElementById('closeMobileMenu');
+      
+      const closeMenu = () => {
+        if(content) content.classList.add('translate-x-full');
+        if(overlay) {
+          overlay.classList.add('opacity-0');
+          setTimeout(() => menu.classList.add('pointer-events-none'), 300);
+        } else if(menu) menu.classList.add('hidden');
+      };
 
-  <main class="container mx-auto px-4 py-10 max-w-4xl">
-    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
-      <a href="../index.html" class="hover:text-black">Home</a>
-      <i class="fas fa-chevron-right text-xs"></i>
-      <span class="text-black font-medium">My Orders</span>
-    </nav>
+      if (btn) btn.addEventListener('click', () => {
+        menu.classList.remove('pointer-events-none');
+        if(overlay) overlay.classList.remove('opacity-0');
+        if(content) content.classList.remove('translate-x-full');
+        menu.classList.remove('hidden');
+      });
+      if (close) close.addEventListener('click', closeMenu);
+      if (overlay) overlay.addEventListener('click', closeMenu);
+      else if (menu) menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
 
-    <h1 class="text-3xl font-bold mb-4">My Orders</h1>
-    <p class="text-gray-600 mb-8 max-w-2xl">Review your recent orders, track shipping status, and tap any order to see full details.</p>
+      // Auth logic for navbar
+      const authSection = document.getElementById('authSection');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = localStorage.getItem('token');
+      
+      if (user && token && authSection) {
+        authSection.innerHTML = `
+          <button id="userMenuToggle" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50" style="transition: none !important; animation: none !important; transform: none !important;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=24" class="w-6 h-6 rounded-full">
+            <span class="hidden xl:inline">${(user.name||user.fullName||'').split(' ')[0]}</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </button>
+          <div id="userMenu" class="absolute top-full mt-2 right-0 w-48 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50">
+            <a href="profile.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-user w-4"></i> Profile</a>
+            <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-shopping-bag w-4"></i> Orders</a>
+            <hr class="my-2 border-slate-200">
+            <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition w-full text-left"><i class="fas fa-sign-out-alt w-4"></i> Sign Out</button>
+          </div>
+        `;
+        
+        const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+        if (mobileAuthLinks) {
+            mobileAuthLinks.innerHTML = `
+                <div class="flex items-center gap-3 mb-2">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">
+                    <span class="font-bold text-slate-900">${user.name||user.fullName}</span>
+                </div>
+                <a href="profile.html" class="hover:text-black transition"><i class="fas fa-user w-5"></i> Profile</a>
+                <a href="orders.html" class="hover:text-black transition"><i class="fas fa-shopping-bag w-5"></i> My Orders</a>
+                <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="text-left text-red-600 hover:text-red-700 transition font-bold mt-2"><i class="fas fa-sign-out-alt w-5"></i> Sign Out</button>
+            `;
+        }
+        
+        const userMenuToggle = document.getElementById('userMenuToggle');
+        const userMenu = document.getElementById('userMenu');
+        if (userMenuToggle && userMenu) {
+            userMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        }
+      }
+      
+      // Initial cart count
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cartCountEl = document.getElementById('cartCount');
+      if (cartCountEl) {
+        cartCountEl.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      }
+    })();
+  </script>
+
+  <main class="flex-1 container mx-auto px-4 py-12 max-w-5xl animate-fade-in-up">
+
+    <div class="mb-10 border-b border-slate-200 pb-8">
+      <p class="text-xs font-bold uppercase tracking-[.3em] text-slate-500 mb-2">Account History</p>
+      <h1 class="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">My Orders</h1>
+      <p class="text-slate-500 mt-4 max-w-2xl text-sm leading-relaxed">Review your recent orders, track shipping status, and tap any order to see full details.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-6">
+      <button onclick="filterOrders('all', this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-slate-900 text-white">All Orders</button>
+      <button onclick="filterOrders('pending', this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Pending</button>
+      <button onclick="filterOrders('shipped', this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Shipped</button>
+      <button onclick="filterOrders('delivered', this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Delivered</button>
+    </div>
 
     <div class="grid gap-4 sm:grid-cols-2 mb-8">
-      <div class="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p class="text-xs uppercase tracking-[.3em] text-gray-400 mb-2">Total Orders</p>
-        <p id="summaryOrders" class="text-3xl font-bold">–</p>
+      <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition">
+        <p class="text-xs uppercase tracking-[.3em] text-slate-400 mb-2">Total Orders</p>
+        <p id="summaryOrders" class="text-3xl font-bold text-slate-900">–</p>
       </div>
-      <div class="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p class="text-xs uppercase tracking-[.3em] text-gray-400 mb-2">Open Orders</p>
-        <p id="summaryOpen" class="text-3xl font-bold">–</p>
+      <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition">
+        <p class="text-xs uppercase tracking-[.3em] text-slate-400 mb-2">Open Orders</p>
+        <p id="summaryOpen" class="text-3xl font-bold text-slate-900">–</p>
       </div>
     </div>
 
     <div id="loading" class="flex justify-center py-16">
-      <i class="fas fa-spinner fa-spin text-3xl text-gray-300"></i>
+      <i class="fas fa-spinner fa-spin text-3xl text-slate-300"></i>
     </div>
 
     <div id="ordersContainer" class="hidden space-y-4"></div>
 
     <div id="emptyOrders" class="hidden text-center py-16">
-      <i class="fas fa-box-open text-5xl text-gray-200 mb-4"></i>
-      <h2 class="text-xl font-semibold text-gray-500 mb-2">No orders yet</h2>
-      <p class="text-gray-400 mb-6">Start shopping to see your orders here.</p>
-      <a href="products.html" class="bg-black text-white px-8 py-3.5 rounded-full font-semibold hover:bg-gray-800 transition">Shop Now</a>
+      <i class="fas fa-box-open text-5xl text-slate-200 mb-4"></i>
+      <h2 class="text-xl font-semibold text-slate-500 mb-2">No orders yet</h2>
+      <p class="text-slate-400 mb-6">Start shopping to see your orders here.</p>
+      <a href="products.html" class="bg-slate-900 text-white px-8 py-3.5 rounded-full font-semibold hover:bg-slate-800 transition">Shop Now</a>
     </div>
   </main>
 
   <!-- Order Detail Modal -->
   <div id="orderModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
     <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl">
-        <h2 class="font-bold text-lg">Order Details</h2>
-        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
-          <i class="fas fa-times text-sm"></i>
+      <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+        <h2 class="font-bold text-lg text-slate-900">Order Details</h2>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center">
+          <i class="fas fa-times text-sm text-slate-600"></i>
         </button>
       </div>
       <div id="modalContent" class="p-6"></div>
     </div>
   </div>
 
-  <footer class="bg-white border-t mt-16 py-8">
-    <div class="container mx-auto px-4 text-center text-sm text-gray-500">CARTELLO © 2024–2025</div>
+  <!-- Premium Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-20">
+    <div class="container mx-auto px-4 py-14">
+      <div class="grid gap-10 lg:grid-cols-4">
+        <div class="space-y-4">
+          <p class="text-2xl font-black text-slate-900">CARTELLO</p>
+          <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+          <div class="flex gap-4 pt-2">
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="products.html" class="hover:text-slate-900 transition">All Products</a></li>
+            <li><a href="products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
+            <li><a href="products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
+            <li><a href="products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
+            <li><a href="orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
+            <li><a href="cart.html" class="hover:text-slate-900 transition">Cart</a></li>
+            <li><a href="login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
+            <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
+            <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
+            <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+        <p>CARTELLO © 2024–2025. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
+          <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
+          <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script>
@@ -100,6 +276,7 @@
     };
 
     let orderData = [];
+    let currentFilter = 'all';
 
     const statusIcons = {
       pending: 'fa-clock',
@@ -109,6 +286,50 @@
       cancelled: 'fa-times-circle'
     };
 
+    function filterOrders(status, button) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.className = 'filter-btn px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      });
+      if (button) {
+        button.className = 'filter-btn px-4 py-2 rounded-full text-sm font-medium bg-slate-900 text-white';
+      }
+
+      const filtered = status === 'all' ? orderData : orderData.filter(order => order.status === status);
+      renderOrders(filtered);
+    }
+
+    function renderOrders(orders) {
+      const container = document.getElementById('ordersContainer');
+      if (orders.length === 0) {
+        container.innerHTML = '<div class="text-center py-12 text-slate-500">No orders found for this filter.</div>';
+        return;
+      }
+      container.innerHTML = orders.map(order => `
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 hover:shadow-lg transition cursor-pointer" onclick="openModalById('${order._id}')">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-xs text-slate-400 mb-0.5">Order #${order._id.slice(-8).toUpperCase()}</p>
+              <p class="text-xs text-slate-500">${formatDate(order.createdAt)}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[order.status] || 'bg-slate-100 text-slate-600'}">
+              <i class="fas ${statusIcons[order.status] || 'fa-circle'} mr-1"></i>${order.status}
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3 mb-4">
+            ${order.orderItems.slice(0, 3).map(item => `
+              <img src="${item.product?.images?.[0] || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-slate-100">`).join('')}
+            ${order.orderItems.length > 3 ? `<div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-sm font-semibold text-slate-500">+${order.orderItems.length - 3}</div>` : ''}
+          </div>
+
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-slate-500">${order.orderItems.reduce((t, i) => t + i.quantity, 0)} item(s) · ${order.paymentMethod}</p>
+            <p class="font-bold text-slate-900">${formatCurrency(order.totalPrice)}</p>
+          </div>
+        </div>`).join('');
+    }
+
     function openModalById(orderId) {
       const order = orderData.find(item => item._id === orderId);
       if (!order) return;
@@ -116,46 +337,46 @@
         <div class="space-y-4">
           <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
-              <p class="text-xs text-gray-400">Order ID</p>
-              <p class="text-sm font-mono font-medium">#${order._id.slice(-8).toUpperCase()}</p>
+              <p class="text-xs text-slate-400">Order ID</p>
+              <p class="text-sm font-mono font-medium text-slate-900">#${order._id.slice(-8).toUpperCase()}</p>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[order.status] || 'bg-gray-100 text-gray-600'}">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[order.status] || 'bg-slate-100 text-slate-600'}">
               <i class="fas ${statusIcons[order.status] || 'fa-circle'} mr-1"></i>${order.status}
             </span>
           </div>
 
-          <div class="bg-gray-50 rounded-2xl p-4">
-            <h3 class="font-semibold text-sm mb-3">Items Ordered</h3>
+          <div class="bg-slate-50 rounded-2xl p-4">
+            <h3 class="font-semibold text-sm mb-3 text-slate-900">Items Ordered</h3>
             <div class="space-y-3">
               ${order.orderItems.map(item => `
                 <div class="flex items-center gap-3">
-                  <img src="${item.image || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-gray-200">
+                  <img src="${item.product?.images?.[0] || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-slate-200">
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium truncate">${item.name}</p>
-                    <p class="text-xs text-gray-500">Qty: ${item.quantity}${item.size ? ' · ' + item.size : ''}</p>
+                    <p class="text-sm font-medium truncate text-slate-900">${item.product?.name || 'Product'}</p>
+                    <p class="text-xs text-slate-500">Qty: ${item.quantity}${item.size ? ' · ' + item.size : ''}</p>
                   </div>
-                  <span class="text-sm font-semibold">${formatCurrency(item.price * item.quantity)}</span>
+                  <span class="text-sm font-semibold text-slate-900">${formatCurrency(item.price * item.quantity)}</span>
                 </div>`).join('')}
             </div>
           </div>
 
-          <div class="bg-gray-50 rounded-2xl p-4">
-            <h3 class="font-semibold text-sm mb-3">Shipping Address</h3>
-            <p class="text-sm text-gray-700">${order.shippingAddress.fullName}</p>
-            <p class="text-sm text-gray-500">${order.shippingAddress.address}</p>
-            <p class="text-sm text-gray-500">${order.shippingAddress.city}, ${order.shippingAddress.postalCode}</p>
-            <p class="text-sm text-gray-500">${order.shippingAddress.country}</p>
-            <p class="text-sm text-gray-500">${order.shippingAddress.phone}</p>
+          <div class="bg-slate-50 rounded-2xl p-4">
+            <h3 class="font-semibold text-sm mb-3 text-slate-900">Shipping Address</h3>
+            <p class="text-sm text-slate-700">${order.shippingAddress.fullName}</p>
+            <p class="text-sm text-slate-500">${order.shippingAddress.address}</p>
+            <p class="text-sm text-slate-500">${order.shippingAddress.city}, ${order.shippingAddress.zipCode}</p>
+            <p class="text-sm text-slate-500">${order.shippingAddress.country}</p>
+            <p class="text-sm text-slate-500">${order.shippingAddress.phone}</p>
           </div>
 
-          <div class="border-t pt-4 space-y-2 text-sm">
-            <div class="flex justify-between text-gray-600"><span>Subtotal</span><span>${formatCurrency(order.itemsPrice)}</span></div>
-            <div class="flex justify-between text-gray-600"><span>Shipping</span><span>${formatCurrency(order.shippingPrice)}</span></div>
-            <div class="flex justify-between font-bold text-base pt-1 border-t"><span>Total</span><span>${formatCurrency(order.totalPrice)}</span></div>
+          <div class="border-t border-slate-200 pt-4 space-y-2 text-sm">
+            <div class="flex justify-between text-slate-600"><span>Subtotal</span><span>${formatCurrency(order.itemsPrice)}</span></div>
+            <div class="flex justify-between text-slate-600"><span>Shipping</span><span>${formatCurrency(order.shippingPrice)}</span></div>
+            <div class="flex justify-between font-bold text-base pt-1 border-t border-slate-200"><span>Total</span><span>${formatCurrency(order.totalPrice)}</span></div>
           </div>
 
-          <div class="flex flex-col sm:flex-row justify-between text-sm text-gray-500 gap-3">
-            <span>Payment: <strong>${order.paymentMethod}</strong></span>
+          <div class="flex flex-col sm:flex-row justify-between text-sm text-slate-500 gap-3">
+            <span>Payment: <strong class="text-slate-900">${order.paymentMethod}</strong></span>
             <span>Ordered: ${formatDate(order.createdAt)}</span>
           </div>
         </div>`;
@@ -185,42 +406,27 @@
 
         if (!data.orders || data.orders.length === 0) {
           document.getElementById('emptyOrders').classList.remove('hidden');
+          document.getElementById('summaryOrders').textContent = '0';
+          document.getElementById('summaryOpen').textContent = '0';
           return;
         }
 
         const container = document.getElementById('ordersContainer');
         orderData = data.orders;
         container.classList.remove('hidden');
-        container.innerHTML = data.orders.map(order => `
-          <div class="bg-white border border-gray-200 rounded-3xl p-5 hover:shadow-md transition cursor-pointer" onclick="openModalById('${order._id}')">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <p class="text-xs text-gray-400 mb-0.5">Order #${order._id.slice(-8).toUpperCase()}</p>
-                <p class="text-xs text-gray-500">${formatDate(order.createdAt)}</p>
-              </div>
-              <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[order.status] || 'bg-gray-100 text-gray-600'}">
-                <i class="fas ${statusIcons[order.status] || 'fa-circle'} mr-1"></i>${order.status}
-              </span>
-            </div>
+        renderOrders(data.orders);
 
-            <div class="flex items-center gap-3 mb-4">
-              ${order.orderItems.slice(0, 3).map(item => `
-                <img src="${item.image || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-xl object-cover bg-gray-100">`).join('')}
-              ${order.orderItems.length > 3 ? `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500">+${order.orderItems.length - 3}</div>` : ''}
-            </div>
-
-            <div class="flex items-center justify-between">
-              <p class="text-sm text-gray-500">${order.orderItems.reduce((t, i) => t + i.quantity, 0)} item(s) · ${order.paymentMethod}</p>
-              <p class="font-bold">${formatCurrency(order.totalPrice)}</p>
-            </div>
-          </div>`).join('');
-          document.getElementById('summaryOrders').textContent = data.orders.length;
-          document.getElementById('summaryOpen').textContent = data.orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
-
+        // Update summary stats
+        const totalOrders = data.orders.length;
+        const openOrders = data.orders.filter(order => !['delivered', 'cancelled'].includes(order.status)).length;
+        document.getElementById('summaryOrders').textContent = totalOrders;
+        document.getElementById('summaryOpen').textContent = openOrders;
       } catch (err) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('ordersContainer').innerHTML = `<div class="text-center py-12 text-red-400">Failed to load orders. <a href="" class="underline">Retry</a></div>`;
         document.getElementById('ordersContainer').classList.remove('hidden');
+        document.getElementById('summaryOrders').textContent = '0';
+        document.getElementById('summaryOpen').textContent = '0';
       }
     })();
   </script>

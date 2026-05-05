@@ -1,455 +1,942 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy"
+content="
+default-src 'self' https:;
+script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com;
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+img-src 'self' data: https:;
+font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+connect-src *;
+">
     <title>CARTELLO - Find Clothes That Match Your Style</title>
-    
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Custom Tailwind Config -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#000000',
-                        secondary: '#F0F0F0',
-                        accent: '#000000'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Integral CF', 'sans-serif']
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#000000",
+              secondary: "#F0F0F0",
+              accent: "#000000",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Integral CF", "sans-serif"],
+            },
+          },
+        },
+      };
     </script>
-    
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
     
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="font-sans bg-white">
     
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="font-sans bg-white">
+
+    <!-- Splash Screen Styles & Elements -->
+    <style>
+      .splash-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: transform 1.2s cubic-bezier(0.86, 0, 0.07, 1), opacity 1.2s ease-in-out;
+      }
+      
+      .splash-logo-container {
+        overflow: hidden;
+        padding: 10px;
+      }
+      
+      .splash-logo {
+        font-family: 'Inter', sans-serif;
+        font-weight: 900;
+        font-size: clamp(3rem, 8vw, 6rem);
+        color: #fff;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        transform: translateY(100%);
+        animation: slideUpLogo 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .splash-tagline {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0);
+        animation: fadeInTagline 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+      }
+
+      .splash-loader {
+        margin-top: 3rem;
+        width: 180px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeInTagline 0.5s ease forwards 0.5s;
+      }
+
+      .splash-loader-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #fff;
+        transform: translateX(-100%);
+        animation: slideProgress 2s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards;
+      }
+
+      @keyframes slideUpLogo {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+
+      @keyframes fadeInTagline {
+        from { color: rgba(255, 255, 255, 0); opacity: 0; }
+        to { color: rgba(255, 255, 255, 0.5); opacity: 1; }
+      }
+
+      @keyframes slideProgress {
+        0% { transform: translateX(-100%); }
+        50% { transform: translateX(0); }
+        100% { transform: translateX(101%); }
+      }
+
+      .splash-exit {
+        transform: translateY(-100%);
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      body.no-scroll {
+        overflow: hidden;
+      }
+
+      @keyframes slowZoom {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.1); }
+      }
+      .animate-slowZoom {
+        animation: slowZoom 20s ease-in-out infinite alternate;
+      }
+    </style>
+
+    <div id="splashScreen" class="splash-screen">
+      <div class="splash-logo-container">
+        <h1 class="splash-logo">CARTELLO</h1>
+      </div>
+      <div class="splash-loader">
+        <div class="splash-loader-bar"></div>
+      </div>
+      <p class="splash-tagline">Premium Streetwear</p>
+    </div>
+
+    <script>
+      const splash = document.getElementById('splashScreen');
+      if (sessionStorage.getItem('splashShown')) {
+        if (splash) splash.remove();
+      } else {
+        sessionStorage.setItem('splashShown', 'true');
+        document.body.classList.add('no-scroll');
+        window.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => {
+            if (splash) {
+              splash.classList.add('splash-exit');
+              setTimeout(() => {
+                splash.remove();
+                document.body.classList.remove('no-scroll');
+              }, 1200);
+            }
+          }, 2600);
+        });
+      }
+    </script>
+
     <!-- Header / Navigation -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <!-- Top Banner -->
-        <div class="bg-black text-white text-center py-2 text-sm">
-            <p>Sign up and get 20% off your first order. 
-                <a href="register.html" class="underline font-semibold">Sign Up Now</a>
-            </p>
+    <header class="sticky top-0 z-50 bg-white/95 shadow-sm"> <!-- Removed backdrop-blur -->
+      <nav class="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-4">
+        <div class="flex items-center gap-6">
+          <a href="index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
+          <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
+            <a href="index.html" class="hover:text-slate-900 transition">Home</a>
+            <a href="pages/products.html" class="hover:text-slate-900 transition">Shop</a>
+            <a href="#about" class="hover:text-slate-900 transition">About Us</a>
+            <a href="#contact" class="hover:text-slate-900 transition">Contact</a>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="relative hidden lg:block">
+            <button id="searchToggle" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-700 hover:bg-slate-200 transition no-focus-ring" style="outline: none !important; transform: none !important;">
+              <i class="fas fa-search"></i>
+              Search
+            </button>
+            <div id="searchDropdown" class="absolute top-full mt-2 right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 hidden z-50">
+              <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" placeholder="Search products..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-slate-900 outline-none transition" />
+              </div>
+              <div id="searchResults" class="mt-3 max-h-60 overflow-y-auto"></div>
+            </div>
+          </div>
+
+          <a href="pages/cart.html" class="relative p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            <i class="fas fa-shopping-cart text-xl"></i>
+            <span id="cartCount" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">0</span>
+          </a>
+          <div id="authSection" class="relative">
+            <a href="pages/login.html" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Sign In</a>
+          </div>
+          <button id="mobileMenuBtn" class="lg:hidden p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </nav>
+
+      <div class="lg:hidden px-4 pb-4">
+        <div class="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 shadow-sm">
+          <i class="fas fa-search text-slate-500"></i>
+          <input id="mobileSearchInput" type="search" placeholder="Search products..." class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400" />
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm">
+        <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col p-6 gap-6">
+          <div class="flex items-center justify-between">
+            <span class="text-xl font-black">CARTELLO</span>
+            <button id="closeMobileMenu" class="p-2 rounded-full bg-slate-100 hover:bg-slate-200"><i class="fas fa-times"></i></button>
+          </div>
+          <nav class="flex flex-col gap-4 text-sm font-medium text-slate-700">
+            <a href="index.html" class="hover:text-black transition">Home</a>
+            <a href="pages/products.html" class="hover:text-black transition">Shop</a>
+            <a href="#about" class="hover:text-black transition">About</a>
+            <a href="#contact" class="hover:text-black transition">Contact</a>
+            <hr class="border-slate-200">
+            <a href="pages/orders.html" class="hover:text-black transition">My Orders</a>
+            <a href="pages/profile.html" class="hover:text-black transition">Profile</a>
+            <a href="pages/cart.html" class="hover:text-black transition">Cart</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[90vh] flex items-center bg-slate-900 overflow-hidden">
+      <!-- Background Image -->
+      <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=2400&q=80" alt="Fashion Background" class="w-full h-full object-cover opacity-50 animate-slowZoom">
+      </div>
+      
+      <!-- Gradient Overlays -->
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent z-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/50 to-transparent z-10"></div>
+      
+      <!-- Content -->
+      <div class="container relative z-20 mx-auto px-4 py-20 lg:py-32">
+        <div class="max-w-3xl">
+          <div class="inline-flex items-center gap-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-white mb-8 animate-fade-in-up">
+            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span></span>
+            Spring Collection 2026
+          </div>
+          
+          <h1 class="text-6xl sm:text-7xl lg:text-[5.5rem] font-black leading-[1.05] text-white mb-8 tracking-tight animate-fade-in-up" style="animation-delay: 0.1s;">
+            Redefine<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-500">Your Style.</span>
+          </h1>
+          
+          <p class="text-xl sm:text-2xl leading-relaxed text-slate-300 mb-10 max-w-2xl animate-fade-in-up" style="animation-delay: 0.2s;">
+            Discover premium streetwear and modern essentials crafted for the bold. Express yourself without saying a word.
+          </p>
+          
+          <div class="flex flex-wrap items-center gap-5 animate-fade-in-up" style="animation-delay: 0.3s;">
+            <a href="pages/products.html" class="inline-flex items-center justify-center gap-3 rounded-full bg-white text-slate-900 px-10 py-5 text-sm font-black uppercase tracking-widest hover:bg-slate-200 hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+              Shop New Arrivals
+            </a>
+            <a href="#brands" class="inline-flex items-center justify-center gap-3 rounded-full border border-white/30 bg-white/5 backdrop-blur-sm text-white px-10 py-5 text-sm font-bold uppercase tracking-widest hover:bg-white/10 transition-all duration-300">
+              <i class="fas fa-play text-xs"></i> View Lookbook
+            </a>
+          </div>
         </div>
         
-        <!-- Main Navigation -->
-        <nav class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between gap-4">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-shadow shadow-sm">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                    <a href="index.html" class="text-2xl font-bold tracking-tight">CARTELLO</a>
-                </div>
-
-                <div class="hidden lg:flex items-center gap-10 flex-1">
-                    <!-- Desktop Navigation -->
-                    <ul class="flex space-x-8 text-sm font-medium text-gray-700">
-                        <li><a href="index.html" class="hover:text-black transition">Home</a></li>
-                        <li><a href="pages/products.html" class="hover:text-black transition">Shop</a></li>
-                        <li><a href="#about" class="hover:text-black transition">About</a></li>
-                        <li><a href="#contact" class="hover:text-black transition">Contact</a></li>
-                    </ul>
-
-                    <!-- Search Bar -->
-                    <div class="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full max-w-md transition-shadow shadow-sm hover:shadow-md">
-                        <i class="fas fa-search text-gray-400 mr-2"></i>
-                        <input type="text" placeholder="Search for products..." class="bg-transparent outline-none w-full text-sm">
-                    </div>
-                </div>
-
-                <!-- Icons -->
-                <div class="flex items-center gap-3">
-                    <button id="mobileSearchBtn" class="lg:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-shadow shadow-sm">
-                        <i class="fas fa-search text-xl"></i>
-                    </button>
-                    <a href="pages/cart.html" class="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-shadow shadow-sm">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span id="cartCount" class="absolute -top-1 -right-1 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">0</span>
-                    </a>
-                    <a href="pages/profile.html" id="userIcon" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-shadow shadow-sm">
-                        <i class="fas fa-user text-xl"></i>
-                    </a>
-                </div>
+        <!-- Floating Stats/Badges -->
+        <div class="absolute right-4 lg:right-20 bottom-20 hidden md:flex flex-col gap-6 animate-fade-in-up" style="animation-delay: 0.5s;">
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-6 w-72 transform translate-x-8 hover:translate-x-0 transition-transform duration-500 shadow-2xl">
+            <div class="flex items-center gap-4 mb-3">
+              <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center text-white text-xl">
+                <i class="fas fa-star"></i>
+              </div>
+              <div>
+                <p class="text-white font-bold text-xl">4.9/5</p>
+                <p class="text-slate-400 text-xs uppercase tracking-widest font-semibold">User Rating</p>
+              </div>
             </div>
-        </nav>
-
-        <div id="mobileMenu" class="lg:hidden hidden fixed inset-0 bg-black/40 z-50">
-            <div class="absolute right-0 top-0 h-full w-80 max-w-full bg-white p-6 shadow-2xl overflow-y-auto animate-slide-left">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <span class="text-xs uppercase tracking-[.3em] text-gray-500">Menu</span>
-                        <h2 class="text-2xl font-bold">CARTELLO</h2>
-                    </div>
-                    <button id="closeMobileMenu" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="mb-6">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
-                        <input id="mobileSearchInput" type="search" placeholder="Search products" class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full focus:ring-2 focus:ring-black focus:border-transparent" />
-                    </div>
-                </div>
-
-                <nav class="space-y-4">
-                    <a href="index.html" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-800 hover:text-black transition">Home</a>
-                    <a href="pages/products.html" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-800 hover:text-black transition">Shop</a>
-                    <a href="#about" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-800 hover:text-black transition">About</a>
-                    <a href="#contact" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-800 hover:text-black transition">Contact</a>
-                </nav>
-
-                <div class="mt-8 space-y-3">
-                    <a href="pages/cart.html" onclick="closeMobileMenu()" class="block text-center bg-black text-white rounded-full px-4 py-3 text-sm font-semibold hover:bg-gray-900 transition">View Cart</a>
-                    <a href="pages/login.html" onclick="closeMobileMenu()" class="block text-center border border-gray-300 rounded-full px-4 py-3 text-sm font-semibold hover:bg-gray-100 transition">Sign In</a>
-                </div>
-
-                <div class="mt-10 text-sm text-gray-500">
-                    <p>Need help? <a href="#contact" class="text-black font-semibold">Contact us</a></p>
-                </div>
+            <p class="text-slate-300 text-sm">Based on 10k+ reviews from verified buyers worldwide.</p>
+          </div>
+          
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-6 w-72 transform hover:-translate-x-8 transition-transform duration-500 shadow-2xl">
+            <div class="flex items-center gap-4 mb-3">
+              <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center text-white text-xl">
+                <i class="fas fa-truck-fast"></i>
+              </div>
+              <div>
+                <p class="text-white font-bold text-xl">Fast</p>
+                <p class="text-slate-400 text-xs uppercase tracking-widest font-semibold">Delivery</p>
+              </div>
             </div>
+            <p class="text-slate-300 text-sm">Free express shipping on all orders over ₱2,500.</p>
+          </div>
         </div>
-    </header>
-    
-    <!-- Hero Section -->
-    <section class="bg-secondary">
-        <div class="container mx-auto px-4 py-16 lg:py-24">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="animate-fade-in">
-                    <h1 class="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
-                        FIND CLOTHES THAT MATCHES YOUR STYLE
-                    </h1>
-                    <p class="text-gray-600 mb-8 text-lg">
-                        Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.
-                    </p>
-                    <a href="pages/products.html" class="inline-block bg-black text-white px-12 py-4 rounded-full hover:bg-gray-800 transition">
-                        Shop Now
-                    </a>
-                    
-                    <!-- Stats -->
-                    <div class="grid grid-cols-3 gap-8 mt-12">
-                        <div>
-                            <h3 class="text-3xl font-bold">200+</h3>
-                            <p class="text-gray-600">International Brands</p>
-                        </div>
-                        <div>
-                            <h3 class="text-3xl font-bold">2,000+</h3>
-                            <p class="text-gray-600">High-Quality Products</p>
-                        </div>
-                        <div>
-                            <h3 class="text-3xl font-bold">30,000+</h3>
-                            <p class="text-gray-600">Happy Customers</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Hero Image -->
-                <div class="relative animate-fade-in">
-                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800" loading="lazy" alt="Fashion Models" class="rounded-lg shadow-2xl" onerror="this.src='https://via.placeholder.com/900x600?text=Image+Unavailable'">
-                    <div class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg">
-                        <i class="fas fa-star text-yellow-400"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </section>
-    
-    <!-- Brands Section -->
-    <section id="brands" class="bg-black py-8 animate-fade-in overflow-hidden">
-        <div class="container mx-auto px-4">
-            <div class="brand-marquee overflow-hidden">
-                <div class="brand-track">
-                    <span class="brand-pill">VERSACE</span>
-                    <span class="brand-pill">ZARA</span>
-                    <span class="brand-pill">GUCCI</span>
-                    <span class="brand-pill">PRADA</span>
-                    <span class="brand-pill">Calvin Klein</span>
-                    <span class="brand-pill">VERSACE</span>
-                    <span class="brand-pill">ZARA</span>
-                    <span class="brand-pill">GUCCI</span>
-                    <span class="brand-pill">PRADA</span>
-                    <span class="brand-pill">Calvin Klein</span>
-                </div>
-            </div>
+
+    <!-- Endless Ticker -->
+    <section class="bg-slate-900 border-y border-slate-800 py-6 overflow-hidden">
+      <div class="container mx-auto px-4">
+        <div class="relative flex overflow-x-hidden group">
+          <div class="animate-marquee whitespace-nowrap flex items-center gap-10 text-slate-400 text-sm font-bold uppercase tracking-[0.3em]">
+            <span>Premium Streetwear</span>
+            <span class="text-white">✦</span>
+            <span>Effortless Style</span>
+            <span class="text-white">✦</span>
+            <span>Modern Essentials</span>
+            <span class="text-white">✦</span>
+            <span>Bold Looks</span>
+            <span class="text-white">✦</span>
+            <span>Curated Fashion</span>
+            <span class="text-white">✦</span>
+            <span>Premium Streetwear</span>
+            <span class="text-white">✦</span>
+            <span>Effortless Style</span>
+            <span class="text-white">✦</span>
+            <span>Modern Essentials</span>
+            <span class="text-white">✦</span>
+            <span>Bold Looks</span>
+            <span class="text-white">✦</span>
+            <span>Curated Fashion</span>
+            <span class="text-white">✦</span>
+          </div>
+          <div class="absolute top-0 animate-marquee2 whitespace-nowrap flex items-center gap-10 text-slate-400 text-sm font-bold uppercase tracking-[0.3em]">
+            <span>Premium Streetwear</span>
+            <span class="text-white">✦</span>
+            <span>Effortless Style</span>
+            <span class="text-white">✦</span>
+            <span>Modern Essentials</span>
+            <span class="text-white">✦</span>
+            <span>Bold Looks</span>
+            <span class="text-white">✦</span>
+            <span>Curated Fashion</span>
+            <span class="text-white">✦</span>
+            <span>Premium Streetwear</span>
+            <span class="text-white">✦</span>
+            <span>Effortless Style</span>
+            <span class="text-white">✦</span>
+            <span>Modern Essentials</span>
+            <span class="text-white">✦</span>
+            <span>Bold Looks</span>
+            <span class="text-white">✦</span>
+            <span>Curated Fashion</span>
+            <span class="text-white">✦</span>
+          </div>
         </div>
+      </div>
     </section>
+
+    <style>
+      .animate-marquee { animation: marquee 25s linear infinite; }
+      .animate-marquee2 { animation: marquee2 25s linear infinite; }
+      @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-100%); }
+      }
+      @keyframes marquee2 {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(0%); }
+      }
+    </style>
 
     <!-- Featured Bento Grid -->
-    <section class="container mx-auto px-4 py-16 animate-fade-in">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <div class="lg:w-7/12 grid gap-6">
-                <div class="bento-card bento-large" style="background-image:url('https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=1200');">
-                    <div class="max-w-md">
-                        <span class="text-sm uppercase tracking-[.4em] text-gray-100">New Collection</span>
-                        <h2 class="mt-4 text-4xl font-bold">The Weekend Edit</h2>
-                        <p class="mt-3 text-sm text-gray-100/85">A curated collection of modern essentials, perfect for effortless layering and bold city style.</p>
-                        <a href="pages/products.html" class="inline-flex mt-6 items-center gap-2 text-sm font-semibold uppercase tracking-[.2em] text-white hover:text-gray-200 transition">
-                            Explore now <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="grid sm:grid-cols-2 gap-6">
-                    <div class="bento-card bento-medium" style="background-image:url('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=900');">
-                        <span class="text-sm uppercase tracking-[.35em] text-gray-100">Streetwear</span>
-                        <h3 class="mt-4 text-2xl font-bold">Urban Classics</h3>
-                    </div>
-                    <div class="bento-card bento-medium" style="background-image:url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900');">
-                        <span class="text-sm uppercase tracking-[.35em] text-gray-100">Limited Drop</span>
-                        <h3 class="mt-4 text-2xl font-bold">Fresh Prints</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="lg:w-5/12 grid gap-6">
-                <div class="bento-card bento-small" style="background-image:url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900');">
-                    <span class="text-sm uppercase tracking-[.35em] text-gray-100">Style Guide</span>
-                    <h3 class="mt-4 text-2xl font-bold">Minimal Looks</h3>
-                </div>
-                <div class="bento-card bento-small" style="background-image:url('https://images.unsplash.com/photo-1521334884684-d80222895322?w=900');">
-                    <span class="text-sm uppercase tracking-[.35em] text-gray-100">Best Sellers</span>
-                    <h3 class="mt-4 text-2xl font-bold">Top Picks</h3>
-                </div>
-                <div class="bento-card bento-small flex flex-col justify-end" style="background-image:url('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=900');">
-                    <span class="text-sm uppercase tracking-[.35em] text-gray-100">Sale</span>
-                    <h3 class="mt-4 text-2xl font-bold">Exclusive Deals</h3>
-                </div>
-            </div>
+    <section class="container mx-auto px-4 py-24">
+      <div class="mb-14 text-center max-w-2xl mx-auto">
+        <p class="text-xs font-bold uppercase tracking-[.4em] text-slate-400 mb-4">Curated Lines</p>
+        <h2 class="text-4xl lg:text-5xl font-black text-slate-900 leading-tight">Explore by Category</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="grid-auto-rows: 280px;">
+        <!-- Large Block -->
+        <div class="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-[40px] bg-slate-100 group cursor-pointer shadow-sm hover:shadow-2xl transition duration-500">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80" alt="Sneakers" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-80 group-hover:opacity-90 transition duration-500"></div>
+          <div class="absolute bottom-10 left-10 right-10">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold uppercase tracking-[0.2em] mb-4">Signature Collection</span>
+            <h3 class="text-4xl font-black text-white mb-3">Premium Footwear</h3>
+            <p class="text-slate-300 text-lg mb-6 max-w-md">Step into comfort and bold aesthetics with our latest drop.</p>
+            <a href="pages/products.html" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white group-hover:text-slate-300 transition">
+              Shop Sneakers <i class="fas fa-arrow-right transform group-hover:translate-x-2 transition"></i>
+            </a>
+          </div>
         </div>
+
+        <!-- Tall Block -->
+        <div class="md:row-span-2 relative overflow-hidden rounded-[40px] bg-slate-100 group cursor-pointer shadow-sm hover:shadow-2xl transition duration-500">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="Women's Collection" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-80 group-hover:opacity-90 transition duration-500"></div>
+          <div class="absolute bottom-10 left-8 right-8">
+            <h3 class="text-3xl font-black text-white mb-4">Women's Edit</h3>
+            <a href="pages/products.html" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white group-hover:text-slate-300 transition">
+              Explore <i class="fas fa-arrow-right transform group-hover:translate-x-2 transition"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Square Block 1 -->
+        <div class="relative overflow-hidden rounded-[32px] bg-slate-100 group cursor-pointer shadow-sm hover:shadow-xl transition duration-500">
+          <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80" alt="Accessories" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent opacity-80 group-hover:opacity-90 transition duration-500"></div>
+          <div class="absolute bottom-8 left-8 right-8">
+            <h3 class="text-2xl font-black text-white mb-2">Accessories</h3>
+            <a href="pages/products.html" class="text-xs font-bold uppercase tracking-widest text-slate-300 group-hover:text-white transition">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Square Block 2 -->
+        <div class="md:col-span-2 relative overflow-hidden rounded-[32px] bg-slate-100 group cursor-pointer shadow-sm hover:shadow-xl transition duration-500">
+          <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1200&q=80" alt="Men's Wear" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent opacity-80 group-hover:opacity-90 transition duration-500"></div>
+          <div class="absolute bottom-8 left-8 right-8">
+            <h3 class="text-3xl font-black text-white mb-2">Men's Essentials</h3>
+            <a href="pages/products.html" class="text-xs font-bold uppercase tracking-widest text-slate-300 group-hover:text-white transition">Shop Men's</a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- About Section -->
     <section id="about" class="container mx-auto px-4 py-24">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div class="space-y-6">
-                <span class="uppercase tracking-[.4em] text-sm text-gray-500">About CARTELLO</span>
-                <h2 class="text-4xl lg:text-5xl font-bold leading-tight">Your curated fashion destination for bold, modern style.</h2>
-                <p class="text-gray-600 text-lg max-w-2xl">
-                    Cartello blends premium streetwear and effortless everyday pieces with fast shipping, easy returns, and expert styling inspiration. Every item is chosen for quality, comfort, and modern attitude.
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
-                        <h3 class="font-semibold mb-2">Fast shipping</h3>
-                        <p class="text-gray-500 text-sm">Get your order delivered quickly with trusted carriers.</p>
-                    </div>
-                    <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
-                        <h3 class="font-semibold mb-2">Premium quality</h3>
-                        <p class="text-gray-500 text-sm">Curated collections built from the best materials and fits.</p>
-                    </div>
-                    <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
-                        <h3 class="font-semibold mb-2">Easy returns</h3>
-                        <p class="text-gray-500 text-sm">Shop confidently with simple returns and friendly support.</p>
-                    </div>
-                    <div class="p-6 rounded-3xl bg-white shadow-lg hover:shadow-xl transition">
-                        <h3 class="font-semibold mb-2">Style guidance</h3>
-                        <p class="text-gray-500 text-sm">Find outfit ideas and styling tips for every season.</p>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                    <a href="pages/products.html" class="inline-flex items-center justify-center gap-2 rounded-full bg-black text-white px-8 py-4 text-sm font-semibold hover:bg-gray-900 transition">Explore Collections</a>
-                    <a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-full border border-gray-300 text-gray-700 px-8 py-4 text-sm font-semibold hover:bg-gray-100 transition">Contact Support</a>
-                </div>
-            </div>
-            <div class="relative rounded-[40px] overflow-hidden shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1521334884684-d80222895322?w=900" loading="lazy" alt="Fashion outfit" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/900x700?text=Image+Unavailable'">
-                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-6 py-6">
-                    <p class="text-sm text-white uppercase tracking-[.3em] mb-2">Discover your look</p>
-                    <h3 class="text-2xl lg:text-3xl font-bold text-white">Street-ready silhouettes for every mood.</h3>
-                </div>
-            </div>
+      <div class="grid lg:grid-cols-[1fr_1.2fr] gap-16 lg:gap-24 items-center">
+        <div class="relative rounded-[40px] overflow-hidden shadow-2xl h-[600px] group">
+          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=80" alt="Fashion outfit" class="w-full h-full object-cover transition duration-1000 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition duration-500"></div>
+          <div class="absolute bottom-8 left-8 bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-xl">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Established</p>
+            <p class="text-2xl font-black text-slate-900">2024</p>
+          </div>
         </div>
+
+        <div class="space-y-8">
+          <div>
+            <span class="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-[0.2em] mb-6">Our Story</span>
+            <h2 class="text-4xl lg:text-5xl font-black text-slate-900 leading-[1.15]">
+              Curating Confidence<br>For The Modern World.
+            </h2>
+          </div>
+          
+          <p class="text-lg text-slate-600 leading-relaxed">
+            Cartello is more than just clothing. It's an attitude. We blend premium streetwear aesthetics with effortless everyday comfort. Every piece in our collection is carefully selected for uncompromising quality, superior fit, and timeless appeal.
+          </p>
+
+          <div class="grid grid-cols-2 gap-6 pt-6 border-t border-slate-100">
+            <div>
+              <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-900 text-xl mb-4">
+                <i class="fas fa-gem"></i>
+              </div>
+              <h3 class="font-bold text-slate-900 mb-2">Premium Quality</h3>
+              <p class="text-slate-500 text-sm leading-relaxed">Materials sourced globally for maximum durability and comfort.</p>
+            </div>
+            <div>
+              <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-900 text-xl mb-4">
+                <i class="fas fa-leaf"></i>
+              </div>
+              <h3 class="font-bold text-slate-900 mb-2">Sustainable Edit</h3>
+              <p class="text-slate-500 text-sm leading-relaxed">Conscious fashion choices that respect our environment.</p>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <a href="#contact" class="inline-flex items-center gap-3 rounded-full bg-slate-900 px-8 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-slate-800 transition shadow-xl shadow-slate-900/20">
+              Get In Touch
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Customer Reviews -->
-    <section class="bg-[#f7f8fb] py-20 animate-fade-in">
-        <div class="container mx-auto px-4">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="uppercase tracking-[.35em] text-sm text-gray-500">Testimonials</span>
-                <h2 class="text-4xl font-bold mt-4">Loved by shoppers around the world</h2>
-                <p class="text-gray-600 mt-4">Real customers share how CARTELLO helped them feel confident, comfortable, and on-trend.</p>
-            </div>
-            <div class="grid gap-6 lg:grid-cols-3">
-                <div class="p-8 rounded-[32px] bg-white shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-                    <p class="text-gray-600 mb-6 text-sm leading-7">"CARTELLO's product selection is amazing. My orders arrive fast, and the quality is always on point. I now have a go-to place for every outfit."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center text-lg font-bold">S</div>
-                        <div>
-                            <p class="font-semibold">Sarah Patel</p>
-                            <p class="text-sm text-gray-500">Fashion blogger</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-8 rounded-[32px] bg-white shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-                    <p class="text-gray-600 mb-6 text-sm leading-7">"Great styling inspiration and easy checkout. I keep coming back for new arrivals every season, and the customer service is excellent."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center text-lg font-bold">M</div>
-                        <div>
-                            <p class="font-semibold">Marcus Lee</p>
-                            <p class="text-sm text-gray-500">Creative director</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-8 rounded-[32px] bg-white shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-                    <p class="text-gray-600 mb-6 text-sm leading-7">"The lookbooks and curated collections helped me refresh my wardrobe in a single click. The outfits always feel polished and wearable."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-black text-white grid place-items-center text-lg font-bold">L</div>
-                        <div>
-                            <p class="font-semibold">Lina Gomez</p>
-                            <p class="text-sm text-gray-500">Style editor</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-10 text-center">
-                <a href="pages/products.html" class="inline-flex items-center gap-2 rounded-full bg-black text-white px-8 py-4 text-sm font-semibold hover:bg-gray-900 transition">Browse Best Sellers <i class="fas fa-arrow-right"></i></a>
-            </div>
+    <section class="bg-slate-50 py-24">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <p class="text-xs font-bold uppercase tracking-[.4em] text-slate-400 mb-4">Testimonials</p>
+          <h2 class="text-4xl lg:text-5xl font-black text-slate-900 leading-tight">Loved By The Bold</h2>
         </div>
+        
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Card 1 -->
+          <div class="bg-white p-8 rounded-[32px] shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
+            <div class="flex text-amber-400 text-sm mb-6 gap-1">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="text-slate-600 leading-relaxed mb-8 flex-1 italic">
+              "The quality of these pieces absolutely blew me away. The fits are perfectly tailored, making effortless style actually effortless. Will definitely be ordering again."
+            </p>
+            <div class="flex items-center gap-4 mt-auto">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" alt="Sarah P." class="w-12 h-12 rounded-full object-cover">
+              <div>
+                <p class="font-bold text-slate-900">Sarah P.</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Fashion Creator</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-slate-900 p-8 rounded-[32px] shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-800 flex flex-col">
+            <div class="flex text-amber-400 text-sm mb-6 gap-1">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="text-slate-300 leading-relaxed mb-8 flex-1 italic">
+              "CARTELLO perfectly bridges the gap between high-end fashion and everyday wear. The fabrics are insane and the delivery was incredibly fast to New York."
+            </p>
+            <div class="flex items-center gap-4 mt-auto">
+              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80" alt="Marcus T." class="w-12 h-12 rounded-full object-cover">
+              <div>
+                <p class="font-bold text-white">Marcus T.</p>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Creative Director</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="bg-white p-8 rounded-[32px] shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col md:hidden lg:flex">
+            <div class="flex text-amber-400 text-sm mb-6 gap-1">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+            </div>
+            <p class="text-slate-600 leading-relaxed mb-8 flex-1 italic">
+              "Finding a brand that consistently delivers on both aesthetics and comfort is rare. The signature collection is an absolute must-have for anyone serious about style."
+            </p>
+            <div class="flex items-center gap-4 mt-auto">
+              <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=80" alt="Elena V." class="w-12 h-12 rounded-full object-cover">
+              <div>
+                <p class="font-bold text-slate-900">Elena V.</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Stylist</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-
     <!-- Contact & Support -->
-    <section id="contact" class="bg-[#f8fafc] py-16 animate-fade-in">
-        <div class="container mx-auto px-4">
-            <div class="grid lg:grid-cols-2 gap-10 items-start">
-                <div class="space-y-6">
-                    <span class="uppercase tracking-[.4em] text-sm text-gray-500">Contact CARTELLO</span>
-                    <h2 class="text-4xl font-bold mt-4">Need help? We're here for you.</h2>
-                    <p class="text-gray-600 text-lg max-w-2xl">Whether you have a styling question, order issue, or want help choosing the perfect look, our support team is ready to assist.</p>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
-                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
-                                <i class="fas fa-headset"></i>
-                            </div>
-                            <h3 class="font-semibold text-lg mb-2">Customer Support</h3>
-                            <p class="text-sm text-gray-500">support@cartello.com</p>
-                            <p class="text-sm text-gray-500">+63 912 345 6789</p>
-                        </div>
-                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
-                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
-                                <i class="fas fa-truck-fast"></i>
-                            </div>
-                            <h3 class="font-semibold text-lg mb-2">Shipping & Returns</h3>
-                            <p class="text-sm text-gray-500">Free shipping on orders over ₱2,500.</p>
-                            <p class="text-sm text-gray-500">Easy returns within 14 days.</p>
-                        </div>
-                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
-                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <h3 class="font-semibold text-lg mb-2">Our Address</h3>
-                            <p class="text-sm text-gray-500">123 Fashion Ave, Metro Manila, Philippines</p>
-                        </div>
-                        <div class="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition">
-                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-3xl bg-black text-white mb-4">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <h3 class="font-semibold text-lg mb-2">Fast Response</h3>
-                            <p class="text-sm text-gray-500">Replies in under 1 business day.</p>
-                        </div>
-                    </div>
-                </div>
+    <section id="contact" class="container mx-auto px-4 py-24">
+      <div class="grid lg:grid-cols-[1fr_1.2fr] gap-16 lg:gap-24 items-center">
+        <!-- Contact Info -->
+        <div class="space-y-10">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[.4em] text-slate-400 mb-4">Support Team</p>
+            <h2 class="text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-6">Here When You Need Us.</h2>
+            <p class="text-lg text-slate-600 leading-relaxed">
+              Have a question about an order, styling advice, or fit details? Our dedicated team is ready to provide you with the assistance you deserve.
+            </p>
+          </div>
 
-                <div class="bg-white rounded-[40px] border border-gray-200 p-10 shadow-2xl">
-                    <span class="uppercase tracking-[.35em] text-sm text-gray-500">Get in touch</span>
-                    <h3 class="text-3xl font-bold mt-4">Send us a message</h3>
-                    <p class="text-gray-600 mt-3">Share your question and our team will respond quickly with the best recommendation.</p>
-                    <form class="mt-8 space-y-4" onsubmit="event.preventDefault(); showToast('Thanks! Your message was sent.'); this.reset();">
-                        <div>
-                            <label class="text-sm font-medium text-gray-700">Full Name</label>
-                            <input type="text" required class="mt-2 w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition" placeholder="Juan dela Cruz">
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-700">Email</label>
-                            <input type="email" required class="mt-2 w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition" placeholder="you@example.com">
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-700">Message</label>
-                            <textarea required rows="5" class="mt-2 w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition" placeholder="Tell us what you need help with"></textarea>
-                        </div>
-                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-black text-white px-6 py-4 text-sm font-semibold hover:bg-gray-900 transition">
-                            <i class="fas fa-paper-plane"></i> Send Message
-                        </button>
-                    </form>
-                </div>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div class="p-6 rounded-[32px] bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors">
+              <div class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center text-xl shadow-sm mb-4">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <h3 class="font-bold text-slate-900 mb-1">Email Us</h3>
+              <p class="text-sm text-slate-500 mb-2">Replies within 24 hours.</p>
+              <a href="mailto:support@cartello.ph" class="text-sm font-bold text-slate-900 hover:underline">support@cartello.ph</a>
             </div>
+            
+            <div class="p-6 rounded-[32px] bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors">
+              <div class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center text-xl shadow-sm mb-4">
+                <i class="fas fa-phone"></i>
+              </div>
+              <h3 class="font-bold text-slate-900 mb-1">Call Us</h3>
+              <p class="text-sm text-slate-500 mb-2">Mon-Fri, 9am - 6pm PHT</p>
+              <a href="tel:+639123456789" class="text-sm font-bold text-slate-900 hover:underline">+63 912 345 6789</a>
+            </div>
+          </div>
         </div>
+
+        <!-- Contact Form -->
+        <div class="bg-white rounded-[40px] shadow-[0_0_50px_rgba(0,0,0,0.05)] border border-slate-100 p-8 lg:p-12">
+          <h3 class="text-2xl font-black text-slate-900 mb-2">Send a Message</h3>
+          <p class="text-slate-500 mb-8 text-sm">We'll get back to you as soon as possible.</p>
+          
+          <form id="contactForm" class="space-y-5">
+            <div class="grid grid-cols-2 gap-5">
+              <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">First Name</label>
+                <input type="text" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition" placeholder="John">
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Last Name</label>
+                <input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition" placeholder="Doe">
+              </div>
+            </div>
+            
+            <div class="space-y-2">
+              <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Email Address</label>
+              <input type="email" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition" placeholder="john@example.com">
+            </div>
+            
+            <div class="space-y-2">
+              <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Message</label>
+              <textarea required rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition resize-none" placeholder="How can we help you?"></textarea>
+            </div>
+            
+            <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-2xl bg-slate-900 text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" onclick="event.preventDefault(); this.innerHTML = '<i class=\'fas fa-check\'></i> Message Sent'; this.classList.add('bg-emerald-600', 'shadow-emerald-600/20'); setTimeout(() => { this.innerHTML = 'Send Message'; this.classList.remove('bg-emerald-600', 'shadow-emerald-600/20'); this.form.reset(); }, 3000);">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-[#f8fafc] pt-20 pb-10">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-10">
-                <div class="lg:col-span-2 space-y-5">
-                    <h3 class="text-3xl font-bold">CARTELLO</h3>
-                    <p class="text-gray-600 max-w-xl">CARTELLO brings premium fashion, effortless styling, and fast delivery in one modern shopping destination. Shop with confidence across every collection.</p>
-                    <div class="flex items-center gap-3 text-sm text-gray-500">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>123 Fashion Ave, New York, NY</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-sm text-gray-500">
-                        <i class="fas fa-envelope"></i>
-                        <span>support@cartello.com</span>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Company</h4>
-                    <ul class="space-y-3 text-gray-600 text-sm">
-                        <li><a href="#about" class="hover:text-black transition">About</a></li>
-                        <li><a href="#" class="hover:text-black transition">Careers</a></li>
-                        <li><a href="#" class="hover:text-black transition">Press</a></li>
-                        <li><a href="#" class="hover:text-black transition">Affiliates</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Shop</h4>
-                    <ul class="space-y-3 text-gray-600 text-sm">
-                        <li><a href="pages/products.html" class="hover:text-black transition">All Products</a></li>
-                        <li><a href="#" class="hover:text-black transition">New Arrivals</a></li>
-                        <li><a href="#" class="hover:text-black transition">Best Sellers</a></li>
-                        <li><a href="#" class="hover:text-black transition">Sale</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Support</h4>
-                    <ul class="space-y-3 text-gray-600 text-sm">
-                        <li><a href="#contact" class="hover:text-black transition">Contact</a></li>
-                        <li><a href="#" class="hover:text-black transition">Shipping</a></li>
-                        <li><a href="#" class="hover:text-black transition">Returns</a></li>
-                        <li><a href="#" class="hover:text-black transition">Privacy</a></li>
-                    </ul>
-                </div>
+    <footer class="bg-white border-t border-slate-200 mt-20">
+      <div class="container mx-auto px-4 py-14">
+        <div class="grid gap-10 lg:grid-cols-4">
+          <div class="space-y-4">
+            <p class="text-2xl font-black text-slate-900">CARTELLO</p>
+            <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+            <div class="flex gap-4 pt-2">
+              <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
             </div>
-            <div class="border-t pt-6 flex flex-col lg:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-                <p>CARTELLO © 2024-2025. All rights reserved.</p>
-                <div class="flex items-center gap-4">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" class="h-6">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-6">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-6">
-                </div>
-            </div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
+            <ul class="space-y-3 text-sm text-slate-500">
+              <li><a href="pages/products.html" class="hover:text-slate-900 transition">All Products</a></li>
+              <li><a href="pages/products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
+              <li><a href="pages/products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
+              <li><a href="pages/products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
+            <ul class="space-y-3 text-sm text-slate-500">
+              <li><a href="pages/profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
+              <li><a href="pages/orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
+              <li><a href="pages/cart.html" class="hover:text-slate-900 transition">Cart</a></li>
+              <li><a href="pages/login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
+            <ul class="space-y-3 text-sm text-slate-500">
+              <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
+              <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
+              <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
+              <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+            </ul>
+          </div>
         </div>
+        <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+          <p>CARTELLO © 2024–2025. All rights reserved.</p>
+          <div class="flex gap-6">
+            <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
+            <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
+            <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
+          </div>
+        </div>
+      </div>
     </footer>
 
     <!-- Custom Scripts -->
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/products.js"></script>
-    
-</body>
+
+    <!-- Premium 3D & Animation Scripts -->
+    <script>
+      // ============================================
+      // 3D SCROLL PARALLAX EFFECTS
+      // ============================================
+      class ScrollParallax {
+        constructor() {
+          this.elements = document.querySelectorAll("[data-parallax]");
+          this.init();
+        }
+
+        init() {
+          if (this.elements.length > 0) {
+            window.addEventListener("scroll", () => this.update());
+          }
+        }
+
+        update() {
+          const scrolled = window.pageYOffset;
+
+          this.elements.forEach((el) => {
+            const speed = el.getAttribute("data-parallax") || 0.5;
+            const yPos = scrolled * speed;
+            el.style.transform = `translateY(${yPos}px)`;
+          });
+        }
+      }
+
+      // Initialize parallax on load
+      document.addEventListener("DOMContentLoaded", () => {
+        new ScrollParallax();
+      });
+
+      // ============================================
+      // 3D CARD TILT EFFECT
+      // ============================================
+      class TiltEffect {
+        constructor(selector = ".tilt-3d") {
+          this.cards = document.querySelectorAll(selector);
+          this.init();
+        }
+
+        init() {
+          this.cards.forEach((card) => {
+            card.addEventListener("mousemove", (e) => this.handleTilt(e, card));
+            card.addEventListener("mouseleave", (e) => this.resetTilt(e, card));
+          });
+        }
+
+        handleTilt(e, card) {
+          const rect = card.getBoundingClientRect();
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const x = e.clientX - rect.left - centerX;
+          const y = e.clientY - rect.top - centerY;
+
+          const rotateX = (y / centerY) * 10;
+          const rotateY = (x / centerX) * -10;
+
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+          card.style.boxShadow = `0 25px 50px rgba(0, 0, 0, 0.2)`;
+        }
+
+        resetTilt(e, card) {
+          card.style.transform =
+            "perspective(1000px) rotateX(0) rotateY(0) scale(1)";
+          card.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.12)";
+        }
+      }
+
+      // Initialize tilt on cards
+      document.addEventListener("DOMContentLoaded", () => {
+        new TiltEffect(".card-hover-3d");
+      });
+
+      // ============================================
+      // SCROLL PROGRESS BAR
+      // ============================================
+      function initScrollProgress() {
+        const progressBar = document.querySelector(".scroll-progress");
+        if (!progressBar) {
+          const bar = document.createElement("div");
+          bar.className = "scroll-progress";
+          document.body.appendChild(bar);
+
+          window.addEventListener("scroll", () => {
+            const scrollTop = window.scrollY;
+            const docHeight =
+              document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = (scrollTop / docHeight) * 100;
+            bar.style.width = scrolled + "%";
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initScrollProgress);
+
+      // ============================================
+      // INTERSECTION OBSERVER FOR ANIMATIONS
+      // ============================================
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -100px 0px",
+      };
+
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("fade-in-up");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      // Observe all stagger items
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".stagger-item").forEach((el) => {
+          observer.observe(el);
+        });
+      });
+
+      // ============================================
+      // SMOOTH SCROLL ENHANCEMENT
+      // ============================================
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // ============================================
+      // RIPPLE EFFECT ON BUTTONS
+      // ============================================
+      function addRippleEffect() {
+        const buttons = document.querySelectorAll('button, a[class*="btn"]');
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", function (e) {
+            const ripple = document.createElement("span");
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + "px";
+            ripple.style.left = x + "px";
+            ripple.style.top = y + "px";
+            ripple.classList.add("ripple");
+
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+          });
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", addRippleEffect);
+
+      // ============================================
+      // CURSOR EFFECT
+      // ============================================
+      function initCursorEffect() {
+        const cursor = document.createElement("div");
+        cursor.className = "cursor-effect";
+        cursor.style.cssText = `
+                position: fixed;
+                width: 30px;
+                height: 30px;
+                border: 2px solid rgba(102, 126, 234, 0.5);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9998;
+                display: none;
+            `;
+        document.body.appendChild(cursor);
+
+        let mouseX = 0,
+          mouseY = 0;
+        let cursorX = 0,
+          cursorY = 0;
+
+        document.addEventListener("mousemove", (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          cursor.style.display = "block";
+
+          // Smooth follow
+          cursorX += (mouseX - cursorX) * 0.2;
+          cursorY += (mouseY - cursorY) * 0.2;
+
+          cursor.style.transform = `translate(${cursorX - 15}px, ${cursorY - 15}px)`;
+        });
+
+        document.addEventListener("mouseleave", () => {
+          cursor.style.display = "none";
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", initCursorEffect);
+
+      // ============================================
+      // LAZY LOAD IMAGES WITH BLUR UP
+      // ============================================
+      function initLazyLoad() {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+
+        if ("IntersectionObserver" in window) {
+          const imageObserver = new IntersectionObserver(
+            (entries, observer) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  const img = entry.target;
+                  img.src = img.dataset.src || img.src;
+                  img.classList.add("fade-scale-in");
+                  imageObserver.unobserve(img);
+                }
+              });
+            },
+          );
+
+          images.forEach((img) => imageObserver.observe(img));
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initLazyLoad);
+
+      // ============================================
+      // HEADER SCROLL EFFECT
+      // ============================================
+      function initHeaderScroll() {
+        const header = document.querySelector("header");
+        let lastScrollTop = 0;
+
+        window.addEventListener("scroll", () => {
+          const scrollTop = window.scrollY;
+
+          if (scrollTop > 100) {
+            header.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.08)";
+            header.style.background = "rgba(255, 255, 255, 0.95)";
+            // header.style.backdropFilter = "blur(10px)"; // Removed blur effect
+          } else {
+            header.style.boxShadow = "none";
+            header.style.background = "#ffffff";
+            header.style.backdropFilter = "none";
+          }
+
+          lastScrollTop = scrollTop;
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", initHeaderScroll);
+    </script>
+  </body>
 </html>

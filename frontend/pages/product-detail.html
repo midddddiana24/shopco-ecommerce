@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:5000 ws://localhost:5000 http://127.0.0.1:5500 ws://127.0.0.1:5500; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
   <title>Product – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,128 +12,311 @@
 </head>
 <body class="bg-white">
 
-  <!-- Header -->
+  <!-- Universal Navbar -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="../index.html" class="text-2xl font-black tracking-tight">CARTELLO</a>
-      <div class="flex items-center gap-4">
-        <a href="cart.html" class="relative">
+    <nav class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="../index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
+        <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
+          <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
+          <a href="../index.html#about" class="hover:text-slate-900 transition">About Us</a>
+          <a href="../index.html#contact" class="hover:text-slate-900 transition">Contact</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="cart.html" class="relative p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
           <i class="fas fa-shopping-cart text-xl"></i>
-          <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+          <span id="cartCount" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">0</span>
         </a>
-        <a href="profile.html" id="userIcon"><i class="fas fa-user text-xl"></i></a>
+        <div id="authSection" class="relative hidden lg:block">
+          <a href="login.html" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Sign In</a>
+        </div>
+        <button id="mobileMenuBtn" class="lg:hidden p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
       </div>
     </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm">
+      <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col p-6 gap-6">
+        <div class="flex items-center justify-between">
+          <span class="text-xl font-black">CARTELLO</span>
+          <button id="closeMobileMenu" class="p-2 rounded-full bg-slate-100 hover:bg-slate-200"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="flex flex-col gap-4 text-sm font-medium text-slate-700">
+          <a href="../index.html" class="hover:text-black transition">Home</a>
+          <a href="products.html" class="hover:text-black transition">Shop</a>
+          <a href="../index.html#about" class="hover:text-black transition">About</a>
+          <a href="../index.html#contact" class="hover:text-black transition">Contact</a>
+          <hr class="border-slate-200">
+          <a href="orders.html" class="hover:text-black transition">My Orders</a>
+          <a href="profile.html" class="hover:text-black transition">Profile</a>
+          <a href="cart.html" class="hover:text-black transition">Cart</a>
+        </nav>
+      </div>
+    </div>
   </header>
+  <script>
+    (function() {
+      // Mobile menu logic
+      const btn = document.getElementById('mobileMenuBtn');
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      const content = document.getElementById('mobileMenuContent');
+      const close = document.getElementById('closeMobileMenu');
+      
+      const closeMenu = () => {
+        if(content) content.classList.add('translate-x-full');
+        if(overlay) {
+          overlay.classList.add('opacity-0');
+          setTimeout(() => menu.classList.add('pointer-events-none'), 300);
+        } else if(menu) menu.classList.add('hidden');
+      };
+
+      if (btn) btn.addEventListener('click', () => {
+        menu.classList.remove('pointer-events-none');
+        if(overlay) overlay.classList.remove('opacity-0');
+        if(content) content.classList.remove('translate-x-full');
+        menu.classList.remove('hidden');
+      });
+      if (close) close.addEventListener('click', closeMenu);
+      if (overlay) overlay.addEventListener('click', closeMenu);
+      else if (menu) menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+
+      // Auth logic for navbar
+      const authSection = document.getElementById('authSection');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = localStorage.getItem('token');
+      
+      if (user && token && authSection) {
+        authSection.innerHTML = `
+          <button id="userMenuToggle" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50" style="transition: none !important; animation: none !important; transform: none !important;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=24" class="w-6 h-6 rounded-full">
+            <span class="hidden xl:inline">${(user.name||user.fullName||'').split(' ')[0]}</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </button>
+          <div id="userMenu" class="absolute top-full mt-2 right-0 w-48 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50">
+            <a href="profile.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-user w-4"></i> Profile</a>
+            <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-shopping-bag w-4"></i> Orders</a>
+            <hr class="my-2 border-slate-200">
+            <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition w-full text-left"><i class="fas fa-sign-out-alt w-4"></i> Sign Out</button>
+          </div>
+        `;
+        
+        const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+        if (mobileAuthLinks) {
+            mobileAuthLinks.innerHTML = `
+                <div class="flex items-center gap-3 mb-2">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">
+                    <span class="font-bold text-slate-900">${user.name||user.fullName}</span>
+                </div>
+                <a href="profile.html" class="hover:text-black transition"><i class="fas fa-user w-5"></i> Profile</a>
+                <a href="orders.html" class="hover:text-black transition"><i class="fas fa-shopping-bag w-5"></i> My Orders</a>
+                <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="text-left text-red-600 hover:text-red-700 transition font-bold mt-2"><i class="fas fa-sign-out-alt w-5"></i> Sign Out</button>
+            `;
+        }
+        
+        const userMenuToggle = document.getElementById('userMenuToggle');
+        const userMenu = document.getElementById('userMenu');
+        if (userMenuToggle && userMenu) {
+            userMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        }
+      }
+      
+      // Initial cart count
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cartCountEl = document.getElementById('cartCount');
+      if (cartCountEl) {
+        cartCountEl.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      }
+    })();
+  </script>
 
   <!-- Loading State -->
-  <div id="loadingState" class="container mx-auto px-4 py-16 flex justify-center">
-    <i class="fas fa-spinner fa-spin text-4xl text-gray-300"></i>
+  <div id="loadingState" class="container mx-auto px-4 py-24 flex flex-col items-center justify-center">
+    <i class="fas fa-circle-notch fa-spin text-5xl text-slate-900 mb-4"></i>
+    <p class="text-sm font-semibold uppercase tracking-widest text-slate-500">Loading Product...</p>
   </div>
 
   <!-- Product Content -->
-  <div id="productContent" class="hidden container mx-auto px-4 py-8">
+  <div id="productContent" class="hidden container mx-auto px-4 py-12">
     <!-- Breadcrumb -->
-    <nav class="text-sm text-gray-500 mb-8 flex items-center gap-2">
-      <a href="../index.html" class="hover:text-black">Home</a>
-      <i class="fas fa-chevron-right text-xs"></i>
-      <a href="products.html" class="hover:text-black">Shop</a>
-      <i class="fas fa-chevron-right text-xs"></i>
-      <span id="breadcrumbName" class="text-black font-medium truncate max-w-xs"></span>
+    <nav class="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-10 flex items-center gap-3">
+      <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
+      <i class="fas fa-chevron-right text-[10px]"></i>
+      <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
+      <i class="fas fa-chevron-right text-[10px]"></i>
+      <span id="breadcrumbName" class="text-slate-900 truncate max-w-xs"></span>
     </nav>
 
-    <div class="grid lg:grid-cols-2 gap-12">
+    <div class="grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-12 xl:gap-20 min-w-0">
       <!-- Images -->
-      <div>
-        <div class="relative aspect-square bg-gray-100 rounded-3xl overflow-hidden mb-4">
-          <img id="mainImage" src="" alt="" onerror="this.src='https://via.placeholder.com/600?text=No+Image'" class="w-full h-full object-cover">
-          <button onclick="prevImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition shadow">
-            <i class="fas fa-chevron-left text-sm"></i>
+      <div class="flex flex-col-reverse lg:flex-row gap-4 min-w-0">
+        <div id="thumbnails" class="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto lg:w-24 shrink-0 pb-2 lg:pb-0 scrollbar-hide min-w-0"></div>
+        <div class="relative w-full rounded-[32px] overflow-hidden bg-slate-100 group min-w-0">
+          <img id="mainImage" src="" alt="" class="w-full h-full object-cover aspect-[4/5] transition duration-700">
+          <button onclick="prevImage()" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur rounded-full flex items-center justify-center hover:bg-white hover:scale-105 transition shadow-lg opacity-0 group-hover:opacity-100">
+            <i class="fas fa-chevron-left"></i>
           </button>
-          <button onclick="nextImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition shadow">
-            <i class="fas fa-chevron-right text-sm"></i>
+          <button onclick="nextImage()" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur rounded-full flex items-center justify-center hover:bg-white hover:scale-105 transition shadow-lg opacity-0 group-hover:opacity-100">
+            <i class="fas fa-chevron-right"></i>
           </button>
         </div>
-        <div id="thumbnails" class="flex gap-3 overflow-x-auto pb-2"></div>
       </div>
 
       <!-- Info -->
-      <div>
-        <span id="categoryBadge" class="text-xs font-semibold text-gray-500 uppercase tracking-wider"></span>
-        <h1 id="productName" class="text-3xl font-bold mt-2 mb-3"></h1>
-
-        <!-- Rating -->
-        <div class="flex items-center gap-3 mb-4">
-          <div id="stars" class="flex gap-0.5"></div>
-          <span id="ratingText" class="text-sm text-gray-600"></span>
+      <div class="py-4 min-w-0">
+        <div class="mb-6">
+          <span id="categoryBadge" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-slate-600 mb-4"></span>
+          <h1 id="productName" class="text-4xl lg:text-5xl font-black text-slate-900 mb-4 leading-tight"></h1>
+          
+          <div class="flex items-center gap-4">
+            <div id="stars" class="flex gap-1 text-sm"></div>
+            <span id="ratingText" class="text-sm font-medium text-slate-500"></span>
+          </div>
         </div>
 
-        <!-- Price -->
-        <div class="flex items-center gap-3 mb-6">
-          <span id="price" class="text-3xl font-bold"></span>
-          <span id="originalPrice" class="text-xl text-gray-400 line-through hidden"></span>
-          <span id="discountBadge" class="bg-red-100 text-red-600 text-sm font-bold px-2 py-0.5 rounded-full hidden"></span>
+        <div class="flex items-end gap-4 mb-8 pb-8 border-b border-slate-100">
+          <span id="price" class="text-4xl font-black text-slate-900"></span>
+          <span id="originalPrice" class="text-xl font-medium text-slate-400 line-through hidden mb-1"></span>
+          <span id="discountBadge" class="hidden rounded-full bg-rose-100 text-rose-600 text-xs font-bold uppercase tracking-widest px-3 py-1 mb-1.5"></span>
         </div>
 
-        <!-- Description -->
-        <p id="description" class="text-gray-600 leading-relaxed mb-6"></p>
+        <p id="description" class="text-slate-600 leading-relaxed mb-10 text-lg"></p>
 
-        <div class="border-t border-gray-100 pt-6">
-          <!-- Sizes -->
-          <div id="sizesSection" class="mb-5 hidden">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-semibold text-sm">Select Size</h3>
-              <button class="text-xs text-gray-500 underline">Size Guide</button>
-            </div>
-            <div id="sizes" class="flex flex-wrap gap-2"></div>
+        <!-- Variants -->
+        <div class="space-y-8 mb-10">
+          <div id="colorsSection" class="hidden">
+            <h3 class="font-semibold text-sm uppercase tracking-widest text-slate-900 mb-4">Color: <span id="selectedColorName" class="font-normal text-slate-500 ml-2"></span></h3>
+            <div id="colors" class="flex flex-wrap gap-3"></div>
           </div>
 
-          <!-- Colors -->
-          <div id="colorsSection" class="mb-6 hidden">
-            <h3 class="font-semibold text-sm mb-3">Select Color: <span id="selectedColorName" class="font-normal text-gray-600"></span></h3>
-            <div id="colors" class="flex flex-wrap gap-2"></div>
-          </div>
-
-          <!-- Quantity + Add to Cart -->
-          <div class="flex items-center gap-4 mb-4">
-            <div class="flex items-center border border-gray-200 rounded-full">
-              <button onclick="changeQty(-1)" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition">
-                <i class="fas fa-minus text-xs"></i>
-              </button>
-              <span id="qtyDisplay" class="w-10 text-center font-semibold">1</span>
-              <button onclick="changeQty(1)" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition">
-                <i class="fas fa-plus text-xs"></i>
-              </button>
+          <div id="sizesSection" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-sm uppercase tracking-widest text-slate-900">Size</h3>
+              <button class="text-xs font-semibold text-slate-500 underline underline-offset-4 hover:text-slate-900 transition">Size Guide</button>
             </div>
-            <button id="addToCartBtn" onclick="addToCartFromDetail()"
-              class="flex-1 bg-black text-white py-3.5 rounded-full font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-2">
-              <i class="fas fa-shopping-cart"></i> Add to Cart
+            <div id="sizes" class="flex flex-wrap gap-3"></div>
+          </div>
+        </div>
+
+        <!-- Add to Cart -->
+        <div class="space-y-4 mb-12">
+          <div id="stockInfo" class="text-sm font-semibold mb-2"></div>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex items-center justify-between border-2 border-slate-200 rounded-full w-full sm:w-32 px-2 py-1">
+              <button onclick="changeQty(-1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition"><i class="fas fa-minus text-xs"></i></button>
+              <span id="qtyDisplay" class="font-semibold text-slate-900">1</span>
+              <button onclick="changeQty(1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition"><i class="fas fa-plus text-xs"></i></button>
+            </div>
+            <button id="addToCartBtn" onclick="addToCartFromDetail()" class="flex-1 bg-slate-900 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition py-4 flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="fas fa-shopping-bag"></i> Add to Cart
             </button>
           </div>
-
-          <!-- Stock indicator -->
-          <div id="stockInfo" class="text-sm text-gray-500 mb-4"></div>
         </div>
 
-        <!-- Trust Badges -->
-        <div class="border-t border-gray-100 pt-6 grid grid-cols-3 gap-4 text-center text-xs text-gray-500">
-          <div><i class="fas fa-truck text-lg text-gray-400 mb-1 block"></i>Free Shipping<br>Over ₱2,500</div>
-          <div><i class="fas fa-undo text-lg text-gray-400 mb-1 block"></i>Easy Returns<br>30 Days</div>
-          <div><i class="fas fa-shield-alt text-lg text-gray-400 mb-1 block"></i>Secure<br>Payment</div>
+        <!-- Accordions -->
+        <div class="border-t border-slate-200 divide-y divide-slate-200">
+          <details class="group py-5" open>
+            <summary class="flex items-center justify-between font-semibold text-slate-900 cursor-pointer list-none uppercase tracking-widest text-sm">
+              Product Details
+              <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down text-xs"></i></span>
+            </summary>
+            <div class="pt-5 text-sm text-slate-600 leading-relaxed space-y-3">
+              <p>Crafted from premium materials for ultimate comfort and durability. This piece features a modern silhouette designed for everyday versatility.</p>
+              <ul class="list-disc pl-5 space-y-1">
+                <li>Relaxed, comfortable fit</li>
+                <li>Premium breathable fabric</li>
+                <li>Machine washable</li>
+                <li>Imported</li>
+              </ul>
+            </div>
+          </details>
+          <details class="group py-5">
+            <summary class="flex items-center justify-between font-semibold text-slate-900 cursor-pointer list-none uppercase tracking-widest text-sm">
+              Shipping & Returns
+              <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down text-xs"></i></span>
+            </summary>
+            <div class="pt-5 text-sm text-slate-600 leading-relaxed space-y-3">
+              <p><strong>Free Standard Shipping</strong> on all orders over ₱2,500. Delivery typically takes 3-5 business days.</p>
+              <p><strong>Returns:</strong> We accept returns within 30 days of purchase. Items must be in original condition with tags attached.</p>
+            </div>
+          </details>
         </div>
+
       </div>
     </div>
   </div>
 
-  <div id="errorState" class="hidden container mx-auto px-4 py-16 text-center">
-    <i class="fas fa-exclamation-circle text-5xl text-red-300 mb-4"></i>
-    <p class="text-gray-600">Product not found.</p>
-    <a href="products.html" class="mt-4 inline-block text-sm underline text-gray-600">Back to Shop</a>
+  <div id="errorState" class="hidden container mx-auto px-4 py-24 text-center">
+    <div class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-rose-100 text-rose-500 mb-6">
+      <i class="fas fa-exclamation-triangle text-3xl"></i>
+    </div>
+    <h2 class="text-3xl font-black text-slate-900 mb-4">Product Not Found</h2>
+    <p class="text-slate-500 mb-8 max-w-md mx-auto">We couldn't find the product you're looking for. It may have been removed or the link is invalid.</p>
+    <a href="products.html" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-4 text-sm font-bold text-white hover:bg-slate-800 transition uppercase tracking-widest">Return to Shop</a>
   </div>
 
-  <!-- Footer -->
-  <footer class="bg-gray-50 border-t mt-16 py-8">
-    <div class="container mx-auto px-4 text-center text-sm text-gray-500">CARTELLO © 2024–2025</div>
+  <!-- Premium Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-20">
+    <div class="container mx-auto px-4 py-14">
+      <div class="grid gap-10 lg:grid-cols-4">
+        <div class="space-y-4">
+          <p class="text-2xl font-black text-slate-900">CARTELLO</p>
+          <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+          <div class="flex gap-4 pt-2">
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="products.html" class="hover:text-slate-900 transition">All Products</a></li>
+            <li><a href="products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
+            <li><a href="products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
+            <li><a href="products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li><a href="profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
+            <li><a href="orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
+            <li><a href="cart.html" class="hover:text-slate-900 transition">Cart</a></li>
+            <li><a href="login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
+          <ul class="space-y-3 text-sm text-slate-500">
+            <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
+            <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
+            <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
+            <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+        <p>CARTELLO © 2024–2025. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
+          <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
+          <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script>
@@ -233,13 +417,36 @@
           stockEl.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>In Stock (${product.stock} available)</span>`;
         }
 
-        // Images
-        document.getElementById('mainImage').src = product.images?.[0] || 'https://via.placeholder.com/600?text=No+Image';
+        // Smart Image Matching
+        const nameImageMap = [
+          { key: /t.?shirt|tee/i, url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80' },
+          { key: /jean|denim/i, url: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=80' },
+          { key: /dress/i, url: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&q=80' },
+          { key: /bag|handbag|purse/i, url: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=800&q=80' },
+          { key: /sneaker|shoe|footwear/i, url: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?w=800&q=80' },
+          { key: /boot/i, url: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=800&q=80' },
+          { key: /watch/i, url: 'https://images.unsplash.com/photo-1524592094714-0f0654ece975?w=800&q=80' },
+          { key: /blazer|jacket|coat/i, url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80' },
+          { key: /cardigan|sweater|knit/i, url: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80' },
+          { key: /skirt/i, url: 'https://images.unsplash.com/photo-1582142306909-195724d33ffc?w=800&q=80' },
+          { key: /stripe/i, url: 'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?w=800&q=80' },
+          { key: /floral/i, url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80' }
+        ];
+
+        let displayImages = product.images || [];
+        if (displayImages.length === 0 || displayImages[0].includes('dyfmzw2ti') || displayImages[0].includes('via.placeholder')) {
+          const match = nameImageMap.find(m => m.key.test(product.name || ''));
+          displayImages = [match ? match.url : 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80'];
+        }
+        product.images = displayImages; // Update globally for slider logic
+
+        document.getElementById('mainImage').src = displayImages[0];
         const thumbs = document.getElementById('thumbnails');
-        (product.images || []).forEach((img, i) => {
-          thumbs.innerHTML += `<button class="thumb-btn w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 ${i === 0 ? 'border-black ring-2 ring-black' : 'border-transparent'} hover:border-gray-400 transition"
+        thumbs.innerHTML = '';
+        displayImages.forEach((img, i) => {
+          thumbs.innerHTML += `<button class="thumb-btn w-20 h-24 lg:w-24 lg:h-32 shrink-0 rounded-2xl overflow-hidden border-2 ${i === 0 ? 'border-slate-900 ring-2 ring-slate-900 ring-offset-2' : 'border-transparent'} hover:opacity-80 transition"
             onclick="setMainImage(${i})">
-            <img src="${img || 'https://via.placeholder.com/150?text=No+Image'}" onerror="this.src='https://via.placeholder.com/150?text=No+Image'" class="w-full h-full object-cover">
+            <img src="${img}" class="w-full h-full object-cover">
           </button>`;
         });
 
@@ -278,15 +485,15 @@
 
     function selectSize(btn, size) {
       selectedSize = size;
-      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('bg-black', 'text-white', 'border-black'));
-      btn.classList.add('bg-black', 'text-white', 'border-black');
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('bg-slate-900', 'text-white', 'border-slate-900'));
+      btn.classList.add('bg-slate-900', 'text-white', 'border-slate-900');
     }
 
     function selectColor(btn, name) {
       selectedColor = name;
       document.getElementById('selectedColorName').textContent = name;
-      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-black'));
-      btn.classList.add('ring-2', 'ring-black');
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-slate-900', 'ring-offset-2'));
+      btn.classList.add('ring-2', 'ring-slate-900', 'ring-offset-2');
     }
   </script>
 </body>
