@@ -21,11 +21,22 @@ html {
 
 body {
   margin: 0;
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
   font-family: 'Inter', sans-serif;
   color: var(--text-base);
   background: radial-gradient(circle at top, rgba(255, 255, 255, 1), rgba(247, 248, 251, 1) 60%);
   position: relative;
   overflow-x: hidden;
+}
+
+.container {
+  width: min(100%, 1300px);
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 section {

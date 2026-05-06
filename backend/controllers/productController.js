@@ -104,18 +104,10 @@ exports.createProduct = async (req, res) => {
   try {
     const { name, description, price, originalPrice, category, sizes, colors, stock, featured } = req.body;
 
-    // Upload images to Cloudinary
+    // Get image URLs from Cloudinary upload
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'shopco/products'
-        });
-        imageUrls.push(result.secure_url);
-        
-        // Delete local file
-        fs.unlinkSync(file.path);
-      }
+      imageUrls = req.files.map(file => file.secure_url);
     }
 
     const product = await Product.create({
@@ -163,16 +155,8 @@ exports.updateProduct = async (req, res) => {
     // Upload new images if provided
     let imageUrls = product.images;
     if (req.files && req.files.length > 0) {
-      imageUrls = [];
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'shopco/products'
-        });
-        imageUrls.push(result.secure_url);
-        
-        // Delete local file
-        fs.unlinkSync(file.path);
-      }
+      const newImages = req.files.map(file => file.secure_url);
+      imageUrls = [...imageUrls, ...newImages];
     }
 
     product = await Product.findByIdAndUpdate(

@@ -1,6 +1,52 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Notification = require('../models/Notification');
+const nodemailer = require('nodemailer');
+
+const createMailTransporter = () => {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
+  const host = process.env.EMAIL_HOST;
+  const port = process.env.EMAIL_PORT;
+
+  if (!user || !pass) {
+    return null;
+  }
+
+  const transporterConfig = {
+    auth: {
+      user,
+      pass
+    }
+  };
+
+  if (host) {
+    transporterConfig.host = host;
+    transporterConfig.port = port ? Number(port) : 465;
+    transporterConfig.secure = transporterConfig.port === 465;
+  } else {
+    transporterConfig.service = 'gmail';
+  }
+
+  return nodemailer.createTransport(transporterConfig);
+};
+
+const sendEmail = async ({ to, subject, text, html }) => {
+  const transporter = createMailTransporter();
+  if (!transporter) {
+    console.log('Email not sent because EMAIL_USER or EMAIL_PASS is not configured.');
+    console.log('Email payload:', { to, subject, text, html });
+    return;
+  }
+
+  await transporter.sendMail({
+    from: `CARTELLO <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    text,
+    html
+  });
+};
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -176,6 +222,16 @@ exports.updateOrderStatus = async (req, res) => {
           newStatus: newStatus
         },
         read: false
+      });
+
+      // Send email notification
+      await sendEmail({
+        to: order.user.email,
+        subject: `Order Status Update - CARTELLO`,
+        text: `Hi ${order.user.name},\n\nYour order #${order._id.slice(-8).toUpperCase()} status has been updated to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}.\n\nThank you for shopping with CARTELLO!`,
+        html: `<p>Hi ${order.user.name},</p>
+               <p>Your order <strong>#${order._id.slice(-8).toUpperCase()}</strong> status has been updated to <strong>${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</strong>.</p>
+               <p>Thank you for shopping with CARTELLO!</p>`
       });
     }
 

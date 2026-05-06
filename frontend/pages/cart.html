@@ -3,155 +3,448 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' https: ws:; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
   <title>Cart – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="../css/styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    :root {
+      --cream: #F5F0E8;
+      --ink: #0A0A0A;
+      --orange: #E84C1E;
+      --orange-light: #FF6B3D;
+      --muted: #6B6560;
+      --border-light: rgba(10, 10, 10, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cream);
+      border-bottom: 1px solid var(--border-light);
+      transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .navbar.scrolled {
+      background: rgba(245, 240, 232, 0.95);
+      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.08);
+    }
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.25s ease;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--ink);
+      transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(10, 10, 10, 0.06);
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      transition: background 0.25s ease;
+      font-family: 'Barlow', sans-serif;
+    }
+    .nav-search:hover { background: rgba(10, 10, 10, 0.1); }
+    .nav-cart {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(10, 10, 10, 0.06);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      font-size: 0.9rem;
+      transition: background 0.25s ease;
+    }
+    .nav-cart:hover { background: rgba(10, 10, 10, 0.12); }
+    .cart-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-signin {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.2s ease;
+    }
+    .nav-signin:hover { background: #2a2a2a; transform: scale(1.02); }
+    .mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .mobile-menu-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+      transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      transform-origin: center;
+    }
+    .mobile-menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mobile-menu-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      background: var(--ink);
+      transform: translateX(100%);
+      transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 5rem 2rem 2rem;
+      gap: 0;
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      color: rgba(255, 255, 255, 0.15);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.6rem 0;
+      transition: color 0.25s ease;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: none;
+    }
+    .mobile-menu.open a { color: rgba(255, 255, 255, 0.15); }
+    .mobile-menu.open a:hover { color: #fff; }
+    .mobile-menu.open a:nth-child(1) { animation: slideUp 0.5s 0.1s ease forwards; }
+    .mobile-menu.open a:nth-child(2) { animation: slideUp 0.5s 0.15s ease forwards; }
+    .mobile-menu.open a:nth-child(3) { animation: slideUp 0.5s 0.2s ease forwards; }
+    .mobile-menu.open a:nth-child(4) { animation: slideUp 0.5s 0.25s ease forwards; }
+    .mobile-menu.open a:nth-child(5) { animation: slideUp 0.5s 0.3s ease forwards; }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* ── SEARCH DROPDOWN ── */
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      width: 320px;
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(10, 10, 10, 0.08);
+      padding: 1rem;
+      display: none;
+      z-index: 200;
+    }
+    .search-dropdown.active { display: block; animation: fadeScaleIn 0.2s ease; }
+    @keyframes fadeScaleIn {
+      from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ── FOOTER ── */
+    .site-footer { background: var(--ink); color: #fff; }
+    .footer-top {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.2rem;
+      letter-spacing: -0.01em;
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .footer-tagline {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1.7;
+      max-width: 260px;
+      margin-bottom: 1.75rem;
+    }
+    .footer-socials { display: flex; gap: 0.75rem; }
+    .fsoc {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+    .fsoc:hover { border-color: var(--orange); background: var(--orange); color: #fff; }
+    .footer-cols {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+    .footer-col-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.35);
+      margin-bottom: 1.25rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .footer-col a {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      transition: color 0.22s ease;
+    }
+    .footer-col a:hover { color: #fff; }
+    .footer-newsletter {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .fn-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: #fff;
+    }
+    .fn-sub { font-size: 0.8rem; color: rgba(255, 255, 255, 0.35); margin-top: 0.25rem; }
+    .fn-form { display: flex; gap: 0.6rem; flex: 1; max-width: 480px; }
+    .fn-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 0.8rem 1.4rem;
+      font-size: 0.85rem;
+      font-family: 'Barlow', sans-serif;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.25s ease;
+    }
+    .fn-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+    .fn-input:focus { border-color: var(--orange); }
+    .fn-btn {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 1.6rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: 'Barlow', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .fn-btn:hover { background: #c43a12; transform: scale(1.02); }
+    .footer-bottom {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-copy { font-size: 0.78rem; color: rgba(255, 255, 255, 0.25); }
+    .footer-legal { display: flex; gap: 1.25rem; align-items: center; }
+    .footer-legal a {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-legal a:hover { color: #fff; }
+    .footer-legal span { color: rgba(255, 255, 255, 0.15); font-size: 0.65rem; }
+    .footer-pays { display: flex; gap: 0.85rem; font-size: 1.6rem; color: rgba(255, 255, 255, 0.25); }
+    .footer-pays i { transition: color 0.2s ease; }
+    .footer-pays i:hover { color: #fff; }
+
+    /* ── PAGE STYLES ── */
     .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
     @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-search { display: none; }
+      .mobile-menu-btn { display: flex; }
+      .footer-top { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1rem 2.5rem; }
+      .footer-cols { grid-template-columns: 1fr 1fr; }
+      .footer-newsletter { flex-direction: column; align-items: flex-start; padding: 2rem 1rem; }
+      .fn-form { max-width: 100%; width: 100%; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
+    @media (max-width: 1024px) {
+      .footer-top { grid-template-columns: 1fr; gap: 3rem; }
+      .footer-cols { grid-template-columns: repeat(2, 1fr); }
+      .footer-newsletter { flex-direction: column; align-items: flex-start; }
+      .fn-form { max-width: 100%; width: 100%; }
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body>
 
-  <!-- Universal Navbar -->
-  <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-6">
-        <a href="../index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
-        <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
-          <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
-          <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
-          <a href="../index.html#about" class="hover:text-slate-900 transition">About Us</a>
-          <a href="../index.html#contact" class="hover:text-slate-900 transition">Contact</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-3">
-        <a href="cart.html" class="relative p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
-          <i class="fas fa-shopping-cart text-xl"></i>
-          <span id="cartCount" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">0</span>
-        </a>
-        <div id="authSection" class="relative hidden lg:block">
-          <a href="login.html" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Sign In</a>
-        </div>
-        <button id="mobileMenuBtn" class="lg:hidden p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
-          <i class="fas fa-bars text-xl"></i>
-        </button>
-      </div>
-    </nav>
-    
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="fixed inset-0 z-50 pointer-events-none">
-      <div id="mobileMenuOverlay" class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300"></div>
-      <div id="mobileMenuContent" class="absolute right-0 top-0 h-full w-72 md:w-80 bg-white shadow-2xl flex flex-col p-6 gap-6 transform translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="flex items-center justify-between">
-          <span class="text-xl font-black">CARTELLO</span>
-          <button id="closeMobileMenu" class="p-2 rounded-full bg-slate-100 hover:bg-slate-200"><i class="fas fa-times"></i></button>
-        </div>
-        <nav class="flex flex-col gap-4 text-sm font-medium text-slate-700">
-          <a href="../index.html" class="hover:text-black transition">Home</a>
-          <a href="products.html" class="hover:text-black transition">Shop</a>
-          <a href="../index.html#about" class="hover:text-black transition">About</a>
-          <a href="../index.html#contact" class="hover:text-black transition">Contact</a>
-          <hr class="border-slate-200">
-          <div id="mobileAuthLinks" class="flex flex-col gap-4">
-             <a href="login.html" class="hover:text-black transition">Sign In</a>
-             <a href="register.html" class="hover:text-black transition">Create Account</a>
+  <!-- NAVBAR -->
+  <header class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo">CARTELLO</a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div style="position:relative;">
+          <button class="nav-search" id="searchToggle">
+            <i class="fas fa-magnifying-glass" style="font-size:0.75rem;"></i>
+            Search
+          </button>
+          <div class="search-dropdown" id="searchDropdown">
+            <div style="position:relative;">
+              <i class="fas fa-magnifying-glass"
+                style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#999;font-size:0.8rem;"></i>
+              <input id="searchInput" type="text" placeholder="Search products…"
+                style="width:100%;padding:0.75rem 1rem 0.75rem 2.5rem;border-radius:999px;border:1.5px solid #eee;font-size:0.85rem;outline:none;font-family:inherit;transition:border-color 0.2s ease;" />
+            </div>
+            <div id="searchResults" style="margin-top:0.75rem;max-height:220px;overflow-y:auto;"></div>
           </div>
-          <hr class="border-slate-200">
-          <a href="orders.html" class="hover:text-black transition">My Orders</a>
-          <a href="profile.html" class="hover:text-black transition">Profile</a>
-          <a href="cart.html" class="hover:text-black transition">Cart</a>
-        </nav>
+        </div>
+        <a href="cart.html" style="position:relative;">
+          <button class="nav-cart">
+            <i class="fas fa-bag-shopping"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </button>
+        </a>
+        <div id="authSection">
+          <a href="login.html" class="nav-signin">Sign In</a>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </header>
-  <script>
-    (function() {
-      // Mobile menu logic
-      const btn = document.getElementById('mobileMenuBtn');
-      const menu = document.getElementById('mobileMenu');
-      const overlay = document.getElementById('mobileMenuOverlay');
-      const content = document.getElementById('mobileMenuContent');
-      const close = document.getElementById('closeMobileMenu');
-      
-      const closeMenu = () => {
-        if(content) content.classList.add('translate-x-full');
-        if(overlay) {
-          overlay.classList.add('opacity-0');
-          setTimeout(() => menu.classList.add('pointer-events-none'), 300);
-        } else if(menu) menu.classList.add('hidden');
-      };
 
-      if (btn) btn.addEventListener('click', () => {
-        menu.classList.remove('pointer-events-none');
-        if(overlay) overlay.classList.remove('opacity-0');
-        if(content) content.classList.remove('translate-x-full');
-        menu.classList.remove('hidden');
-      });
-      if (close) close.addEventListener('click', closeMenu);
-      if (overlay) overlay.addEventListener('click', closeMenu);
-      else if (menu) menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
-
-      // Auth logic for navbar
-      const authSection = document.getElementById('authSection');
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
-      const token = localStorage.getItem('token');
-      
-      if (user && token && authSection) {
-        authSection.innerHTML = `
-          <button id="userMenuToggle" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50" style="transition: none !important; animation: none !important; transform: none !important;">
-            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=24" class="w-6 h-6 rounded-full">
-            <span class="hidden xl:inline">${(user.name||user.fullName||'').split(' ')[0]}</span>
-            <i class="fas fa-chevron-down text-xs"></i>
-          </button>
-          <div id="userMenu" class="absolute top-full mt-2 right-0 w-48 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50">
-            <a href="profile.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-user w-4"></i> Profile</a>
-            <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-shopping-bag w-4"></i> Orders</a>
-            <hr class="my-2 border-slate-200">
-            <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition w-full text-left"><i class="fas fa-sign-out-alt w-4"></i> Sign Out</button>
-          </div>
-        `;
-        
-        const mobileAuthLinks = document.getElementById('mobileAuthLinks');
-        if (mobileAuthLinks) {
-            mobileAuthLinks.innerHTML = `
-                <div class="flex items-center gap-3 mb-2">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">
-                    <span class="font-bold text-slate-900">${user.name||user.fullName}</span>
-                </div>
-                <a href="profile.html" class="hover:text-black transition"><i class="fas fa-user w-5"></i> Profile</a>
-                <a href="orders.html" class="hover:text-black transition"><i class="fas fa-shopping-bag w-5"></i> My Orders</a>
-                <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="text-left text-red-600 hover:text-red-700 transition font-bold mt-2"><i class="fas fa-sign-out-alt w-5"></i> Sign Out</button>
-            `;
-        }
-        
-        const userMenuToggle = document.getElementById('userMenuToggle');
-        const userMenu = document.getElementById('userMenu');
-        if (userMenuToggle && userMenu) {
-            userMenuToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userMenu.classList.toggle('hidden');
-            });
-            document.addEventListener('click', (e) => {
-                if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
-                    userMenu.classList.add('hidden');
-                }
-            });
-        }
-      }
-      
-      // Initial cart count
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const cartCountEl = document.getElementById('cartCount');
-      if (cartCountEl) {
-        cartCountEl.textContent = cart.reduce((total, item) => total + item.quantity, 0);
-      }
-    })();
-  </script>
+  <!-- MOBILE MENU -->
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="../index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="../index.html#about">About</a>
+    <a href="../index.html#contact">Contact</a>
+    <a href="cart.html">Cart</a>
+  </nav>
 
   <main class="container mx-auto px-4 py-10">
     <!-- Progress Indicator -->
@@ -188,7 +481,6 @@
       <section class="rounded-[32px] bg-white p-8 shadow-sm border border-slate-200">
         <div id="cartContainer" class="divide-y divide-slate-100"></div>
       </section>
-
       <section id="cartSummary" class="sticky top-24 self-start"></section>
     </div>
 
@@ -205,7 +497,7 @@
       <div class="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         <div class="group rounded-[32px] overflow-hidden bg-slate-50 shadow-sm hover:shadow-xl transition duration-500 border border-slate-100">
           <div class="relative h-64 overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80" alt="Sneakers" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700" onerror="this.src='https://via.placeholder.com/900x520?text=Image+Unavailable'">
+            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80" alt="Sneakers" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700">
           </div>
           <div class="p-6">
             <h3 class="font-bold text-lg text-slate-900">Street steel sneakers</h3>
@@ -214,7 +506,7 @@
         </div>
         <div class="group rounded-[32px] overflow-hidden bg-slate-50 shadow-sm hover:shadow-xl transition duration-500 border border-slate-100">
           <div class="relative h-64 overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80" alt="Jacket" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700" onerror="this.src='https://via.placeholder.com/900x520?text=Image+Unavailable'">
+            <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80" alt="Jacket" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700">
           </div>
           <div class="p-6">
             <h3 class="font-bold text-lg text-slate-900">Layered jackets</h3>
@@ -223,7 +515,7 @@
         </div>
         <div class="group rounded-[32px] overflow-hidden bg-slate-50 shadow-sm hover:shadow-xl transition duration-500 border border-slate-100">
           <div class="relative h-64 overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&q=80" alt="Accessories" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700" onerror="this.src='https://via.placeholder.com/900x520?text=Image+Unavailable'">
+            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&q=80" alt="Accessories" class="h-full w-full object-cover transform group-hover:scale-105 transition duration-700">
           </div>
           <div class="p-6">
             <h3 class="font-bold text-lg text-slate-900">Modern accessories</h3>
@@ -234,54 +526,89 @@
     </section>
   </main>
 
-  <!-- Premium Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-20">
-    <div class="container mx-auto px-4 py-14">
-      <div class="grid gap-10 lg:grid-cols-4">
-        <div class="space-y-4">
-          <p class="text-2xl font-black text-slate-900">CARTELLO</p>
-          <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
-          <div class="flex gap-4 pt-2">
-            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
-          </div>
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="../index.html" class="footer-logo">CARTELLO</a>
+        <p class="footer-tagline">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+        <div class="footer-socials">
+          <a href="#" class="fsoc"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="fsoc"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="fsoc"><i class="fab fa-tiktok"></i></a>
+          <a href="#" class="fsoc"><i class="fab fa-x-twitter"></i></a>
         </div>
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
-          <ul class="space-y-3 text-sm text-slate-500">
-            <li><a href="products.html" class="hover:text-slate-900 transition">All Products</a></li>
-            <li><a href="products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
-            <li><a href="products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
-            <li><a href="products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <div class="footer-col-title">Shop</div>
+          <ul>
+            <li><a href="products.html">All Products</a></li>
+            <li><a href="products.html?category=new">New Arrivals</a></li>
+            <li><a href="products.html?category=sale">Sale</a></li>
+            <li><a href="products.html">Best Sellers</a></li>
+            <li><a href="products.html">Men's Edit</a></li>
+            <li><a href="products.html">Women's Edit</a></li>
           </ul>
         </div>
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
-          <ul class="space-y-3 text-sm text-slate-500">
-            <li><a href="profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
-            <li><a href="orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
-            <li><a href="cart.html" class="hover:text-slate-900 transition">Cart</a></li>
-            <li><a href="login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+        <div class="footer-col">
+          <div class="footer-col-title">Account</div>
+          <ul>
+            <li><a href="profile.html">My Profile</a></li>
+            <li><a href="orders.html">My Orders</a></li>
+            <li><a href="cart.html">My Cart</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="login.html?mode=register">Register</a></li>
           </ul>
         </div>
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
-          <ul class="space-y-3 text-sm text-slate-500">
-            <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
-            <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
-            <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
-            <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+        <div class="footer-col">
+          <div class="footer-col-title">Company</div>
+          <ul>
+            <li><a href="../index.html#about">About Us</a></li>
+            <li><a href="../index.html#contact">Contact</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Sustainability</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Support</div>
+          <ul>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns Policy</a></li>
+            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">Track Order</a></li>
           </ul>
         </div>
       </div>
-      <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
-        <p>CARTELLO © 2024–2025. All rights reserved.</p>
-        <div class="flex gap-6">
-          <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
-          <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
-          <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
-        </div>
+    </div>
+
+    <div class="footer-newsletter">
+      <div class="fn-copy">
+        <div class="fn-title">Stay In The Loop</div>
+        <div class="fn-sub">Get early access to drops, exclusive offers, and styling tips.</div>
+      </div>
+      <form class="fn-form" onsubmit="event.preventDefault(); this.innerHTML='<span style=\'color:var(--orange);font-weight:700;\'>✓ You\'re in! Check your inbox.</span>';">
+        <input type="email" required placeholder="Enter your email…" class="fn-input" />
+        <button type="submit" class="fn-btn">Subscribe <i class="fas fa-arrow-right"></i></button>
+      </form>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">CARTELLO © 2024–2026. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <span>·</span>
+        <a href="#">Terms of Service</a>
+        <span>·</span>
+        <a href="#">Shipping Info</a>
+      </div>
+      <div class="footer-pays">
+        <i class="fab fa-cc-visa" title="Visa"></i>
+        <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+        <i class="fab fa-cc-paypal" title="PayPal"></i>
+        <i class="fab fa-google-pay" title="GCash-style"></i>
       </div>
     </div>
   </footer>
@@ -293,25 +620,15 @@
       return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount);
     }
 
-    function getCart() {
-      return JSON.parse(localStorage.getItem('cart') || '[]');
-    }
-
-    function saveCart(cart) {
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
+    function getCart() { return JSON.parse(localStorage.getItem('cart') || '[]'); }
+    function saveCart(cart) { localStorage.setItem('cart', JSON.stringify(cart)); }
 
     function updateCartCount() {
       const count = getCart().reduce((total, item) => total + item.quantity, 0);
       document.getElementById('cartCount').textContent = count;
     }
 
-    function removeFromCart(index) {
-      const cart = getCart();
-      cart.splice(index, 1);
-      saveCart(cart);
-      renderAll();
-    }
+    function removeFromCart(index) { const cart = getCart(); cart.splice(index, 1); saveCart(cart); renderAll(); }
 
     function changeQty(index, delta) {
       const cart = getCart();
@@ -319,14 +636,6 @@
       if (cart[index].quantity <= 0) cart.splice(index, 1);
       saveCart(cart);
       renderAll();
-    }
-
-    function showToast(message, type = 'success') {
-      const toast = document.createElement('div');
-      toast.className = `fixed bottom-6 right-6 z-50 rounded-3xl px-5 py-3 text-sm text-white shadow-2xl ${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'}`;
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2500);
     }
 
     function applyPromo() {
@@ -371,7 +680,7 @@
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="flex gap-4">
               <a href="product-detail.html?id=${item.id}" class="block overflow-hidden rounded-3xl bg-slate-100">
-                <img src="${item.image || 'https://via.placeholder.com/120?text=No+Image'}" alt="${item.name}" class="h-28 w-28 object-cover" onerror="this.src='https://via.placeholder.com/120?text=No+Image'">
+                <img src="${item.image || 'https://via.placeholder.com/120?text=No+Image'}" alt="${item.name}" class="h-28 w-28 object-cover">
               </a>
               <div>
                 <a href="product-detail.html?id=${item.id}" class="text-lg font-semibold text-slate-900 hover:underline">${item.name}</a>
@@ -396,7 +705,6 @@
       const discount = subtotal * promoState.discount;
       const total = subtotal + shipping - discount;
       let shippingLabel = shipping === 0 ? 'FREE' : formatCurrency(shipping);
-      if (promoState.freeShipping) shippingLabel = 'FREE';
 
       cartSummary.innerHTML = `
         <div class="space-y-6">
@@ -423,11 +731,54 @@
       `;
     }
 
-    renderAll();
+    // ── Navbar scroll ──
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ── Mobile menu ──
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileBtn.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // ── Search dropdown ──
+    const searchToggle = document.getElementById('searchToggle');
+    const searchDropdown = document.getElementById('searchDropdown');
+    searchToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      searchDropdown.classList.toggle('active');
+      if (searchDropdown.classList.contains('active')) {
+        setTimeout(() => document.getElementById('searchInput').focus(), 100);
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!searchDropdown.contains(e.target) && e.target !== searchToggle) {
+        searchDropdown.classList.remove('active');
+      }
+    });
+
+    // Auth section
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (user) {
-      document.getElementById('userIcon').innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full" alt="Profile">`;
+    const token = localStorage.getItem('token');
+    if (user && token) {
+      document.getElementById('authSection').innerHTML = `
+        <a href="profile.html" class="nav-signin" style="background:rgba(10,10,10,0.08);color:var(--ink);">
+          <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||'User')}&background=000&color=fff&size=24" style="width:18px;height:18px;border-radius:50%;">
+          ${(user.name||'').split(' ')[0]}
+        </a>`;
     }
+
+    renderAll();
   </script>
 </body>
 </html>

@@ -14,14 +14,14 @@ router.post(
   "/",
   protect,
   authorize('admin'),
-  upload.single("image"),
+  upload.array("images", 5),
   productController.createProduct,
 );
 router.put(
   "/:id",
   protect,
   authorize('admin'),
-  upload.single("image"),
+  upload.array("images", 5),
   productController.updateProduct,
 );
 router.delete("/:id", protect, authorize('admin'), productController.deleteProduct);

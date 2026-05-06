@@ -3,144 +3,551 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' https: ws:; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>Product – CARTELLO</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
-<body class="bg-white">
 
-  <!-- Universal Navbar -->
-  <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-6">
-        <a href="../index.html" class="text-2xl font-black tracking-tight text-slate-900">CARTELLO</a>
-        <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
-          <a href="../index.html" class="hover:text-slate-900 transition">Home</a>
-          <a href="products.html" class="hover:text-slate-900 transition">Shop</a>
-          <a href="../index.html#about" class="hover:text-slate-900 transition">About Us</a>
-          <a href="../index.html#contact" class="hover:text-slate-900 transition">Contact</a>
+  <style>
+    /* ─── CSS VARIABLES ─── */
+    :root {
+      --cream: #F5F0E8;
+      --ink: #0A0A0A;
+      --orange: #E84C1E;
+      --orange-light: #FF6B3D;
+      --muted: #6B6560;
+      --border-light: rgba(10, 10, 10, 0.1);
+      --black: var(--ink);
+      --white: #ffffff;
+      --border: rgba(10, 10, 10, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════════
+       NAVBAR — from index.html
+    ═══════════════════════════════════════════ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cream);
+      border-bottom: 1px solid var(--border-light);
+      transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .navbar.scrolled {
+      background: rgba(245, 240, 232, 0.95);
+      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.08);
+    }
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.25s ease;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--ink);
+      transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-actions { display: flex; align-items: center; gap: 1rem; }
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(10, 10, 10, 0.06);
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      font-family: 'Barlow', sans-serif;
+      transition: background 0.25s ease;
+    }
+    .nav-search:hover { background: rgba(10, 10, 10, 0.1); }
+    .nav-cart {
+      position: relative;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(10, 10, 10, 0.06);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      font-size: 0.9rem;
+      transition: background 0.25s ease;
+    }
+    .nav-cart:hover { background: rgba(10, 10, 10, 0.12); }
+    .cart-badge {
+      position: absolute;
+      top: -3px; right: -3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-signin {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      transition: background 0.25s ease, transform 0.2s ease;
+    }
+    .nav-signin:hover { background: #2a2a2a; transform: scale(1.02); }
+
+    /* Mobile hamburger */
+    .mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .mobile-menu-btn span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+      transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      transform-origin: center;
+    }
+    .mobile-menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mobile-menu-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      background: var(--ink);
+      transform: translateX(100%);
+      transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 5rem 2rem 2rem;
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      color: rgba(255, 255, 255, 0.15);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.6rem 0;
+      transition: color 0.25s ease;
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    .mobile-menu.open a { color: rgba(255, 255, 255, 0.15); }
+    .mobile-menu.open a:hover { color: #fff; }
+    .mobile-menu.open a:nth-child(1) { animation: slideUp 0.5s 0.10s ease forwards; }
+    .mobile-menu.open a:nth-child(2) { animation: slideUp 0.5s 0.15s ease forwards; }
+    .mobile-menu.open a:nth-child(3) { animation: slideUp 0.5s 0.20s ease forwards; }
+    .mobile-menu.open a:nth-child(4) { animation: slideUp 0.5s 0.25s ease forwards; }
+    .mobile-menu.open a:nth-child(5) { animation: slideUp 0.5s 0.30s ease forwards; }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* Search dropdown */
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      width: 320px;
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(10, 10, 10, 0.08);
+      padding: 1rem;
+      display: none;
+      z-index: 200;
+    }
+    .search-dropdown.active { display: block; animation: fadeScaleIn 0.2s ease; }
+    @keyframes fadeScaleIn {
+      from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+      to   { opacity: 1; transform: scale(1)   translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-search { display: none; }
+      .mobile-menu-btn { display: flex; }
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER — from index.html
+    ═══════════════════════════════════════════ */
+    .site-footer { background: var(--ink); color: #fff; }
+
+    .footer-top {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.2rem;
+      letter-spacing: -0.01em;
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .footer-tagline {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1.7;
+      max-width: 260px;
+      margin-bottom: 1.75rem;
+    }
+    .footer-socials { display: flex; gap: 0.75rem; }
+    .fsoc {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+    .fsoc:hover { border-color: var(--orange); background: var(--orange); color: #fff; }
+    .footer-cols {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+    .footer-col-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.35);
+      margin-bottom: 1.25rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .footer-col a {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      transition: color 0.22s ease;
+    }
+    .footer-col a:hover { color: #fff; }
+
+    /* Newsletter */
+    .footer-newsletter {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .fn-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: #fff;
+    }
+    .fn-sub { font-size: 0.8rem; color: rgba(255, 255, 255, 0.35); margin-top: 0.25rem; }
+    .fn-form { display: flex; gap: 0.6rem; flex: 1; max-width: 480px; }
+    .fn-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 0.8rem 1.4rem;
+      font-size: 0.85rem;
+      font-family: 'Barlow', sans-serif;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.25s ease;
+    }
+    .fn-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+    .fn-input:focus { border-color: var(--orange); }
+    .fn-btn {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 1.6rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: 'Barlow', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .fn-btn:hover { background: #c43a12; transform: scale(1.02); }
+
+    /* Bottom bar */
+    .footer-bottom {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-copy { font-size: 0.78rem; color: rgba(255, 255, 255, 0.25); }
+    .footer-legal { display: flex; gap: 1.25rem; align-items: center; }
+    .footer-legal a {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-legal a:hover { color: #fff; }
+    .footer-legal span { color: rgba(255, 255, 255, 0.15); font-size: 0.65rem; }
+    .footer-pays { display: flex; gap: 0.85rem; font-size: 1.6rem; color: rgba(255, 255, 255, 0.25); }
+    .footer-pays i { transition: color 0.2s ease; }
+    .footer-pays i:hover { color: #fff; }
+
+    /* Footer responsive */
+    @media (max-width: 1024px) {
+      .footer-top { grid-template-columns: 1fr; gap: 3rem; }
+      .footer-cols { grid-template-columns: repeat(2, 1fr); }
+      .footer-newsletter { flex-direction: column; align-items: flex-start; }
+      .fn-form { max-width: 100%; width: 100%; }
+    }
+    @media (max-width: 768px) {
+      .footer-top { padding: 4rem 1rem 2.5rem; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .footer-cols { grid-template-columns: 1fr 1fr; }
+      .footer-newsletter { padding: 2rem 1rem; }
+    }
+
+    /* ═══════════════════════════════════════════
+       PRODUCT DETAIL — original styles
+    ═══════════════════════════════════════════ */
+    .cart-bounce { animation: cart-button-bounce 0.45s ease; }
+    @keyframes cart-button-bounce {
+      0%   { transform: translateY(0) scale(1); }
+      40%  { transform: translateY(-4px) scale(1.02); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    .cart-flyer {
+      position: fixed;
+      width: 70px; height: 70px;
+      border-radius: 1rem;
+      object-fit: cover;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transform: translate3d(0, 0, 0);
+      transition: transform 0.75s ease, opacity 0.75s ease;
+    }
+    .cart-flyer.fly { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       NAVBAR — from index.html
+  ═══════════════════════════════════════════ -->
+  <header class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo">CARTELLO</a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div style="position:relative;">
+          <button class="nav-search" id="searchToggle">
+            <i class="fas fa-magnifying-glass" style="font-size:0.75rem;"></i>
+            Search
+          </button>
+          <div class="search-dropdown" id="searchDropdown">
+            <div style="position:relative;">
+              <i class="fas fa-magnifying-glass"
+                style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#999;font-size:0.8rem;"></i>
+              <input id="searchInput" type="text" placeholder="Search products…"
+                style="width:100%;padding:0.75rem 1rem 0.75rem 2.5rem;border-radius:999px;border:1.5px solid #eee;font-size:0.85rem;outline:none;font-family:inherit;transition:border-color 0.2s ease;" />
+            </div>
+            <div id="searchResults" style="margin-top:0.75rem;max-height:220px;overflow-y:auto;"></div>
+          </div>
         </div>
-      </div>
-      <div class="flex items-center gap-3">
-        <a href="cart.html" class="relative p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
-          <i class="fas fa-shopping-cart text-xl"></i>
-          <span id="cartCount" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">0</span>
+        <a href="cart.html" style="position:relative;">
+          <button class="nav-cart">
+            <i class="fas fa-bag-shopping"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </button>
         </a>
-        <div id="authSection" class="relative hidden lg:block">
-          <a href="login.html" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition">Sign In</a>
+        <div id="authSection">
+          <a href="login.html" class="nav-signin">Sign In</a>
         </div>
-        <button id="mobileMenuBtn" class="lg:hidden p-3 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
-          <i class="fas fa-bars text-xl"></i>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <span></span><span></span><span></span>
         </button>
-      </div>
-    </nav>
-    
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm">
-      <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col p-6 gap-6">
-        <div class="flex items-center justify-between">
-          <span class="text-xl font-black">CARTELLO</span>
-          <button id="closeMobileMenu" class="p-2 rounded-full bg-slate-100 hover:bg-slate-200"><i class="fas fa-times"></i></button>
-        </div>
-        <nav class="flex flex-col gap-4 text-sm font-medium text-slate-700">
-          <a href="../index.html" class="hover:text-black transition">Home</a>
-          <a href="products.html" class="hover:text-black transition">Shop</a>
-          <a href="../index.html#about" class="hover:text-black transition">About</a>
-          <a href="../index.html#contact" class="hover:text-black transition">Contact</a>
-          <hr class="border-slate-200">
-          <a href="orders.html" class="hover:text-black transition">My Orders</a>
-          <a href="profile.html" class="hover:text-black transition">Profile</a>
-          <a href="cart.html" class="hover:text-black transition">Cart</a>
-        </nav>
       </div>
     </div>
   </header>
+
+  <!-- MOBILE MENU -->
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="../index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="../index.html#about">About</a>
+    <a href="../index.html#contact">Contact</a>
+    <a href="cart.html">Cart</a>
+  </nav>
+
+  <!-- Navbar scripts -->
   <script>
-    (function() {
-      // Mobile menu logic
-      const btn = document.getElementById('mobileMenuBtn');
-      const menu = document.getElementById('mobileMenu');
-      const overlay = document.getElementById('mobileMenuOverlay');
-      const content = document.getElementById('mobileMenuContent');
-      const close = document.getElementById('closeMobileMenu');
-      
-      const closeMenu = () => {
-        if(content) content.classList.add('translate-x-full');
-        if(overlay) {
-          overlay.classList.add('opacity-0');
-          setTimeout(() => menu.classList.add('pointer-events-none'), 300);
-        } else if(menu) menu.classList.add('hidden');
-      };
+    (function () {
+      // Scroll effect
+      const nav = document.getElementById('mainNav');
+      window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 60);
+      }, { passive: true });
 
-      if (btn) btn.addEventListener('click', () => {
-        menu.classList.remove('pointer-events-none');
-        if(overlay) overlay.classList.remove('opacity-0');
-        if(content) content.classList.remove('translate-x-full');
-        menu.classList.remove('hidden');
+      // Mobile menu
+      const mobileBtn  = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileBtn.addEventListener('click', () => {
+        mobileBtn.classList.toggle('open');
+        mobileMenu.classList.toggle('open');
       });
-      if (close) close.addEventListener('click', closeMenu);
-      if (overlay) overlay.addEventListener('click', closeMenu);
-      else if (menu) menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+      mobileMenu.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          mobileBtn.classList.remove('open');
+          mobileMenu.classList.remove('open');
+        });
+      });
 
-      // Auth logic for navbar
+      // Search dropdown
+      const searchToggle   = document.getElementById('searchToggle');
+      const searchDropdown = document.getElementById('searchDropdown');
+      searchToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        searchDropdown.classList.toggle('active');
+        if (searchDropdown.classList.contains('active')) {
+          setTimeout(() => document.getElementById('searchInput').focus(), 100);
+        }
+      });
+      document.addEventListener('click', (e) => {
+        if (!searchDropdown.contains(e.target) && e.target !== searchToggle) {
+          searchDropdown.classList.remove('active');
+        }
+      });
+
+      // Auth state
       const authSection = document.getElementById('authSection');
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const user  = JSON.parse(localStorage.getItem('user')  || 'null');
       const token = localStorage.getItem('token');
-      
       if (user && token && authSection) {
         authSection.innerHTML = `
-          <button id="userMenuToggle" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50" style="transition: none !important; animation: none !important; transform: none !important;">
-            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=24" class="w-6 h-6 rounded-full">
-            <span class="hidden xl:inline">${(user.name||user.fullName||'').split(' ')[0]}</span>
+          <button id="userMenuToggle" class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.fullName)}&background=000&color=fff&size=24" class="w-6 h-6 rounded-full">
+            <span class="hidden xl:inline">${(user.name || user.fullName || '').split(' ')[0]}</span>
             <i class="fas fa-chevron-down text-xs"></i>
           </button>
           <div id="userMenu" class="absolute top-full mt-2 right-0 w-48 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50">
-            <a href="profile.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-user w-4"></i> Profile</a>
-            <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-shopping-bag w-4"></i> Orders</a>
+            <a href="profile.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100"><i class="fas fa-user w-4"></i> Profile</a>
+            <a href="orders.html"  class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100"><i class="fas fa-shopping-bag w-4"></i> Orders</a>
             <hr class="my-2 border-slate-200">
-            <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition w-full text-left"><i class="fas fa-sign-out-alt w-4"></i> Sign Out</button>
-          </div>
-        `;
-        
-        const mobileAuthLinks = document.getElementById('mobileAuthLinks');
-        if (mobileAuthLinks) {
-            mobileAuthLinks.innerHTML = `
-                <div class="flex items-center gap-3 mb-2">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||user.fullName)}&background=000&color=fff&size=32" class="w-8 h-8 rounded-full">
-                    <span class="font-bold text-slate-900">${user.name||user.fullName}</span>
-                </div>
-                <a href="profile.html" class="hover:text-black transition"><i class="fas fa-user w-5"></i> Profile</a>
-                <a href="orders.html" class="hover:text-black transition"><i class="fas fa-shopping-bag w-5"></i> My Orders</a>
-                <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="text-left text-red-600 hover:text-red-700 transition font-bold mt-2"><i class="fas fa-sign-out-alt w-5"></i> Sign Out</button>
-            `;
-        }
-        
-        const userMenuToggle = document.getElementById('userMenuToggle');
-        const userMenu = document.getElementById('userMenu');
-        if (userMenuToggle && userMenu) {
-            userMenuToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userMenu.classList.toggle('hidden');
-            });
-            document.addEventListener('click', (e) => {
-                if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
-                    userMenu.classList.add('hidden');
-                }
-            });
+            <button onclick="localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='login.html'" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 w-full text-left">
+              <i class="fas fa-sign-out-alt w-4"></i> Sign Out
+            </button>
+          </div>`;
+        const t = document.getElementById('userMenuToggle');
+        const m = document.getElementById('userMenu');
+        if (t && m) {
+          t.addEventListener('click', e => { e.stopPropagation(); m.classList.toggle('hidden'); });
+          document.addEventListener('click', e => { if (!m.contains(e.target) && !t.contains(e.target)) m.classList.add('hidden'); });
         }
       }
-      
-      // Initial cart count
+
+      // Cart count
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const cartCountEl = document.getElementById('cartCount');
-      if (cartCountEl) {
-        cartCountEl.textContent = cart.reduce((total, item) => total + item.quantity, 0);
-      }
+      if (cartCountEl) cartCountEl.textContent = cart.reduce((t, i) => t + i.quantity, 0);
     })();
   </script>
+
+  <!-- ═══════════════════════════════════════════
+       PRODUCT DETAIL CONTENT — original, untouched
+  ═══════════════════════════════════════════ -->
 
   <!-- Loading State -->
   <div id="loadingState" class="container mx-auto px-4 py-24 flex flex-col items-center justify-center">
@@ -179,7 +586,6 @@
         <div class="mb-6">
           <span id="categoryBadge" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-slate-600 mb-4"></span>
           <h1 id="productName" class="text-4xl lg:text-5xl font-black text-slate-900 mb-4 leading-tight"></h1>
-          
           <div class="flex items-center gap-4">
             <div id="stars" class="flex gap-1 text-sm"></div>
             <span id="ratingText" class="text-sm font-medium text-slate-500"></span>
@@ -200,7 +606,6 @@
             <h3 class="font-semibold text-sm uppercase tracking-widest text-slate-900 mb-4">Color: <span id="selectedColorName" class="font-normal text-slate-500 ml-2"></span></h3>
             <div id="colors" class="flex flex-wrap gap-3"></div>
           </div>
-
           <div id="sizesSection" class="hidden">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-semibold text-sm uppercase tracking-widest text-slate-900">Size</h3>
@@ -217,9 +622,10 @@
             <div class="flex items-center justify-between border-2 border-slate-200 rounded-full w-full sm:w-32 px-2 py-1">
               <button onclick="changeQty(-1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition"><i class="fas fa-minus text-xs"></i></button>
               <span id="qtyDisplay" class="font-semibold text-slate-900">1</span>
-              <button onclick="changeQty(1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition"><i class="fas fa-plus text-xs"></i></button>
+              <button onclick="changeQty(1)"  class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition"><i class="fas fa-plus text-xs"></i></button>
             </div>
-            <button id="addToCartBtn" onclick="addToCartFromDetail()" class="flex-1 bg-slate-900 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition py-4 flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button id="addToCartBtn" onclick="addToCartFromDetail()"
+              class="flex-1 bg-slate-900 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition py-4 flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
               <i class="fas fa-shopping-bag"></i> Add to Cart
             </button>
           </div>
@@ -253,11 +659,11 @@
             </div>
           </details>
         </div>
-
       </div>
     </div>
   </div>
 
+  <!-- Error State -->
   <div id="errorState" class="hidden container mx-auto px-4 py-24 text-center">
     <div class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-rose-100 text-rose-500 mb-6">
       <i class="fas fa-exclamation-triangle text-3xl"></i>
@@ -267,65 +673,110 @@
     <a href="products.html" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-4 text-sm font-bold text-white hover:bg-slate-800 transition uppercase tracking-widest">Return to Shop</a>
   </div>
 
-  <!-- Premium Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-20">
-    <div class="container mx-auto px-4 py-14">
-      <div class="grid gap-10 lg:grid-cols-4">
-        <div class="space-y-4">
-          <p class="text-2xl font-black text-slate-900">CARTELLO</p>
-          <p class="text-sm leading-7 text-slate-500">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
-          <div class="flex gap-4 pt-2">
-            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition text-sm"><i class="fab fa-tiktok"></i></a>
-          </div>
+  <!-- ═══════════════════════════════════════════
+       FOOTER — from index.html
+  ═══════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="../index.html" class="footer-logo">CARTELLO</a>
+        <p class="footer-tagline">Premium fashion for confident, modern lives. Curated essentials delivered to your door.</p>
+        <div class="footer-socials">
+          <a href="#" class="fsoc"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="fsoc"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="fsoc"><i class="fab fa-tiktok"></i></a>
+          <a href="#" class="fsoc"><i class="fab fa-x-twitter"></i></a>
         </div>
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Shop</p>
-          <ul class="space-y-3 text-sm text-slate-500">
-            <li><a href="products.html" class="hover:text-slate-900 transition">All Products</a></li>
-            <li><a href="products.html?category=new" class="hover:text-slate-900 transition">New Arrivals</a></li>
-            <li><a href="products.html?category=sale" class="hover:text-slate-900 transition">Sale</a></li>
-            <li><a href="products.html" class="hover:text-slate-900 transition">Best Sellers</a></li>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <div class="footer-col-title">Shop</div>
+          <ul>
+            <li><a href="products.html">All Products</a></li>
+            <li><a href="products.html?category=new">New Arrivals</a></li>
+            <li><a href="products.html?category=sale">Sale</a></li>
+            <li><a href="products.html">Best Sellers</a></li>
+            <li><a href="products.html">Men's Edit</a></li>
+            <li><a href="products.html">Women's Edit</a></li>
           </ul>
         </div>
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Account</p>
-          <ul class="space-y-3 text-sm text-slate-500">
-            <li><a href="profile.html" class="hover:text-slate-900 transition">My Profile</a></li>
-            <li><a href="orders.html" class="hover:text-slate-900 transition">My Orders</a></li>
-            <li><a href="cart.html" class="hover:text-slate-900 transition">Cart</a></li>
-            <li><a href="login.html" class="hover:text-slate-900 transition">Sign In</a></li>
+        <div class="footer-col">
+          <div class="footer-col-title">Account</div>
+          <ul>
+            <li><a href="profile.html">My Profile</a></li>
+            <li><a href="orders.html">My Orders</a></li>
+            <li><a href="cart.html">My Cart</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="login.html?mode=register">Register</a></li>
           </ul>
         </div>
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-widest text-slate-900 mb-4">Support</p>
-          <ul class="space-y-3 text-sm text-slate-500">
-            <li class="flex items-start gap-3"><i class="fas fa-envelope mt-1 text-slate-400"></i> support@cartello.ph</li>
-            <li class="flex items-start gap-3"><i class="fas fa-phone mt-1 text-slate-400"></i> +63 912 345 6789</li>
-            <li class="flex items-start gap-3"><i class="fas fa-truck mt-1 text-slate-400"></i> Free shipping ₱2,500+</li>
-            <li class="flex items-start gap-3"><i class="fas fa-undo mt-1 text-slate-400"></i> 14-day easy returns</li>
+        <div class="footer-col">
+          <div class="footer-col-title">Company</div>
+          <ul>
+            <li><a href="../index.html#about">About Us</a></li>
+            <li><a href="../index.html#contact">Contact</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Sustainability</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Support</div>
+          <ul>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns Policy</a></li>
+            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">Track Order</a></li>
           </ul>
         </div>
       </div>
-      <div class="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
-        <p>CARTELLO © 2024–2025. All rights reserved.</p>
-        <div class="flex gap-6">
-          <a href="#" class="hover:text-slate-900 transition">Privacy Policy</a>
-          <a href="#" class="hover:text-slate-900 transition">Terms of Service</a>
-          <a href="#" class="hover:text-slate-900 transition">Shipping Info</a>
-        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="footer-newsletter">
+      <div class="fn-copy">
+        <div class="fn-title">Stay In The Loop</div>
+        <div class="fn-sub">Get early access to drops, exclusive offers, and styling tips.</div>
+      </div>
+      <form class="fn-form" onsubmit="event.preventDefault(); this.innerHTML='<span style=\'color:var(--orange);font-weight:700;\'>✓ You\'re in! Check your inbox.</span>';">
+        <input type="email" required placeholder="Enter your email…" class="fn-input" />
+        <button type="submit" class="fn-btn">Subscribe <i class="fas fa-arrow-right"></i></button>
+      </form>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <p class="footer-copy">CARTELLO © 2024–2026. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <span>·</span>
+        <a href="#">Terms of Service</a>
+        <span>·</span>
+        <a href="#">Shipping Info</a>
+      </div>
+      <div class="footer-pays">
+        <i class="fab fa-cc-visa"       title="Visa"></i>
+        <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+        <i class="fab fa-cc-paypal"     title="PayPal"></i>
+        <i class="fab fa-google-pay"    title="GCash-style"></i>
       </div>
     </div>
   </footer>
 
+  <!-- ═══════════════════════════════════════════
+       PRODUCT DETAIL SCRIPTS — original, untouched
+  ═══════════════════════════════════════════ -->
   <script>
-    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://shopco-ecommerce-pm93.onrender.com/api';
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000/api'
+      : 'https://shopco-ecommerce-pm93.onrender.com/api';
+
     let product = null;
     let currentImg = 0;
     let quantity = 1;
     let selectedSize = '';
-    let selectedColor = ''; 
+    let selectedColor = '';
 
     function formatCurrency(n) {
       return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
@@ -334,9 +785,9 @@
     function renderStars(r) {
       let h = '';
       for (let i = 0; i < 5; i++) {
-        if (i < Math.floor(r)) h += '<i class="fas fa-star text-yellow-400"></i>';
+        if      (i < Math.floor(r))                   h += '<i class="fas fa-star text-yellow-400"></i>';
         else if (i === Math.floor(r) && r % 1 >= 0.5) h += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
-        else h += '<i class="far fa-star text-yellow-400"></i>';
+        else                                           h += '<i class="far fa-star text-yellow-400"></i>';
       }
       return h;
     }
@@ -350,7 +801,7 @@
       currentImg = index;
       document.getElementById('mainImage').src = product.images[index];
       document.querySelectorAll('.thumb-btn').forEach((btn, i) => {
-        btn.classList.toggle('ring-2', i === index);
+        btn.classList.toggle('ring-2',   i === index);
         btn.classList.toggle('ring-black', i === index);
       });
     }
@@ -362,13 +813,43 @@
       if (!product) return;
       if (product.sizes?.length && !selectedSize) { showToast('Please select a size', 'error'); return; }
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const key = product._id + selectedSize + selectedColor;
-      const ex = cart.find(i => i.id + i.size + i.color === key);
+      const key  = product._id + selectedSize + selectedColor;
+      const ex   = cart.find(i => i.id + i.size + i.color === key);
+      const image = product.images?.[0] || 'https://via.placeholder.com/600?text=No+Image';
       if (ex) ex.quantity += quantity;
-      else cart.push({ id: product._id, name: product.name, price: product.price, image: product.images?.[0] || 'https://via.placeholder.com/600?text=No+Image', size: selectedSize, color: selectedColor, quantity });
+      else cart.push({ id: product._id, name: product.name, price: product.price, image, size: selectedSize, color: selectedColor, quantity });
       localStorage.setItem('cart', JSON.stringify(cart));
       document.getElementById('cartCount').textContent = cart.reduce((t, i) => t + i.quantity, 0);
+      animateAddToCart();
       showToast(product.name + ' added to cart!');
+    }
+
+    function animateAddToCart() {
+      const button    = document.getElementById('addToCartBtn');
+      const target    = document.querySelector('a[href="cart.html"]');
+      const mainImage = document.getElementById('mainImage');
+      if (!button || !target || !mainImage) return;
+
+      const flyer = document.createElement('img');
+      flyer.src   = mainImage.src;
+      flyer.className = 'cart-flyer';
+      document.body.appendChild(flyer);
+
+      const buttonRect = button.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const size = 70;
+      flyer.style.left = `${buttonRect.left + buttonRect.width  / 2 - size / 2}px`;
+      flyer.style.top  = `${buttonRect.top  + buttonRect.height / 2 - size / 2}px`;
+      flyer.style.opacity = '1';
+
+      requestAnimationFrame(() => {
+        flyer.classList.add('fly');
+        flyer.style.transform = `translate3d(${targetRect.left + targetRect.width/2 - (buttonRect.left + buttonRect.width/2)}px, ${targetRect.top + targetRect.height/2 - (buttonRect.top + buttonRect.height/2)}px, 0) scale(0.2)`;
+        flyer.style.opacity = '0.04';
+      });
+
+      button.classList.add('cart-bounce');
+      setTimeout(() => { flyer.remove(); button.classList.remove('cart-bounce'); }, 800);
     }
 
     function showToast(msg, type = 'success') {
@@ -381,21 +862,25 @@
 
     (async () => {
       const id = new URLSearchParams(window.location.search).get('id');
-      if (!id) { document.getElementById('loadingState').classList.add('hidden'); document.getElementById('errorState').classList.remove('hidden'); return; }
+      if (!id) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        return;
+      }
 
       try {
-        const res = await fetch(`${API}/products/${id}`);
+        const res  = await fetch(`${API}/products/${id}`);
         const data = await res.json();
-        product = data.product;
+        product    = data.product;
 
         document.title = product.name + ' – CARTELLO';
         document.getElementById('breadcrumbName').textContent = product.name;
-        document.getElementById('productName').textContent = product.name;
-        document.getElementById('categoryBadge').textContent = product.category?.name || '';
-        document.getElementById('description').textContent = product.description;
-        document.getElementById('price').textContent = formatCurrency(product.price);
-        document.getElementById('stars').innerHTML = renderStars(product.rating);
-        document.getElementById('ratingText').textContent = `${product.rating.toFixed(1)} (${product.numReviews} reviews)`;
+        document.getElementById('productName').textContent    = product.name;
+        document.getElementById('categoryBadge').textContent  = product.category?.name || '';
+        document.getElementById('description').textContent    = product.description;
+        document.getElementById('price').textContent          = formatCurrency(product.price);
+        document.getElementById('stars').innerHTML            = renderStars(product.rating);
+        document.getElementById('ratingText').textContent     = `${product.rating.toFixed(1)} (${product.numReviews} reviews)`;
 
         if (product.originalPrice) {
           const disc = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
@@ -417,37 +902,37 @@
           stockEl.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>In Stock (${product.stock} available)</span>`;
         }
 
-        // Smart Image Matching
+        // Smart image matching
         const nameImageMap = [
-          { key: /t.?shirt|tee/i, url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80' },
-          { key: /jean|denim/i, url: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=80' },
-          { key: /dress/i, url: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&q=80' },
-          { key: /bag|handbag|purse/i, url: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=800&q=80' },
+          { key: /t.?shirt|tee/i,         url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80' },
+          { key: /jean|denim/i,            url: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=80' },
+          { key: /dress/i,                 url: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&q=80' },
+          { key: /bag|handbag|purse/i,     url: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=800&q=80' },
           { key: /sneaker|shoe|footwear/i, url: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?w=800&q=80' },
-          { key: /boot/i, url: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=800&q=80' },
-          { key: /watch/i, url: 'https://images.unsplash.com/photo-1524592094714-0f0654ece975?w=800&q=80' },
-          { key: /blazer|jacket|coat/i, url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80' },
+          { key: /boot/i,                  url: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=800&q=80' },
+          { key: /watch/i,                 url: 'https://images.unsplash.com/photo-1524592094714-0f0654ece975?w=800&q=80' },
+          { key: /blazer|jacket|coat/i,    url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80' },
           { key: /cardigan|sweater|knit/i, url: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80' },
-          { key: /skirt/i, url: 'https://images.unsplash.com/photo-1582142306909-195724d33ffc?w=800&q=80' },
-          { key: /stripe/i, url: 'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?w=800&q=80' },
-          { key: /floral/i, url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80' }
+          { key: /skirt/i,                 url: 'https://images.unsplash.com/photo-1582142306909-195724d33ffc?w=800&q=80' },
+          { key: /stripe/i,                url: 'https://images.unsplash.com/photo-1574180566232-aaad1b5b8450?w=800&q=80' },
+          { key: /floral/i,                url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80' },
         ];
 
         let displayImages = product.images || [];
-        if (displayImages.length === 0 || displayImages[0].includes('dyfmzw2ti') || displayImages[0].includes('via.placeholder')) {
+        if (!displayImages.length || displayImages[0].includes('dyfmzw2ti') || displayImages[0].includes('via.placeholder')) {
           const match = nameImageMap.find(m => m.key.test(product.name || ''));
           displayImages = [match ? match.url : 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80'];
         }
-        product.images = displayImages; // Update globally for slider logic
+        product.images = displayImages;
 
         document.getElementById('mainImage').src = displayImages[0];
         const thumbs = document.getElementById('thumbnails');
         thumbs.innerHTML = '';
         displayImages.forEach((img, i) => {
-          thumbs.innerHTML += `<button class="thumb-btn w-20 h-24 lg:w-24 lg:h-32 shrink-0 rounded-2xl overflow-hidden border-2 ${i === 0 ? 'border-slate-900 ring-2 ring-slate-900 ring-offset-2' : 'border-transparent'} hover:opacity-80 transition"
-            onclick="setMainImage(${i})">
-            <img src="${img}" class="w-full h-full object-cover">
-          </button>`;
+          thumbs.innerHTML += `
+            <button class="thumb-btn w-20 h-24 lg:w-24 lg:h-32 shrink-0 rounded-2xl overflow-hidden border-2 ${i === 0 ? 'border-slate-900 ring-2 ring-slate-900 ring-offset-2' : 'border-transparent'} hover:opacity-80 transition" onclick="setMainImage(${i})">
+              <img src="${img}" class="w-full h-full object-cover">
+            </button>`;
         });
 
         // Sizes
@@ -455,8 +940,7 @@
           document.getElementById('sizesSection').classList.remove('hidden');
           const sizesEl = document.getElementById('sizes');
           product.sizes.forEach(size => {
-            sizesEl.innerHTML += `<button onclick="selectSize(this, '${size}')"
-              class="size-btn border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium hover:border-black transition">${size}</button>`;
+            sizesEl.innerHTML += `<button onclick="selectSize(this,'${size}')" class="size-btn border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium hover:border-black transition">${size}</button>`;
           });
         }
 
@@ -465,9 +949,7 @@
           document.getElementById('colorsSection').classList.remove('hidden');
           const colorsEl = document.getElementById('colors');
           product.colors.forEach(c => {
-            colorsEl.innerHTML += `<button onclick="selectColor(this, '${c.name}')" title="${c.name}"
-              class="color-btn w-8 h-8 rounded-full border-2 border-transparent hover:border-gray-400 transition ring-offset-1"
-              style="background-color:${c.code || '#888'}"></button>`;
+            colorsEl.innerHTML += `<button onclick="selectColor(this,'${c.name}')" title="${c.name}" class="color-btn w-8 h-8 rounded-full border-2 border-transparent hover:border-gray-400 transition ring-offset-1" style="background-color:${c.code || '#888'}"></button>`;
           });
         }
 
@@ -478,7 +960,7 @@
         document.getElementById('errorState').classList.remove('hidden');
       }
 
-      // Cart count
+      // Refresh cart count after product load
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       document.getElementById('cartCount').textContent = cart.reduce((t, i) => t + i.quantity, 0);
     })();
